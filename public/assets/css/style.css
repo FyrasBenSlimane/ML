@@ -1,0 +1,63 @@
+/* ===================================================
+   MedCare — Styles personnalisés
+   =================================================== */
+
+/* ---------- Écran d'accueil : verre dépoli & podium 3D ---------- */
+.glass-panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(240, 250, 248, 0.65) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+}
+
+.glass-tile {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 249, 247, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+}
+
+.podium-cylinder-top {
+    background: radial-gradient(ellipse at center, #E4F5F2 0%, #CCEAE5 100%);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -3px 6px rgba(16, 92, 85, 0.1);
+}
+
+.podium-cylinder-body {
+    background: linear-gradient(90deg, #B5E0D9 0%, #D8F0EC 25%, #EAF7F5 50%, #D8F0EC 75%, #B7DFD8 100%);
+}
+
+.podium-base-rim {
+    background: linear-gradient(90deg, #A2D6CD 0%, #C8EAE3 30%, #E3F5F2 50%, #C8EAE3 70%, #A2D6CD 100%);
+    box-shadow: 0 16px 28px -4px rgba(22, 78, 73, 0.2);
+}
+
+/* ---------- Écran "Find Doctors" ---------- */
+
+/* Fond ambiant inspiré de la maquette */
+.screen-ambient {
+    background: radial-gradient(circle at 100% 15%, #ffebe2 0%, #fcf7f3 45%, #eefbf9 85%);
+    min-height: 100vh;
+}
+
+/* Masquer la scrollbar (carrousel de spécialités) */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Carte praticien en verre dépoli */
+.glass-card {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+/* Barre de navigation inférieure */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+}

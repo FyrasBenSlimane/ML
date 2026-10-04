@@ -1,0 +1,6 @@
+# Données ML (hors template)
+*.csv
+
+# Divers
+.DS_Store
+Thumbs.db
