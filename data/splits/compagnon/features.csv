@@ -1,0 +1,16 @@
+feature
+age_ordinal
+gender
+race
+time_in_hospital
+num_medications
+number_diagnoses
+total_prior_visits
+diag_1_group
+diag_2_group
+A1Cresult
+max_glu_serum
+insulin_prescrite
+metformin_prescrite
+diabetesMed
+num_med_changes

@@ -1,0 +1,17 @@
+feature
+age_ordinal
+gender
+race
+num_medications
+number_diagnoses
+total_prior_visits
+diag_1_group
+diag_2_group
+diag_3_group
+insulin_prescrite
+metformin_prescrite
+diabetesMed
+num_med_changes
+number_outpatient
+number_emergency
+number_inpatient
