@@ -1,0 +1,49 @@
+{
+  "features": [
+    "age_ordinal",
+    "gender",
+    "admission_type_id",
+    "admission_source_id",
+    "diag_1_group",
+    "number_emergency",
+    "number_inpatient",
+    "number_outpatient",
+    "A1Cresult",
+    "num_medications",
+    "medical_specialty",
+    "sulfonylurea_bin"
+  ],
+  "target": "insulin_change (Up/Down=1, Steady=0)",
+  "population": "patients sous insuline (insulin in {Steady, Up, Down})",
+  "seuil": 0.315,
+  "borne_haute": 0.55,
+  "zones": [
+    [
+      "Risque plus faible",
+      0.0,
+      0.315,
+      24
+    ],
+    [
+      "Risque intermédiaire",
+      0.315,
+      0.55,
+      47
+    ],
+    [
+      "Risque élevé",
+      0.55,
+      1.0,
+      68
+    ]
+  ],
+  "num_medications_tranches": {
+    "1-5": 3,
+    "6-10": 8,
+    "11-15": 13,
+    "16-20": 18,
+    ">20": 25
+  },
+  "sklearn_version": "1.9.1",
+  "random_state": 42
+}

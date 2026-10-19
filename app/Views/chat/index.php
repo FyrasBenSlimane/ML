@@ -86,7 +86,9 @@
     const VOICE = new URLSearchParams(location.search).get('voice') === '1';
 
     // ===== Script de la conversation =====
-    // Étape 0 = porte d'entrée (insuline). Étapes 1 à 9 = questions du modèle.
+    // Étape 0 = porte d'entrée (insuline). Étapes 1 à 12 = questions du modèle (12 variables).
+    // Les valeurs envoyées sont converties en categories du modele par l'API /predict
+    // (voir le dictionnaire commente cote API). "Je ne sais pas" -> Unknown / Not_Tested.
     const FLOW = [
       { gate: true, texte: "Bonjour 👋 Je suis Doza. Prenez-vous de l'insuline ?",
         reponses: [ {label:'Oui', value:'oui'}, {label:'Non', value:'non'} ] },
@@ -104,7 +106,13 @@
 
       { key:'admission_source_id', texte:"Comment êtes-vous arrivé à l'hôpital ?",
         reponses:[ {label:'Par les urgences',value:7},{label:'Envoyé par mon médecin',value:1},
-                   {label:"Transféré d'un autre établissement",value:6},{label:'Autre',value:0} ] },
+                   {label:"Transféré d'un autre établissement",value:6},{label:'Autre',value:0},
+                   {label:'Je ne sais pas',value:'jnsp'} ] },
+
+      { key:'medical_specialty', texte:"Dans quel service êtes-vous hospitalisé ?",
+        reponses:[ {label:'Médecine interne',value:'InternalMedicine'},{label:'Urgences',value:'Emergency/Trauma'},
+                   {label:'Médecine générale',value:'Family/GeneralPractice'},{label:'Cardiologie',value:'Cardiology'},
+                   {label:'Autre service',value:'Other'},{label:'Je ne sais pas',value:'Unknown'} ] },
 
       { key:'diag_1_group', texte:"Pour quelle raison principale êtes-vous hospitalisé ?",
         reponses:[ {label:'Diabète',value:'Diabetes'},{label:'Cœur / vaisseaux',value:'Circulatory'},
@@ -125,6 +133,13 @@
       { key:'A1Cresult', texte:"Connaissez-vous votre dernière HbA1c (hémoglobine glyquée) ?",
         reponses:[ {label:'Moins de 7 %',value:1},{label:'Entre 7 et 8 %',value:2},
                    {label:'Plus de 8 %',value:3},{label:'Je ne sais pas',value:0} ] },
+
+      { key:'num_medications', texte:"Combien de médicaments différents prenez-vous au total ?",
+        reponses:[ {label:'1 à 5',value:3},{label:'6 à 10',value:8},{label:'11 à 15',value:13},
+                   {label:'16 à 20',value:18},{label:'Plus de 20',value:25} ] },
+
+      { key:'sulfonylurea', texte:"Prenez-vous un sulfamide hypoglycémiant (glyburide ou glipizide) ?",
+        reponses:[ {label:'Oui',value:1},{label:'Non',value:0},{label:'Je ne sais pas',value:0} ] },
     ];
 
     // Réponses collectées (c'est ce qui sera envoyé au modèle)
@@ -134,9 +149,9 @@
     function scrollBas() { stream.scrollTop = stream.scrollHeight; }
 
     function majProgression(i) {
-      // i = numéro d'étape (0 = porte). On affiche "Question n / 9" pour les étapes 1 à 9.
-      if (i >= 1 && i <= 9) {
-        progressEl.textContent = 'Question ' + i + ' / 9';
+      // i = numéro d'étape (0 = porte). On affiche "Question n / 12" pour les étapes 1 à 12.
+      if (i >= 1 && i <= 12) {
+        progressEl.textContent = 'Question ' + i + ' / 12';
         progressEl.classList.remove('hidden');
       } else {
         progressEl.classList.add('hidden');
@@ -288,13 +303,24 @@
         '</div>'
       );
 
-      // Appel du modèle (mock), enregistrement en base, puis redirection résultat
-      setTimeout(function () {
-        const p = predictDose(answers);
-        const aller = function () { window.location = BASE + 'doza/resultat?p=' + p; };
+      // Appel de l'API Python (/predict), enregistrement en base, puis redirection résultat
+      setTimeout(async function () {
+        let res;
+        try {
+          res = await predictDose(answers);   // objet complet renvoyé par l'API
+        } catch (e) {
+          messageDoza('<p class="text-[14px] leading-relaxed" style="color:#134E4A">Désolé, le service de prédiction est indisponible pour le moment. Vérifiez que l\'API est lancée, puis réessayez.</p>');
+          return;
+        }
+        // On transmet le résultat complet à l'écran de résultat via sessionStorage.
+        try {
+          sessionStorage.setItem('doza_result', JSON.stringify(res));
+          sessionStorage.setItem('doza_answers', JSON.stringify(answers));
+        } catch (e) { /* mode privé : on continue, l'écran retombera sur ?p= */ }
 
-        // Sauvegarde de la session (question du patient + réponse du modèle).
-        // On redirige dans tous les cas, même si la base n'est pas disponible.
+        const p = res.proba;
+        const aller = function () { window.location = BASE + 'doza/resultat?p=' + p; };
+        // Sauvegarde de la session (on redirige dans tous les cas, même si la base est absente).
         fetch(BASE + 'doza/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

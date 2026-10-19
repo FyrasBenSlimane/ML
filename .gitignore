@@ -1,6 +1,18 @@
 # Données ML (hors template)
 *.csv
 
+# Environnement Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Archives et exports volumineux (non versionnés)
+*.zip
+
 # Divers
 .DS_Store
 Thumbs.db

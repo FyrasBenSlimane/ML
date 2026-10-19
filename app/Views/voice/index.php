@@ -84,6 +84,7 @@
             <!-- 2. Pastille niveau (point lumineux + libellé) + phrase — rempli par afficherResultat(p) -->
             <div id="result-level" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[13px] font-semibold mb-2 bg-slate-100 text-slate-600">—</div>
             <p id="result-message" class="text-[19px] font-semibold leading-snug max-w-xs" style="color:#134E4A">—</p>
+            <p id="result-rate" class="text-[12.5px] text-slate-500 mt-1.5 max-w-xs"></p>
 
             <!-- 3. Avertissement — TOUJOURS affiché (encart ambre doux) -->
             <div class="mt-3 flex items-start gap-2.5 text-left px-3.5 py-2.5 rounded-2xl bg-amber-50/60 border border-amber-200/60 w-full">
@@ -96,9 +97,12 @@
             </div>
 
             <!-- 4. Mention bas de carte (disclaimer discret) -->
-            <p class="mt-2 text-[11px] text-slate-400 font-normal">Prédiction indicative — ne remplace pas l'avis médical</p>
+            <p class="mt-2 text-[11px] text-slate-400 font-normal">Démo éducative — ne remplace pas l'avis médical</p>
         </div>
     </div>
+
+    <!-- Explication par patient (rempli par le JS depuis la réponse de l'API) -->
+    <div id="result-explain" class="px-4 mt-3 space-y-2"></div>
 
     <!-- Boutons de navigation sous la carte -->
     <div class="mt-auto px-4 pt-3 flex flex-col gap-2">
@@ -168,35 +172,59 @@
     const btnPause   = document.getElementById('btn-pause');
     const btnCancel  = document.getElementById('btn-cancel');
 
-    // ===== 3. Fonction UNIQUE : afficher le résultat selon la probabilité p (0 à 1) =====
-    // C'est ici qu'on branchera le vrai modèle plus tard (il suffit d'appeler afficherResultat(p)).
-    function afficherResultat(p) {
-      let titre, message, classes, dot;
+    const rateEl    = document.getElementById('result-rate');
+    const explainEl = document.getElementById('result-explain');
 
-      if (p < 0.35) {
-        titre = 'Peu probable';
-        message = "Votre dose d'insuline devrait probablement rester la même.";
-        classes = 'bg-emerald-50 text-emerald-700 border border-emerald-200/70';
-        dot = 'bg-emerald-500';
-      } else if (p < 0.65) {
-        titre = 'Possible';
-        message = "Un ajustement de votre dose d'insuline est possible pendant votre séjour.";
-        classes = 'bg-amber-50 text-amber-800 border border-amber-200/80';
-        dot = 'bg-amber-500';
-      } else {
-        titre = 'Probable';
-        message = "Un ajustement de votre dose d'insuline est probable pendant votre séjour.";
-        classes = 'bg-orange-50 text-orange-700 border border-orange-200/80';
-        dot = 'bg-orange-500';
+    // Styles + message par zone de risque (libellés renvoyés par l'API).
+    const ZONES = {
+      'Risque plus faible': {
+        message: "Votre dose d'insuline devrait probablement rester la même.",
+        classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200/70', dot: 'bg-emerald-500' },
+      'Risque intermédiaire': {
+        message: "Un ajustement de votre dose d'insuline est possible pendant votre séjour.",
+        classes: 'bg-amber-50 text-amber-800 border border-amber-200/80', dot: 'bg-amber-500' },
+      'Risque élevé': {
+        message: "Un ajustement de votre dose d'insuline est probable pendant votre séjour.",
+        classes: 'bg-orange-50 text-orange-700 border border-orange-200/80', dot: 'bg-orange-500' },
+    };
+
+    // Zone déduite de la probabilité (repli si l'API n'a pas renvoyé le libellé).
+    function zoneDepuisP(p) {
+      if (p < 0.315) return 'Risque plus faible';
+      if (p < 0.55)  return 'Risque intermédiaire';
+      return 'Risque élevé';
+    }
+
+    // ===== 3. Afficher le résultat complet renvoyé par l'API =====
+    function afficherResultat(res) {
+      const zone = res.zone || zoneDepuisP(res.proba);
+      const z = ZONES[zone] || ZONES['Risque intermédiaire'];
+
+      niveauEl.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-[13px] font-semibold mb-2 ' + z.classes;
+      niveauEl.innerHTML = '<span class="w-2 h-2 rounded-full ' + z.dot + ' animate-pulse"></span>' + zone;
+      messageEl.textContent = z.message;
+
+      // Phrase sans ambiguïté sur le pourcentage + taux réel observé dans la zone.
+      if (typeof res.zone_taux === 'number') {
+        rateEl.textContent = "Parmi les patients dans une situation proche, environ "
+          + res.zone_taux + " % ont eu un changement de dose.";
       }
 
-      // Pastille niveau : point lumineux coloré + libellé (tons doux de la charte)
-      niveauEl.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-[13px] font-semibold mb-2 ' + classes;
-      niveauEl.innerHTML = '<span class="w-2 h-2 rounded-full ' + dot + ' animate-pulse"></span>' + titre;
-      messageEl.textContent = message;
+      // Facteurs qui ont le plus pesé pour ce patient (explication, PAS un conseil).
+      let html = '';
+      if (res.facteurs && res.facteurs.length) {
+        html += '<div class="rounded-2xl bg-white/70 border border-teal-100/70 px-3.5 py-2.5 text-left">'
+             +  '<p class="text-[12.5px] font-bold text-teal-800 mb-0.5">Les facteurs qui ont le plus pesé</p>'
+             +  '<p class="text-[11.5px] text-slate-400 mb-1.5">Ils expliquent l\'estimation du modèle — ce ne sont pas des conseils.</p>'
+             +  '<ul class="space-y-0.5">';
+        res.facteurs.forEach(function (f) {
+          html += '<li class="text-[12.5px] text-slate-600">• ' + f.champ + ' : votre réponse « ' + f.reponse + ' »</li>';
+        });
+        html += '</ul></div>';
+      }
+      explainEl.innerHTML = html;
 
-      // Texte lu à voix haute = niveau + message + avertissement (jamais le pourcentage)
-      texteALire = titre + '. ' + message + ' ' + AVERTISSEMENT;
+      texteALire = zone + '. ' + z.message + ' ' + AVERTISSEMENT;
     }
 
     // ===== 4. Lecture audio (Web Speech API), uniquement au clic (pas d'auto-play) =====
@@ -234,7 +262,14 @@
     });
 
     // ===== 7. Affichage initial =====
-    // p est fourni par le serveur (PHP) depuis l'URL ?p=... (défaut 0.70).
-    afficherResultat(<?= json_encode($p) ?>);
+    // Résultat complet transmis par le questionnaire via sessionStorage ;
+    // repli sur la probabilité fournie par le serveur (?p=...) si absent.
+    let resultat = null;
+    try { resultat = JSON.parse(sessionStorage.getItem('doza_result')); } catch (e) {}
+    if (!resultat) {
+      const p = <?= json_encode($p) ?>;
+      resultat = { proba: p, pourcentage: Math.round(p * 100), zone: zoneDepuisP(p), pourquoi: [], changerait: [] };
+    }
+    afficherResultat(resultat);
   })();
 </script>

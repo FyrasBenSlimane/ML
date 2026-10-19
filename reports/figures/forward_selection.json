@@ -1,0 +1,111 @@
+{
+  "steps": [
+    {
+      "n": 9,
+      "ajout": "(9 de base)",
+      "wording": "",
+      "pr_val": 0.4061,
+      "gain": null,
+      "pr_test": 0.4007,
+      "garde": true
+    },
+    {
+      "n": 10,
+      "ajout": "num_medications",
+      "wording": "Combien de médicaments différents prenez-vous ?",
+      "pr_val": 0.4754,
+      "gain": 0.0693,
+      "pr_test": 0.4723,
+      "garde": true
+    },
+    {
+      "n": 11,
+      "ajout": "medical_specialty",
+      "wording": "Dans quel service êtes-vous hospitalisé ?",
+      "pr_val": 0.4904,
+      "gain": 0.015,
+      "pr_test": 0.4827,
+      "garde": true
+    },
+    {
+      "n": 12,
+      "ajout": "sulfonylurea_bin",
+      "wording": "Prenez-vous un sulfamide (glyburide/glipizide) ?",
+      "pr_val": 0.5044,
+      "gain": 0.014,
+      "pr_test": 0.4976,
+      "garde": true
+    },
+    {
+      "n": 13,
+      "ajout": "max_glu_serum",
+      "wording": "Votre glycémie mesurée la plus élevée récemment ?",
+      "pr_val": 0.5168,
+      "gain": 0.0124,
+      "pr_test": 0.5148,
+      "garde": true
+    },
+    {
+      "n": 14,
+      "ajout": "metformin_bin",
+      "wording": "Prenez-vous de la metformine ?",
+      "pr_val": 0.5205,
+      "gain": 0.0037,
+      "pr_test": 0.5155,
+      "garde": false
+    },
+    {
+      "n": 15,
+      "ajout": "diag_2_group",
+      "wording": "Avez-vous une 2e maladie importante ? Laquelle ?",
+      "pr_val": 0.523,
+      "gain": 0.0025,
+      "pr_test": 0.5211,
+      "garde": false
+    },
+    {
+      "n": 16,
+      "ajout": "number_diagnoses",
+      "wording": "Combien de problèmes de santé avez-vous au total ?",
+      "pr_val": 0.5243,
+      "gain": 0.0013,
+      "pr_test": 0.5282,
+      "garde": false
+    },
+    {
+      "n": 17,
+      "ajout": "glimepiride_bin",
+      "wording": "Prenez-vous du glimepiride ?",
+      "pr_val": 0.5257,
+      "gain": 0.0014,
+      "pr_test": 0.5287,
+      "garde": false
+    },
+    {
+      "n": 18,
+      "ajout": "diag_3_group",
+      "wording": "Avez-vous une 3e maladie importante ?",
+      "pr_val": 0.5277,
+      "gain": 0.002,
+      "pr_test": 0.5294,
+      "garde": false
+    }
+  ],
+  "final_feats": [
+    "age_ordinal",
+    "gender",
+    "admission_type_id",
+    "admission_source_id",
+    "diag_1_group",
+    "number_emergency",
+    "number_inpatient",
+    "number_outpatient",
+    "A1Cresult",
+    "num_medications",
+    "medical_specialty",
+    "sulfonylurea_bin",
+    "max_glu_serum"
+  ],
+  "pr_test_final": 0.5148,
+  "complet_val": 0.5729
+}
