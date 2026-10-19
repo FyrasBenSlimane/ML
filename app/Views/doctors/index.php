@@ -60,8 +60,51 @@
 
     <!-- Liste des médecins -->
     <main class="px-5 mt-4 space-y-3.5">
+
+        <!-- ===== Carte d'accès à Doza (assistant IA) — placée en premier ===== -->
+        <article class="relative rounded-3xl p-3.5 flex items-center shadow-soft-card hover:shadow-md active:scale-[0.99] transition bg-white ring-1 ring-teal-300/40">
+            <!-- Clic sur toute la carte → fiche du médecin -->
+            <a href="<?= BASE_URL ?>profile" class="absolute inset-0 z-10 rounded-3xl" aria-label="Ouvrir la fiche de Doza"></a>
+
+            <!-- Avatar Doza (photo) -->
+            <div class="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner border border-white/80 bg-teal-50">
+                <img alt="Doza" class="w-full h-full object-cover object-top" src="<?= ASSETS_URL ?>/img/doctor5.jpg">
+            </div>
+
+            <!-- Informations -->
+            <div class="ml-3.5 flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-sm font-bold text-teal-darkText truncate leading-snug">Doza</h2>
+                </div>
+                <p class="text-xs text-teal-700/80 font-medium truncate mt-0.5">Assistant insuline · IA</p>
+                <div class="flex items-center space-x-1 mt-1.5 text-[11px] text-slate-500">
+                    <svg class="w-3 h-3 text-teal-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span>2 min · 9 questions</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1 truncate">Ne remplace pas l'avis d'un médecin</p>
+            </div>
+
+            <!-- Actions (au-dessus du lien étiré) : chat & mode vocal -->
+            <div class="relative z-20 flex flex-col space-y-2 ml-2 flex-shrink-0">
+                <a href="<?= BASE_URL ?>doza" aria-label="Discuter avec Doza" class="w-9 h-9 rounded-full bg-white/90 border border-slate-100 flex items-center justify-center text-teal-600 shadow-sm hover:bg-teal-50 active:scale-95 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </a>
+                <a href="<?= BASE_URL ?>doza?voice=1" aria-label="Mode vocal : Doza lit les questions" class="w-9 h-9 rounded-full bg-teal-primary text-white flex items-center justify-center shadow-sm shadow-teal-600/30 hover:bg-teal-600 active:scale-95 transition">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
+                    </svg>
+                </a>
+            </div>
+        </article>
+
         <?php foreach ($doctors as $doc): ?>
-        <article class="glass-card rounded-3xl p-3.5 flex items-center shadow-soft-card hover:shadow-md transition">
+        <article class="relative glass-card rounded-3xl p-3.5 flex items-center shadow-soft-card hover:shadow-md active:scale-[0.99] transition">
+            <!-- Clic sur toute la carte → fiche du médecin -->
+            <a href="<?= BASE_URL ?>profile" class="absolute inset-0 z-10 rounded-3xl" aria-label="Voir la fiche de <?= htmlspecialchars($doc['name']) ?>"></a>
             <!-- Avatar -->
             <div class="w-16 h-16 rounded-2xl <?= $doc['bg'] ?> overflow-hidden flex-shrink-0 shadow-inner border border-white/80">
                 <img alt="<?= htmlspecialchars($doc['name']) ?>" class="w-full h-full object-cover object-top" src="<?= ASSETS_URL ?>/img/<?= $doc['img'] ?>">
@@ -83,8 +126,8 @@
                     <span><?= htmlspecialchars($doc['exp']) ?> Years Exp.</span>
                 </div>
             </div>
-            <!-- Actions (message & appel) -->
-            <div class="flex flex-col space-y-2 ml-2 flex-shrink-0">
+            <!-- Actions (message & appel) — au-dessus du lien étiré -->
+            <div class="relative z-20 flex flex-col space-y-2 ml-2 flex-shrink-0">
                 <button aria-label="Message <?= htmlspecialchars($doc['name']) ?>" class="w-9 h-9 rounded-full bg-white/90 border border-slate-100 flex items-center justify-center text-teal-600 shadow-sm hover:bg-teal-50 active:scale-95 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"></path>

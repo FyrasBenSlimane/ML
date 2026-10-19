@@ -25,13 +25,11 @@
                 <path d="M6.5 11h2.5l1.5-3 2 6 1.5-3h3.5" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
             </svg>
         </button>
-        <button aria-label="Options" class="w-12 h-12 rounded-full glass-tile flex items-center justify-center shadow-icon-soft text-slate-700 transition hover:scale-105 active:scale-95" type="button">
-            <div class="flex space-x-1 items-center">
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
-            </div>
-        </button>
+        <a href="<?= BASE_URL ?>auth" aria-label="Connexion / Créer un compte" class="w-12 h-12 rounded-full glass-tile flex items-center justify-center shadow-icon-soft text-teal-brand transition hover:scale-105 active:scale-95">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+            </svg>
+        </a>
     </nav>
 
     <!-- Zone Hero -->
@@ -126,14 +124,14 @@
                     <span class="mt-2 text-[11px] font-bold text-teal-darkText leading-tight">Book<br>Appointment</span>
                 </button>
 
-                <button class="group flex flex-col items-center justify-center p-2.5 rounded-2xl glass-tile shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 text-center" type="button">
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shadow-inner group-hover:scale-105 transition-transform duration-200">
+                <a href="<?= BASE_URL ?>doza" class="group flex flex-col items-center justify-center p-2.5 rounded-2xl glass-tile shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 text-center">
+                    <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-brand shadow-inner group-hover:scale-105 transition-transform duration-200">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"></path>
+                            <path d="M12 2.5S5.5 10 5.5 14.5a6.5 6.5 0 0013 0C18.5 10 12 2.5 12 2.5z"></path>
                         </svg>
                     </div>
-                    <span class="mt-2 text-[11px] font-bold text-teal-darkText leading-tight">24/7<br>Support</span>
-                </button>
+                    <span class="mt-2 text-[11px] font-bold text-teal-darkText leading-tight">Doza<br>Assistant</span>
+                </a>
             </div>
         </section>
 

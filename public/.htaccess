@@ -1,6 +1,7 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    # Pas de RewriteBase : rewrite relatif → fonctionne à la racine
+    # comme dans un sous-dossier XAMPP (htdocs/Projet ML/...).
 
     # Ne pas réécrire les fichiers/dossiers existants (assets, images...)
     RewriteCond %{REQUEST_FILENAME} !-f

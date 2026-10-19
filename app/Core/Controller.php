@@ -16,10 +16,11 @@ class Controller
     /**
      * Rend une vue dans le layout principal.
      *
-     * @param string $view  ex: 'home/index'
-     * @param array  $data  données passées à la vue
+     * @param string $view   ex: 'home/index'
+     * @param array  $data   données passées à la vue
+     * @param string $layout layout à utiliser (fichier dans Views/layouts/), défaut 'main'
      */
-    protected function view($view, $data = [])
+    protected function view($view, $data = [], $layout = 'main')
     {
         extract($data);
 
@@ -34,7 +35,11 @@ class Controller
         require $viewFile;
         $content = ob_get_clean();
 
-        // Injecte dans le layout
-        require APP_PATH . '/Views/layouts/main.php';
+        // Injecte dans le layout choisi (repli sur main.php si absent)
+        $layoutFile = APP_PATH . '/Views/layouts/' . $layout . '.php';
+        if (!file_exists($layoutFile)) {
+            $layoutFile = APP_PATH . '/Views/layouts/main.php';
+        }
+        require $layoutFile;
     }
 }

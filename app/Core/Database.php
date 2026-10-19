@@ -16,11 +16,9 @@ class Database
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
-        try {
-            $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
-        } catch (PDOException $e) {
-            die('Erreur de connexion : ' . $e->getMessage());
-        }
+        // On laisse remonter l'exception : les contrôleurs décident quoi faire
+        // (ex. afficher un historique vide si MySQL n'est pas démarré).
+        $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
     }
 
     public function query($sql)

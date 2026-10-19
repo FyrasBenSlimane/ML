@@ -61,3 +61,98 @@
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.8);
 }
+
+/* ---------- Écran "Active Voice Session" ---------- */
+
+/* Fond ambiant menthe pastel (la hauteur est gérée par le cadre h-[844px] dans la vue) */
+.voice-ambient {
+    background: linear-gradient(180deg, #E7FFFB 0%, #E2F7F3 45%, #D1F5EE 100%);
+}
+
+/* Noyau irisé de l'orbe (dégradé radial multi-couches, sans image) */
+.voice-orb-core {
+    background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 45%),
+        radial-gradient(circle at 70% 65%, rgba(208, 188, 255, 0.55) 0%, rgba(208, 188, 255, 0) 50%),
+        radial-gradient(circle at 60% 40%, rgba(109, 245, 225, 0.6) 0%, rgba(109, 245, 225, 0) 55%),
+        radial-gradient(ellipse at center, #D6FBF5 0%, #AEE8E0 55%, #9FD8E6 100%);
+    box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.85), inset 0 -8px 18px rgba(16, 92, 85, 0.18);
+}
+
+/* Respiration + flottement de l'orbe */
+@keyframes orb-float-breathe {
+    0%, 100% {
+        transform: translateY(0px) scale(0.98) rotate(0deg);
+        border-radius: 50%;
+        filter: drop-shadow(0 0 18px rgba(109, 245, 225, 0.45));
+    }
+    25% { border-radius: 48% 52% 53% 47% / 52% 48% 52% 48%; }
+    50% {
+        transform: translateY(-6px) scale(1.04) rotate(2deg);
+        border-radius: 53% 47% 49% 51% / 47% 53% 48% 52%;
+        filter: drop-shadow(0 0 28px rgba(0, 104, 95, 0.5)) drop-shadow(0 0 45px rgba(107, 56, 212, 0.3));
+    }
+    75% { border-radius: 49% 51% 52% 48% / 51% 49% 53% 47%; }
+}
+
+/* Anneaux d'onde acoustique */
+@keyframes ripple-expand-1 {
+    0%   { transform: scale(0.85); opacity: 0.75; }
+    50%  { opacity: 0.35; }
+    100% { transform: scale(1.35); opacity: 0; }
+}
+@keyframes ripple-expand-2 {
+    0%   { transform: scale(0.8); opacity: 0.6; }
+    60%  { opacity: 0.25; }
+    100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* Halo harmonique rotatif */
+@keyframes aura-spin-glow {
+    0%   { transform: rotate(0deg) scale(1);     opacity: 0.45; }
+    50%  { transform: rotate(180deg) scale(1.12); opacity: 0.75; }
+    100% { transform: rotate(360deg) scale(1);   opacity: 0.45; }
+}
+
+/* Reflet irisé liquide */
+@keyframes iridescent-shimmer {
+    0%   { transform: translate(-30%, -30%) rotate(0deg);   opacity: 0.35; }
+    50%  { transform: translate(15%, 15%) rotate(180deg);   opacity: 0.65; }
+    100% { transform: translate(-30%, -30%) rotate(360deg); opacity: 0.35; }
+}
+
+.animate-orb-breathe   { animation: orb-float-breathe 5.8s ease-in-out infinite; will-change: transform, border-radius, filter; }
+.animate-ripple-1      { animation: ripple-expand-1 3.4s cubic-bezier(0.25, 0.8, 0.25, 1) infinite; }
+.animate-ripple-2      { animation: ripple-expand-2 3.4s cubic-bezier(0.25, 0.8, 0.25, 1) infinite 1.4s; }
+.animate-aura-glow     { animation: aura-spin-glow 11s ease-in-out infinite alternate; will-change: transform, opacity; }
+.animate-shimmer-liquid { animation: iridescent-shimmer 7s ease-in-out infinite alternate; will-change: transform, opacity; }
+
+/* Au repos : l'orbe garde une animation douce (respiration + reflets + halo)
+   pour rester vivant. Seules les ONDES acoustiques (anneaux) sont en pause,
+   et démarrent pendant la lecture audio via la classe .is-speaking. */
+#orb-stage .animate-ripple-1,
+#orb-stage .animate-ripple-2 {
+    animation-play-state: paused;
+    visibility: hidden;
+}
+#orb-stage.is-speaking .animate-ripple-1,
+#orb-stage.is-speaking .animate-ripple-2 {
+    animation-play-state: running;
+    visibility: visible;
+}
+
+/* Pendant la lecture : la respiration s'accélère légèrement (effet "actif"). */
+#orb-stage.is-speaking .animate-orb-breathe {
+    animation-duration: 3.4s;
+}
+
+/* Respect des préférences d'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+    .animate-orb-breathe,
+    .animate-ripple-1,
+    .animate-ripple-2,
+    .animate-aura-glow,
+    .animate-shimmer-liquid {
+        animation: none;
+    }
+}
