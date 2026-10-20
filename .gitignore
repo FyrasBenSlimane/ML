@@ -3,6 +3,7 @@
 
 # Environnement Python
 .venv/
+.venv-api/
 venv/
 env/
 __pycache__/
