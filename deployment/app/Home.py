@@ -23,6 +23,12 @@ st.set_page_config(
 
 inject_global_css()
 
+# SSO depuis MedCare : si l'URL contient ?token=..., connexion automatique du soignant.
+from sso import try_token_login, MEDCARE_URL
+_sso_err = try_token_login()
+if _sso_err:
+    st.error(_sso_err)
+
 if st.session_state.get("logged_in"):
     with st.sidebar:
         portal = st.session_state.get("portal_type", "")
@@ -42,6 +48,11 @@ if st.session_state.get("logged_in"):
                         margin-top:0.3rem;">Welcome, {name}</div>
         </div>
         """, unsafe_allow_html=True)
+        st.markdown(
+            f'<a href="{MEDCARE_URL}" target="_self" style="display:block;text-align:center;'
+            f'padding:0.55rem;border-radius:10px;background:rgba(13,148,136,0.08);color:#0D9488;'
+            f'font-weight:600;text-decoration:none;margin-bottom:0.5rem;">&larr; Retour &agrave; MedCare</a>',
+            unsafe_allow_html=True)
         if st.button("Logout", use_container_width=True):
             for k in ["logged_in", "user_name", "portal_type"]:
                 st.session_state.pop(k, None)

@@ -1158,6 +1158,15 @@ def render_sidebar():
                             margin-top:0.3rem;">Welcome, {name}</div>
             </div>
             """, unsafe_allow_html=True)
+            try:
+                from sso import MEDCARE_URL
+                st.markdown(
+                    f'<a href="{MEDCARE_URL}" target="_self" style="display:block;text-align:center;'
+                    f'padding:0.5rem;border-radius:10px;background:rgba(13,148,136,0.08);color:#0D9488;'
+                    f'font-weight:600;text-decoration:none;margin-bottom:0.5rem;">&larr; Retour &agrave; MedCare</a>',
+                    unsafe_allow_html=True)
+            except Exception:
+                pass
             if st.button("Logout", use_container_width=True):
                 for k in ["logged_in", "user_name", "portal_type"]:
                     st.session_state.pop(k, None)
