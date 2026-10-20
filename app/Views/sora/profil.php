@@ -181,6 +181,11 @@
         return;
       }
       afficher(data);
+      // Enregistrement de la fiche + resultats pour le patient connecte (best effort).
+      fetch('<?= BASE_URL ?>sora/save', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fiche: fiche, resultat: data })
+      }).catch(function () {});
     })();
   })();
 </script>

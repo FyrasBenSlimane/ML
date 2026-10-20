@@ -1,72 +1,36 @@
 <?php
 /**
- * Contrôleur du profil médecin.
- *  - /profile        → « Doctor Profile & Overview » (écran qui précède le Q&A)
- *  - /profile/qa     → « Doctor Profile & Q&A » (liste des questions / réponses)
- *
- * Point d'entrée naturel depuis la liste des médecins (/doctors).
- * Le bloc « Community Q&A » de l'écran profil ouvre /profile/qa.
+ * Profil du patient connecté : son historique Doza + Sora, et la déconnexion.
+ *   /profile      → mon profil + mes historiques
+ *   /profile/qa   → communauté Q&A (écran secondaire conservé)
  */
 class ProfileController extends Controller
 {
-    /** Fiche du médecin + aperçu de la communauté Q&A. */
     public function index()
     {
-        $doctor = [
-            'name'     => 'Doza',
-            'spec'     => 'Détection du changement d\'insuline · IA',
-            'center'   => 'Assistant de dosage d\'insuline',
-            'exp'      => 'Modèle prédictif',
-            'img'      => 'doctor5.jpg', // avatar principal
-            'badgeImg' => 'doctor6.jpg', // collaborateur (petit badge)
-            'bio'      => "Specialized in pediatric diagnostics and personalized treatment "
-                        . "protocols. Collaborating with clinical AI models to deliver rapid, "
-                        . "evidence-based care for every young patient.",
-            'stats'    => [
-                ['icon' => 'star',     'value' => '4.9',  'label' => '320 Reviews'],
-                ['icon' => 'chat',     'value' => '1.4k', 'label' => 'Questions Answered'],
-                ['icon' => 'patients', 'value' => '5.2k', 'label' => 'Patients'],
-            ],
-        ];
+        $this->requireRole('patient');
+        $user = $this->currentUser();
 
-        // Historiques réels, construits à partir des sessions enregistrées en base.
-        // (Si MySQL n'est pas démarré, on affiche simplement un historique vide.)
-        $questions = [];
-        $answers   = [];
+        $doza = [];
+        $sora = [];
         try {
-            $rows = $this->model('Consultation')->recent(50);
-            foreach ($rows as $row) {
-                $date = $this->formatDate($row->created_at);
-                $questions[] = [
-                    'text' => $row->question,
-                    'tag'  => $row->tag,
-                    'date' => $date,
-                ];
-                $answers[] = [
-                    'text'       => $row->answer,
-                    'result'     => $row->result,
-                    'confidence' => $row->probability . '%',
-                    'date'       => $date,
-                ];
-            }
+            $doza = $this->model('Consultation')->recentByUser($user['id'], 30);
+            $sora = $this->model('SoraFiche')->recentByUser($user['id'], 30);
         } catch (Throwable $e) {
-            $questions = [];
-            $answers   = [];
+            // Base indisponible : historiques vides, pas de blocage.
         }
 
-        $data = [
-            'title'     => 'Doza',
-            'doctor'    => $doctor,
-            'questions' => $questions,
-            'answers'   => $answers,
-            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start sm:items-center bg-slate-100 min-h-screen p-0 sm:p-4',
-        ];
-
-        $this->view('profile/index', $data);
+        $this->view('profile/index', [
+            'title'     => 'Mon profil',
+            'user'      => $user,
+            'doza'      => $doza,
+            'sora'      => $sora,
+            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
+        ]);
     }
 
     /** Date MySQL (Y-m-d H:i:s) → « 12 oct. » en français. */
-    private function formatDate($datetime)
+    public function formatDate($datetime)
     {
         $ts = strtotime((string) $datetime);
         if ($ts === false) { return ''; }
@@ -75,42 +39,21 @@ class ProfileController extends Controller
         return (int) date('j', $ts) . ' ' . $mois[(int) date('n', $ts)];
     }
 
-    /** Liste des questions / réponses de la communauté. */
+    /** Communauté Q&A (conservée). */
     public function qa()
     {
+        $this->requireRole('patient');
         $questions = [
-            [
-                'text'    => 'Protocol for adjusting insulin dosage in newly diagnosed type 1 pediatric patients?',
-                'tag'     => 'Pediatrics',
-                'answers' => 160,
-                'helpful' => '98% helpful',
-            ],
-            [
-                'text'    => 'Key differential diagnosis guidelines for chronic tension headaches vs ocular strain in children?',
-                'tag'     => 'Neurology',
-                'answers' => 84,
-                'helpful' => '95% helpful',
-            ],
-            [
-                'text'    => 'Recommended vaccination schedule adjustments for immunocompromised toddlers?',
-                'tag'     => 'Immunology',
-                'answers' => 52,
-                'helpful' => '91% helpful',
-            ],
+            ['text' => "Protocole d'ajustement de l'insuline en pédiatrie ?", 'tag' => 'Pédiatrie', 'answers' => 160, 'helpful' => '98% utile'],
+            ['text' => "Céphalées chroniques : diagnostic différentiel ?",     'tag' => 'Neurologie', 'answers' => 84,  'helpful' => '95% utile'],
+            ['text' => "Calendrier vaccinal chez l'immunodéprimé ?",            'tag' => 'Immunologie', 'answers' => 52,  'helpful' => '91% utile'],
         ];
-
         $data = [
-            'title'     => 'Doza · Q&A',
-            'doctor'    => [
-                'name'     => 'Doza',
-                'spec'     => 'Détection du changement d\'insuline · IA',
-                'img'      => 'doctor5.jpg',
-                'badgeImg' => 'doctor6.jpg',
-            ],
+            'title'     => 'Communauté Q&A',
+            'doctor'    => ['name' => 'Doza', 'spec' => "Détection du changement d'insuline · IA", 'img' => 'doctor5.jpg', 'badgeImg' => 'doctor6.jpg'],
             'questions' => $questions,
             'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start sm:items-center bg-slate-100 min-h-screen p-0 sm:p-4',
         ];
-
         $this->view('profile/qa', $data);
     }
 }

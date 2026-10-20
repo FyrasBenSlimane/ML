@@ -7,6 +7,7 @@ class VoiceController extends Controller
 {
     public function index()
     {
+        $this->requireRole('patient');
         // Probabilité renvoyée par le modèle ML, entre 0 et 1.
         // Lue depuis l'URL : /voice?p=0.70 . Valeur par défaut (démo) : 0.70
         $p = isset($_GET['p']) ? (float) $_GET['p'] : 0.70;

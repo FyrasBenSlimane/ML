@@ -6,6 +6,7 @@ class ChatController extends Controller
 {
     public function index()
     {
+        $this->requireRole('patient');
         $data = [
             'title'     => 'Doza',
             // Écran plein format (pas de cadre sombre centré)

@@ -12,6 +12,7 @@ class DozaController extends Controller
     /** Conversation guidée. */
     public function index()
     {
+        $this->requireRole('patient');
         $data = [
             'title'     => 'Doza',
             'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
@@ -34,24 +35,30 @@ class DozaController extends Controller
         if ($p < 0) { $p = 0; }
         if ($p > 1) { $p = 1; }
 
-        // Interprétation de la probabilité → libellé de résultat + réponse du modèle
-        if ($p >= 0.66) {
-            $result = 'Réajustement probable';
-            $answer = "D'après vos réponses, un réajustement de votre dose d'insuline est probable. Parlez-en à votre médecin.";
-        } elseif ($p >= 0.40) {
-            $result = 'À surveiller';
-            $answer = "Risque modéré détecté. Surveillez votre glycémie sur les prochaines 48 h et notez toute variation.";
+        // Résultat = la ZONE renvoyée par l'API (seuils 0.315 / 0.55 de insulin_meta.json),
+        // pas un recalcul local avec 0.40 / 0.66.
+        $zone = isset($payload['zone']) ? (string) $payload['zone'] : '';
+        $messages = [
+            'Risque élevé'         => "D'après vos réponses, un réajustement de votre dose d'insuline est probable. Parlez-en à votre médecin.",
+            'Risque intermédiaire' => "Un ajustement de votre dose d'insuline est possible. Surveillez votre glycémie.",
+            'Risque plus faible'   => "Votre profil ne montre pas de besoin de changement immédiat. Poursuivez votre suivi habituel.",
+        ];
+        if ($zone !== '' && isset($messages[$zone])) {
+            $result = $zone;
         } else {
-            $result = 'Dose stable';
-            $answer = "Votre profil ne montre pas de besoin de changement immédiat. Poursuivez votre suivi habituel.";
+            // Repli si la zone n'est pas transmise : mêmes seuils que l'API.
+            $result = $p >= 0.55 ? 'Risque élevé' : ($p >= 0.315 ? 'Risque intermédiaire' : 'Risque plus faible');
         }
+        $answer = $messages[$result];
 
         // Domaine principal (motif d'hospitalisation) → tag lisible
         $tag = $this->tagFromDiag($answers['diag_1_group'] ?? null);
+        $uid = $this->currentUser()['id'] ?? null;
 
         try {
             $model = $this->model('Consultation');
             $ok = $model->create([
+                'user_id'      => $uid,
                 'tag'          => $tag,
                 'question'     => "Dois-je ajuster ma dose d'insuline ?",
                 'answer'       => $answer,
@@ -86,6 +93,7 @@ class DozaController extends Controller
     /** Écran de résultat : /doza/resultat?p=0.70 */
     public function resultat()
     {
+        $this->requireRole('patient');
         // Probabilité renvoyée par le modèle (0 à 1), bornée par sécurité.
         $p = isset($_GET['p']) ? (float) $_GET['p'] : 0.70;
         if ($p < 0) { $p = 0; }

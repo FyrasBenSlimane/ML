@@ -33,6 +33,21 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
+// --- Configuration locale (secrets, NON versionnée) ---
+// app/Config/config.local.php (ignoré par Git) peut définir READMITGUARD_SECRET,
+// PERSONNEL_ACCESS_CODE, READMITGUARD_URL… Modèle : config.local.example.php.
+$localConfig = __DIR__ . '/config.local.php';
+if (file_exists($localConfig)) {
+    require_once $localConfig;
+}
+
+// URL de l'application ReadmitGuard (Streamlit) ouverte depuis le portail personnel.
+if (!defined('READMITGUARD_URL'))    define('READMITGUARD_URL', 'http://localhost:8501');
+// Secret HMAC du jeton ReadmitGuard — valeur de DEV, À CHANGER (via config.local.php).
+if (!defined('READMITGUARD_SECRET')) define('READMITGUARD_SECRET', 'dev-secret-a-changer');
+// Code établissement exigé pour créer un compte Personnel — valeur de DEV, À CHANGER.
+if (!defined('PERSONNEL_ACCESS_CODE')) define('PERSONNEL_ACCESS_CODE', 'MEDCARE-DEV');
+
 // Affichage des erreurs (à passer à 0 en production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

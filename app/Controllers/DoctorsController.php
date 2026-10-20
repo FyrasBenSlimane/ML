@@ -6,6 +6,7 @@ class DoctorsController extends Controller
 {
     public function index()
     {
+        $this->requireRole('patient');
         // Données d'exemple — à remplacer par un appel au modèle/BDD.
         // 'link' (optionnel) = route ouverte au clic sur la carte (défaut : 'profile').
         $doctors = [

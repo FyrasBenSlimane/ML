@@ -17,11 +17,12 @@ class Consultation extends Model
         $this->ensureTable();
     }
 
-    /** Crée la table si elle n'existe pas encore. */
+    /** Crée la table si elle n'existe pas encore, et ajoute user_id s'il manque. */
     private function ensureTable()
     {
         $sql = "CREATE TABLE IF NOT EXISTS consultations (
                     id           INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id      INT          NULL,
                     tag          VARCHAR(50)  NOT NULL,
                     question     VARCHAR(255) NOT NULL,
                     answer       TEXT         NOT NULL,
@@ -31,15 +32,22 @@ class Consultation extends Model
                     created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
         $this->db->query($sql)->execute();
+
+        // Migration idempotente : ajoute user_id aux anciennes tables (NULL pour l'historique).
+        $existe = $this->db->query("SHOW COLUMNS FROM consultations LIKE 'user_id'")->single();
+        if (!$existe) {
+            $this->db->query("ALTER TABLE consultations ADD COLUMN user_id INT NULL AFTER id")->execute();
+        }
     }
 
-    /** Enregistre une consultation. */
+    /** Enregistre une consultation (user_id optionnel : NULL si non connecté). */
     public function create(array $d)
     {
         $this->db->query(
-            "INSERT INTO consultations (tag, question, answer, result, probability, answers_json)
-             VALUES (:tag, :question, :answer, :result, :probability, :answers_json)"
+            "INSERT INTO consultations (user_id, tag, question, answer, result, probability, answers_json)
+             VALUES (:user_id, :tag, :question, :answer, :result, :probability, :answers_json)"
         )
+        ->bind(':user_id',      isset($d['user_id']) ? (int) $d['user_id'] : null)
         ->bind(':tag',          $d['tag'])
         ->bind(':question',     $d['question'])
         ->bind(':answer',       $d['answer'])
@@ -57,5 +65,14 @@ class Consultation extends Model
         return $this->db->query(
             "SELECT * FROM consultations ORDER BY created_at DESC, id DESC LIMIT $limit"
         )->all();
+    }
+
+    /** Historique Doza d'un patient donné. */
+    public function recentByUser($userId, $limit = 50)
+    {
+        $limit = (int) $limit;
+        return $this->db->query(
+            "SELECT * FROM consultations WHERE user_id = :uid ORDER BY created_at DESC, id DESC LIMIT $limit"
+        )->bind(':uid', (int) $userId)->all();
     }
 }

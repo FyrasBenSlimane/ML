@@ -42,4 +42,74 @@ class Controller
         }
         require $layoutFile;
     }
+
+    // ===================== Authentification / sessions =====================
+
+    /** Utilisateur connecté (tableau) ou null. */
+    protected function currentUser()
+    {
+        return $_SESSION['user'] ?? null;
+    }
+
+    /** Vrai si un utilisateur est connecté. */
+    protected function isLoggedIn()
+    {
+        return isset($_SESSION['user']);
+    }
+
+    /** Redirige vers une route interne puis stoppe le script. */
+    protected function redirect($path = '')
+    {
+        header('Location: ' . BASE_URL . ltrim($path, '/'));
+        exit;
+    }
+
+    /** Portail d'accueil selon le rôle. */
+    protected function homeFor($role)
+    {
+        return $role === 'personnel' ? 'personnel' : 'doctors';
+    }
+
+    /** Exige une connexion ; sinon -> page de connexion. */
+    protected function requireLogin()
+    {
+        if (!$this->isLoggedIn()) {
+            $this->redirect('auth/login');
+        }
+    }
+
+    /**
+     * Exige un rôle précis. Visiteur -> connexion ;
+     * mauvais rôle -> son propre portail.
+     */
+    protected function requireRole($role)
+    {
+        $this->requireLogin();
+        if (($this->currentUser()['role'] ?? null) !== $role) {
+            $this->redirect($this->homeFor($this->currentUser()['role'] ?? null));
+        }
+    }
+
+    // ===================== Jeton CSRF =====================
+
+    /** Jeton CSRF de la session (créé si absent). */
+    protected function csrfToken()
+    {
+        if (empty($_SESSION['csrf'])) {
+            $_SESSION['csrf'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf'];
+    }
+
+    /** Champ caché à insérer dans les formulaires. */
+    protected function csrfField()
+    {
+        return '<input type="hidden" name="csrf" value="' . htmlspecialchars($this->csrfToken()) . '">';
+    }
+
+    /** Vérifie le jeton CSRF reçu. */
+    protected function verifyCsrf($token)
+    {
+        return !empty($_SESSION['csrf']) && is_string($token) && hash_equals($_SESSION['csrf'], $token);
+    }
 }

@@ -16,6 +16,11 @@ if (php_sapi_name() === 'cli-server') {
 // Chargement de la configuration
 require_once __DIR__ . '/../app/Config/config.php';
 
+// Session (authentification) — démarrée avant tout affichage.
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 // Autoloader simple des classes de app/
 spl_autoload_register(function ($class) {
     $paths = [

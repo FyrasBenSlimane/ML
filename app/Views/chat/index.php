@@ -321,10 +321,11 @@
         const p = res.proba;
         const aller = function () { window.location = BASE + 'doza/resultat?p=' + p; };
         // Sauvegarde de la session (on redirige dans tous les cas, même si la base est absente).
+        // On transmet la ZONE de l'API pour que l'historique soit cohérent (seuils 0.315 / 0.55).
         fetch(BASE + 'doza/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answers: answers, p: p })
+          body: JSON.stringify({ answers: answers, p: p, zone: res.zone })
         }).then(aller, aller);
       }, 1300);
     }

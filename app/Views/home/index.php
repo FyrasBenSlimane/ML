@@ -43,7 +43,7 @@
                 Advanced healthcare for a better and healthier you.
             </p>
             <div class="mt-5">
-                <a href="<?= BASE_URL ?>doctors" class="group relative inline-flex items-center bg-gradient-to-r from-[#1EACA0] to-[#12897F] hover:from-[#179B90] hover:to-[#0F776E] text-white font-semibold text-[14px] pl-5 pr-1.5 py-1.5 rounded-full shadow-teal-glow transition-all duration-300 transform active:scale-95">
+                <a href="<?= BASE_URL ?>auth/login" class="group relative inline-flex items-center bg-gradient-to-r from-[#1EACA0] to-[#12897F] hover:from-[#179B90] hover:to-[#0F776E] text-white font-semibold text-[14px] pl-5 pr-1.5 py-1.5 rounded-full shadow-teal-glow transition-all duration-300 transform active:scale-95">
                     <span>Get Started</span>
                     <div class="ml-3 w-8 h-8 rounded-full bg-white flex items-center justify-center text-teal-brand shadow-sm group-hover:translate-x-0.5 transition-transform duration-200">
                         <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
