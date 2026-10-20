@@ -5,9 +5,12 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import base64
+import sys
 import plotly.graph_objects as go
 
-MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from registry import model_file
+
 AVATAR_DIR = Path(__file__).resolve().parent / "static" / "avatars"
 
 
@@ -881,18 +884,18 @@ def inject_global_css():
 
 
 def load_model(name):
-    model_path = MODEL_DIR / f"{name}_model.joblib"
-    feat_path = MODEL_DIR / f"{name}_features.joblib"
+    model_path = model_file(f"{name}_model.joblib")
+    feat_path = model_file(f"{name}_features.joblib")
     if not model_path.exists():
-        model_path = MODEL_DIR / f"{name}.joblib"
+        model_path = model_file(f"{name}.joblib")
     return joblib.load(model_path), joblib.load(feat_path)
 
 
 def load_model_ab(base_name):
-    model_a = joblib.load(MODEL_DIR / f"{base_name}_model_a.joblib")
-    feats_a = joblib.load(MODEL_DIR / f"{base_name}_features_a.joblib")
-    model_b = joblib.load(MODEL_DIR / f"{base_name}_model_b.joblib")
-    feats_b = joblib.load(MODEL_DIR / f"{base_name}_features_b.joblib")
+    model_a = joblib.load(model_file(f"{base_name}_model_a.joblib"))
+    feats_a = joblib.load(model_file(f"{base_name}_features_a.joblib"))
+    model_b = joblib.load(model_file(f"{base_name}_model_b.joblib"))
+    feats_b = joblib.load(model_file(f"{base_name}_features_b.joblib"))
     return model_a, feats_a, model_b, feats_b
 
 
