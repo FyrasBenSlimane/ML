@@ -4,6 +4,7 @@
 # Environnement Python
 .venv/
 .venv-api/
+deployment/.venv/
 venv/
 env/
 __pycache__/
