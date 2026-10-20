@@ -23,7 +23,8 @@ class User extends Model
                     role          ENUM('patient','personnel') NOT NULL DEFAULT 'patient',
                     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        $this->db->query($sql)->execute();
+        // Pas de DDL à chaque requête : vérifié une fois via information_schema.
+        $this->ensureSchema('users', $sql);
     }
 
     /** Crée un compte (le mot de passe est haché ici). Renvoie l'id ou false. */

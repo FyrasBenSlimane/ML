@@ -31,13 +31,11 @@ class Consultation extends Model
                     answers_json TEXT         NULL,
                     created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        $this->db->query($sql)->execute();
-
-        // Migration idempotente : ajoute user_id aux anciennes tables (NULL pour l'historique).
-        $existe = $this->db->query("SHOW COLUMNS FROM consultations LIKE 'user_id'")->single();
-        if (!$existe) {
-            $this->db->query("ALTER TABLE consultations ADD COLUMN user_id INT NULL AFTER id")->execute();
-        }
+        // Pas de DDL à chaque requête : vérifié une fois via information_schema.
+        // Si la table existe déjà mais sans user_id (ancienne version), on l'ajoute (NULL pour l'historique).
+        $this->ensureSchema('consultations', $sql, [
+            'user_id' => "ALTER TABLE consultations ADD COLUMN user_id INT NULL AFTER id",
+        ]);
     }
 
     /** Enregistre une consultation (user_id optionnel : NULL si non connecté). */

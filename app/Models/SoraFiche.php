@@ -34,7 +34,8 @@ class SoraFiche extends Model
                     created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     INDEX (user_id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        $this->db->query($sql)->execute();
+        // Pas de DDL à chaque requête : vérifié une fois via information_schema.
+        $this->ensureSchema('sora_fiches', $sql);
     }
 
     /** Enregistre une fiche + ses résultats pour un patient. */

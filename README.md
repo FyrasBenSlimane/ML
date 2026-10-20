@@ -82,6 +82,9 @@ Créer via `/auth/register`. Pour un compte **Personnel**, saisir le **code éta
 
 ## Reste à faire
 
-- Test de bout en bout **en base** à refaire avec **XAMPP MySQL démarré** (non disponible lors de l'intégration).
+- **XAMPP MySQL instable sur ce poste** : `mysqld.exe` plante par moments (erreur Windows `0xc0000005` / segfault). Le crash vient en particulier du moteur `information_schema` (trace dans `fill_schema_schemata`) et des requêtes qui modifient la structure (CREATE/ALTER). **À réparer ou réinstaller XAMPP MySQL/MariaDB après la validation.** Contournements déjà en place côté code :
+  - les modèles ne lancent plus de DDL à chaque requête : l'existence des tables/colonnes est vérifiée **une seule fois** par session (voir `Model::ensureSchema`), par un `SELECT` léger sur la vraie table (et **non** via `information_schema`, qui fait crasher ce serveur) ;
+  - la source de vérité du schéma reste `database/medcare.sql`.
+  - **Avant une démo : démarrer MySQL dans le panneau XAMPP** (bouton *Start* en face de *MySQL*), puis lancer `start_all.bat`.
 - Adaptation « langage patient » du formulaire Sora (libellés simplifiés, tranches, « Je ne sais pas ») — reportée.
 - Fusion éventuelle des deux API (MedCare :8001 et ReadmitGuard :8002) — reportée après validation.
