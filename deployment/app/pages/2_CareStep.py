@@ -121,7 +121,7 @@ with tabs[0]:
 
         gender_bin = 1 if gender == "Male" else 0
         a1c_val = 1 if a1c_tested == "Yes" else 0
-        change_val = "No" if med_change == "Yes" else "Ch"
+        change_val = "Ch" if med_change == "Yes" else "No"   # encoder keeps only change_No (1 = nothing changed)
 
         row_dict = {f: 0 for f in features}
         row_dict["age_ord"] = age

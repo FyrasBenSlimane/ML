@@ -1,0 +1,302 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs,tabularx,array}
+\usepackage{amssymb,amsmath}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black}
+\setlist{nosep,leftmargin=*}
+\setlength{\tabcolsep}{4pt}
+
+\title{\textbf{CareStep} --- Labs : Pr\'eparation, Mod\'elisation, \'Evaluation\\
+\large Fyras $\mid$ Projet ML avanc\'e --- Dataset Diabetes 130-US Hospitals}
+\author{Fyras}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Vue d'ensemble du pipeline}
+
+Le pipeline CareStep transforme les donn\'ees brutes du dataset UCI \#296 en un score de risque calibr\'e, puis en un plan d'actions personnalis\'e pour chaque patient.
+
+\medskip
+\noindent
+\fbox{\parbox{0.95\textwidth}{\centering
+\textbf{Donn\'ees brutes} $\;\to\;$
+\textbf{Pr\'eparation} $\;\to\;$
+\textbf{Mod\'elisation} $\;\to\;$
+\textbf{\'Evaluation} $\;\to\;$
+\textbf{Tuning} $\;\to\;$
+\textbf{SHAP $\to$ Plan d'action}
+}}
+
+\medskip
+Chaque \'etape correspond \`a un script Python (un ``Lab'') ex\'ecutable ind\'ependamment, chaque Lab chargeant les r\'esultats du pr\'ec\'edent.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Lab 1 --- Pr\'eparation des donn\'ees}
+
+\subsection{Chargement et nettoyage}
+
+\begin{itemize}
+  \item Dataset : 101\,766 encounters, 50 colonnes, 71\,518 patients uniques.
+  \item \textbf{Exclusion} des sorties d\'ec\`es/palliatifs (\texttt{discharge\_disposition\_id} $\in \{11,13,14,19,20,21\}$) $\to$ 2\,423 lignes retir\'ees.
+  \item \textbf{Exclusion} du genre \texttt{Unknown/Invalid} (r\`egle 2 du protocole) $\to$ 3 lignes retir\'ees $\to$ \textbf{99\,340} encounters restants.
+\end{itemize}
+
+\subsection{Construction de la cible}
+
+$$y = \mathbb{1}[\texttt{readmitted} = \text{``<30''}]$$
+
+Pr\'evalence : $\approx 11{,}4\,\%$ de positifs (classe d\'es\'equilibr\'ee).
+
+\subsection{Les 12 features patient}
+
+On utilise uniquement des features qu'un patient peut lui-m\^eme r\'epondre \`a la sortie :
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}clX@{}}
+\toprule
+\# & \textbf{Feature} & \textbf{Transformation} \\
+\midrule
+1 & \texttt{age\_ord} & Tranche d'\^age $\to$ ordinal (0--9) \\
+2 & \texttt{gender\_bin} & Homme = 1, Femme = 0 \\
+3 & \texttt{inpatient\_cap} & Hospitalisations pass\'ees, cap \`a 3 \\
+4 & \texttt{emergency\_cap} & Urgences pass\'ees, cap \`a 3 \\
+5 & \texttt{outpatient\_bkt} & Consultations pass\'ees, buckets (0/1/2/3) \\
+6 & \texttt{time\_in\_hospital} & Dur\'ee du s\'ejour (1--14) \\
+7 & \texttt{diag\_group} & Code ICD-9 regroup\'e en 7 familles \\
+8 & \texttt{num\_medications} & Nombre de m\'edicaments \\
+9 & \texttt{insulin} & Changement insuline (Up/Down/Steady/No) \\
+10 & \texttt{change} & Autre m\'edicament chang\'e (Ch/No) \\
+11 & \texttt{a1c\_tested} & Test HbA1c effectu\'e (0/1) \\
+12 & \texttt{discharge\_group} & Destination (home/home\_with\_help/facility) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Les 7 familles de diagnostic : circulatory (29{,}9\,\%), other (21\,\%), respiratory (14\,\%), infection/renal (10{,}1\,\%), digestive (9{,}4\,\%), diabetes (8{,}7\,\%), injury (6{,}9\,\%).
+
+\textbf{Pi\`ege corrig\'e --- \texttt{a1c\_tested}.} Dans le CSV, la valeur texte \texttt{None} de \texttt{A1Cresult} signifie ``test non fait'', mais pandas la lit comme une valeur manquante (\texttt{NaN}). Le test \texttt{A1Cresult != "None"} donnait donc 1 pour \emph{toutes} les lignes (feature constante, inutile). On utilise \texttt{A1Cresult.notna()} : 16{,}9\,\% des s\'ejours ont un test HbA1c, 83{,}1\,\% non.
+
+\subsection{Split anti-fuite}
+
+\textbf{GroupShuffleSplit} sur \texttt{patient\_nbr} (80/20) : un patient n'appara\^it que dans un seul ensemble. Cela \'evite la fuite d'information o\`u le mod\`ele ``reconna\^it'' un patient d\'ej\`a vu.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Ensemble} & \textbf{Encounters} & \textbf{Patients} \\
+\midrule
+Train & 79\,567 & 55\,989 \\
+Test & 19\,773 & 13\,998 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Patients en commun entre train et test : \textbf{0}.
+
+\subsection{Preprocesseur sklearn}
+
+Un \texttt{ColumnTransformer} transforme les 12 features en 23 colonnes num\'eriques (passthrough pour les num\'eriques, OneHotEncoder pour les cat\'egorielles). Un deuxi\`eme preprocesseur encode \emph{toutes} les features (98 colonnes) pour le mod\`ele de r\'ef\'erence. \texttt{race} n'y figure pas : elle sert uniquement \`a l'audit d'\'equit\'e, jamais en entr\'ee d'un mod\`ele.
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Lab 2 --- Mod\'elisation}
+
+\subsection{Strat\'egie : 3 \'etapes progressives}
+
+\begin{enumerate}
+  \item \textbf{R\'egression logistique} (baseline) --- 12 features patient, \texttt{class\_weight="balanced"}.
+  \item \textbf{LightGBM patient} --- 12 features, \texttt{scale\_pos\_weight} = 7{,}8 pour compenser le d\'es\'equilibre.
+  \item \textbf{LightGBM FULL} --- toutes les features (98 colonnes) comme r\'ef\'erence.
+\end{enumerate}
+
+\subsection{R\'esultats de base (avant tuning)}
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Mod\`ele} & \textbf{PR-AUC} & \textbf{ROC-AUC} \\
+\midrule
+LogReg (12 features) & 0{,}190 & 0{,}659 \\
+LightGBM (12 features) & 0{,}202 & 0{,}653 \\
+LightGBM FULL (r\'ef\'erence) & 0{,}208 & 0{,}659 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Ratio patient/full (mod\`eles bruts)} = $0{,}202 / 0{,}208 = 96{,}8\,\%$ --- on perd tr\`es peu de performance en n'utilisant que 12 features.
+
+\subsection{Calibration}
+
+Le LightGBM produit des scores, pas des probabilit\'es fiables. On applique une calibration isotonique :
+\begin{enumerate}
+  \item S\'eparer le train en 80\,\% (entra\^inement) et 20\,\% (calibration) avec \texttt{GroupShuffleSplit}.
+  \item Entra\^iner un LightGBM frais sur les 80\,\%.
+  \item Ajuster une courbe isotonique sur les 20\,\% (\texttt{CalibratedClassifierCV}, \texttt{cv="prefit"}).
+\end{enumerate}
+
+R\'esultat : le Brier score passe de 0{,}222 \`a \textbf{0{,}097} --- les probabilit\'es pr\'edites correspondent mieux \`a la r\'ealit\'e.
+
+\subsection{Niveaux de risque}
+
+Deux seuils simples bas\'es sur la pr\'evalence $p \approx 11\,\%$ :
+
+\begin{center}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+\textbf{Niveau} & \textbf{R\`egle} & \textbf{Action} \\
+\midrule
+Low & $\hat{p} < p$ & Plan standard \\
+Medium & $p \le \hat{p} < 2p$ & Plan + suivi rapproch\'e \\
+High & $\hat{p} \ge 2p$ & Plan + alertes \'equipe soignante \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Lab 3 --- \'Evaluation}
+
+\subsection{M\'etriques}
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Mod\`ele} & \textbf{PR-AUC} & \textbf{ROC-AUC} & \textbf{Brier} \\
+\midrule
+LogReg (12f) & 0{,}190 & 0{,}659 & 0{,}230 \\
+LightGBM (12f) & 0{,}202 & 0{,}653 & 0{,}222 \\
+LightGBM calibr\'e (12f) & 0{,}189 & 0{,}647 & \textbf{0{,}097} \\
+LightGBM FULL (r\'ef.) & 0{,}208 & 0{,}659 & 0{,}211 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Ratio PR-AUC patient calibr\'e/full = 0{,}189 / 0{,}208 = 90{,}9\,\%} $\ge$ cible de 85--90\,\% $\checkmark$ \\
+(Le mod\`ele d\'eploy\'e est le mod\`ele calibr\'e ; la calibration isotonique co\^ute un peu de PR-AUC, d'o\`u 90{,}9\,\% contre 96{,}8\,\% pour les mod\`eles bruts.)
+
+\subsection{Recall par niveau de risque}
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Niveau} & \textbf{Patients} & \textbf{Taux r\'eadm.} & \textbf{Capture} \\
+\midrule
+Low & 10\,787 (55\,\%) & 7{,}3\,\% & 35{,}2\,\% \\
+Medium & 8\,441 (43\,\%) & 15{,}4\,\% & 57{,}8\,\% \\
+High & 545 (2{,}8\,\%) & 28{,}8\,\% & 7{,}0\,\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Le groupe HIGH a un taux de r\'eadmission $3{,}9\times$ plus \'elev\'e que le groupe LOW.
+
+\subsection{SHAP --- Facteurs modifiables (ODS-B)}
+
+SHAP (SHapley Additive exPlanations) d\'ecompose la pr\'ediction de chaque patient en contributions par feature. On identifie les facteurs \textbf{modifiables} --- ceux sur lesquels le patient peut agir :
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lrX@{}}
+\toprule
+\textbf{Feature} & \textbf{$\overline{|\text{SHAP}|}$} & \textbf{Action propos\'ee} \\
+\midrule
+\texttt{num\_medications} & 0{,}093 & Utilisez un pilulier pour organiser vos m\'edicaments \\
+\texttt{insulin} & 0{,}063 & Prenez votre dose d'insuline comme prescrit \\
+\texttt{emergency\_cap} & 0{,}044 & Appelez votre m\'edecin avant d'aller aux urgences \\
+\texttt{a1c\_tested} & 0{,}035 & Planifiez un test HbA1c \\
+\texttt{change} & 0{,}032 & Suivez les changements de m\'edicaments prescrits \\
+\texttt{outpatient\_bkt} & 0{,}016 & Rendez-vous de suivi dans les 7 jours \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Apr\`es correction, \texttt{a1c\_tested} est un vrai facteur (SHAP 0{,}035 au lieu de 0) : l'action ``Planifiez un test HbA1c'' est maintenant d\'eclench\'ee pour les patients concern\'es. Pour l'insuline, la valeur indiqu\'ee est celle de sa modalit\'e la plus influente.
+
+Pour chaque patient \`a risque moyen ou \'elev\'e, on g\'en\`ere un plan personnalis\'e en ne gardant que les facteurs modifiables dont le SHAP $> 0$ (poussent vers la r\'eadmission).
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Lab 4 --- Am\'elioration (Tuning)}
+
+\subsection{Recherche d'hyperparamètres}
+
+\textbf{RandomizedSearchCV} : 40 combinaisons al\'eatoires, \'evalu\'ees en 5 folds (\texttt{GroupKFold} sur \texttt{patient\_nbr}), soit 200 ajustements au total. La m\'etrique optimis\'ee est le \textbf{PR-AUC} (adapt\'ee aux classes d\'es\'equilibr\'ees).
+
+Param\`etres explor\'es :
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Param\`etre} & \textbf{Plage} & \textbf{R\^ole} \\
+\midrule
+\texttt{n\_estimators} & 200 -- 800 & Nombre d'arbres \\
+\texttt{learning\_rate} & 0{,}01 -- 0{,}15 & Vitesse d'apprentissage \\
+\texttt{max\_depth} & 3 -- 7 & Profondeur max \\
+\texttt{num\_leaves} & 15 -- 63 & Taille des arbres \\
+\texttt{min\_child\_samples} & 20 -- 100 & R\'egularisation par feuille \\
+\texttt{subsample} & 0{,}60 -- 0{,}95 & Fraction des donn\'ees \\
+\texttt{colsample\_bytree} & 0{,}50 -- 0{,}95 & Fraction des features \\
+\texttt{reg\_alpha} (L1) & 0 -- 1 & Sparsit\'e \\
+\texttt{reg\_lambda} (L2) & 0{,}5 -- 3 & Lissage des poids \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{R\'esultats du tuning}
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Mod\`ele} & \textbf{PR-AUC} & \textbf{ROC-AUC} & \textbf{Brier} \\
+\midrule
+Lab 2 --- LightGBM (avant) & 0{,}202 & 0{,}653 & --- \\
+Lab 4 --- Tun\'e (apr\`es) & \textbf{0{,}207} & \textbf{0{,}662} & --- \\
+Lab 4 --- Tun\'e + calibr\'e & 0{,}194 & 0{,}659 & \textbf{0{,}097} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Meilleur score en validation crois\'ee (GroupKFold) : PR-AUC = 0{,}199. Am\'elioration sur le test : $+2{,}5\,\%$ sur PR-AUC, $+1{,}5\,\%$ sur ROC-AUC. Le mod\`ele tun\'e est l\'eg\`erement meilleur tout en gardant une bonne calibration (Brier $\approx 0{,}097$).
+
+\subsection{Niveaux de risque (mod\`ele tun\'e)}
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Niveau} & \textbf{Patients} & \textbf{Taux r\'eadm.} & \textbf{Capture} \\
+\midrule
+Low & 11\,922 (60\,\%) & 7{,}4\,\% & 39{,}6\,\% \\
+Medium & 7\,068 (36\,\%) & 16{,}1\,\% & 50{,}6\,\% \\
+High & 783 (4\,\%) & 28{,}2\,\% & 9{,}8\,\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Le groupe \textbf{MEDIUM + HIGH} capture \textbf{60{,}4\,\%} des r\'eadmissions tout en ne repr\'esentant que 40\,\% des patients --- l'\'equipe soignante peut concentrer ses efforts sur 4 patients sur 10 et couvrir 6 r\'eadmissions sur 10.
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+\begin{enumerate}
+  \item \textbf{12 features suffisent} : le mod\`ele patient conserve 96{,}8\,\% du PR-AUC du mod\`ele complet (90{,}9\,\% apr\`es calibration).
+  \item \textbf{La calibration est essentielle} : sans elle, les probabilit\'es ne sont pas fiables (Brier 0{,}22 $\to$ 0{,}097).
+  \item \textbf{Le tuning am\'eliore mod\'er\'ement} : +2{,}5\,\% PR-AUC --- le choix des features compte plus que les hyperparam\`etres.
+  \item \textbf{V\'erifier les donn\'ees avant le mod\`ele} : un seul bug de lecture (\texttt{None} lu comme \texttt{NaN}) rendait une des 12 features constante.
+  \item \textbf{SHAP rend le mod\`ele actionnable} : chaque patient \`a risque re\c{c}oit des actions concr\`etes sur ses facteurs modifiables.
+\end{enumerate}
+
+\end{document}
