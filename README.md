@@ -73,7 +73,7 @@ Jeton valide et non expiré → connexion automatique ; absent → formulaire no
 ## Comptes de test
 
 Créer via `/auth/register`. Pour un compte **Personnel**, saisir le **code établissement**
-(`PERSONNEL_ACCESS_CODE` de `config.local.php` ; valeur de dev : `MEDCARE-2024`).
+fourni par l'administrateur (défini dans `config.local.php`, non versionné).
 
 ## Limites connues
 
