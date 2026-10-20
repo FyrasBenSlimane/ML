@@ -101,26 +101,6 @@
             </div>
         </article>
 
-        <!-- ===== Carte d'accès à l'Accompagnement (compagnon du quotidien) ===== -->
-        <article class="relative rounded-3xl p-3.5 flex items-center shadow-soft-card hover:shadow-md active:scale-[0.99] transition bg-white ring-1 ring-emerald-300/40">
-            <a href="<?= BASE_URL ?>accompagnement" class="absolute inset-0 z-10 rounded-3xl" aria-label="Ouvrir l'Accompagnement"></a>
-            <div class="w-16 h-16 rounded-2xl flex-shrink-0 shadow-inner border border-white/80 bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-            </div>
-            <div class="ml-3.5 flex-1 min-w-0">
-                <h2 class="text-sm font-bold text-teal-darkText truncate leading-snug">Accompagnement</h2>
-                <p class="text-xs text-teal-700/80 font-medium truncate mt-0.5">Compagnon du quotidien · IA</p>
-                <div class="flex items-center space-x-1 mt-1.5 text-[11px] text-slate-500">
-                    <svg class="w-3 h-3 text-teal-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                    <span>Diabète bien ou mal contrôlé ?</span>
-                </div>
-                <p class="text-[10px] text-slate-400 mt-1 truncate">Aide à l'orientation · ne remplace pas un médecin</p>
-            </div>
-            <div class="relative z-20 flex items-center ml-2 flex-shrink-0 text-teal-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            </div>
-        </article>
-
         <?php foreach ($doctors as $doc): ?>
         <article class="relative glass-card rounded-3xl p-3.5 flex items-center shadow-soft-card hover:shadow-md active:scale-[0.99] transition">
             <!-- Clic sur toute la carte → page liée (défaut : fiche du médecin) -->
