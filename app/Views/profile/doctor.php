@@ -1,3 +1,8 @@
+<?php
+// Bouton « + » de la barre du bas : par défaut retour à la liste ; pour un outil IA (Sora), le lance.
+$plusLink = $plusLink ?? 'doctors';
+$plusAria = $plusAria ?? 'Trouver un médecin';
+?>
 <!-- ============ ÉCRAN « DOCTOR PROFILE & OVERVIEW » (autre médecin de la liste) ============ -->
 <!-- Même interface que la fiche Doza. -->
 <main class="relative w-full max-w-[390px] h-[844px] bg-gradient-to-b from-teal-600 via-teal-500 to-teal-400 overflow-hidden flex flex-col shadow-2xl sm:rounded-[48px] border-0 sm:border-8 border-slate-900">
@@ -173,7 +178,7 @@
         <a href="<?= BASE_URL ?>" aria-label="Accueil" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-teal-600 active:scale-90 transition-transform">
             <svg class="w-6 h-6 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </a>
-        <a href="<?= BASE_URL ?>doctors" aria-label="Trouver un médecin" class="w-12 h-12 -mt-4 bg-gradient-to-tr from-teal-600 to-teal-400 text-white rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(45,212,191,0.45)] active:scale-95 transition-all">
+        <a href="<?= BASE_URL . $plusLink ?>" aria-label="<?= htmlspecialchars($plusAria) ?>" class="w-12 h-12 -mt-4 bg-gradient-to-tr from-teal-600 to-teal-400 text-white rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(45,212,191,0.45)] active:scale-95 transition-all">
             <svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </a>
         <a href="<?= BASE_URL ?>profile" aria-label="Profil" class="w-10 h-10 flex flex-col items-center justify-center text-slate-400 hover:text-teal-600 active:scale-90 transition-transform">

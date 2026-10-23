@@ -111,6 +111,52 @@ class ProfileController extends Controller
         ]);
     }
 
+    /** Fiche « Sora » (Doctor Profile & Overview) : même interface que Doza, côté patient. */
+    public function sora()
+    {
+        $this->requireRole('patient');
+        $user = $this->currentUser();
+
+        $doctor = [
+            'name'   => 'Sora',
+            'spec'   => 'Profil de sortie · IA',
+            'center' => 'Assistant de sortie',
+            'exp'    => 'Modèle prédictif',
+            'img'    => 'doctor6.jpg',
+            'bio'    => "Compagnon de sortie : suivi et contrôle du diabète pour préparer l'après-hospitalisation.",
+            'stats'  => [
+                ['icon' => 'star',     'value' => '4.7',  'label' => '190 Reviews'],
+                ['icon' => 'chat',     'value' => '1.1k', 'label' => 'Fiches'],
+                ['icon' => 'patients', 'value' => '3.4k', 'label' => 'Patients'],
+            ],
+        ];
+
+        // Historique réel des fiches Sora du patient connecté.
+        $questions = [];
+        $answers   = [];
+        try {
+            foreach ($this->model('SoraFiche')->recentByUser($user['id'], 50) as $row) {
+                $date = $this->formatDate($row->created_at);
+                $questions[] = ['text' => 'Fiche de sortie — ' . $row->profil, 'tag' => 'Sora', 'date' => $date];
+                $answers[]   = ['text' => $row->profil, 'result' => $row->resultat_suivi,
+                                'confidence' => $row->resultat_controle, 'date' => $date];
+            }
+        } catch (Throwable $e) {
+            // Base indisponible : historique vide.
+        }
+
+        $this->view('profile/doctor', [
+            'title'     => 'Sora',
+            'doctor'    => $doctor,
+            'badge'     => 'Sora · Santé IA',
+            'questions' => $questions,
+            'answers'   => $answers,
+            'plusLink'  => 'sora',
+            'plusAria'  => 'Nouvelle fiche Sora',
+            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start sm:items-center bg-slate-100 min-h-screen p-0 sm:p-4',
+        ]);
+    }
+
     /** Date MySQL (Y-m-d H:i:s) → « 12 oct. » en français. */
     public function formatDate($datetime)
     {

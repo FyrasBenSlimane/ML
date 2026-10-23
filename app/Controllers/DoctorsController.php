@@ -20,7 +20,7 @@ class DoctorsController extends Controller
         $doctors = [
             $ryan,
             $sarah,
-            ['name' => 'Sora', 'spec' => 'Assistant santé · IA', 'rating' => '4.7', 'reviews' => 190, 'exp' => '9+', 'img' => 'doctor6.jpg', 'bg' => 'bg-rose-50/60', 'link' => 'sora'],
+            ['name' => 'Sora', 'spec' => 'Assistant santé · IA', 'rating' => '4.7', 'reviews' => 190, 'exp' => '9+', 'img' => 'doctor6.jpg', 'bg' => 'bg-rose-50/60', 'link' => 'profile/sora'],
             $lucas,
         ];
 
