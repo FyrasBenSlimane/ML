@@ -75,6 +75,42 @@ class ProfileController extends Controller
         ]);
     }
 
+    /** Fiche d'un autre médecin de la liste — même interface que la fiche Doza. */
+    public function doctor($slug = '')
+    {
+        $this->requireRole('patient');
+
+        $cat  = require APP_PATH . '/Config/doctors.php';
+        $slug = preg_replace('/[^a-z0-9_-]/', '', strtolower((string) $slug));
+        if (!isset($cat[$slug])) {
+            $this->redirect('doctors');
+        }
+        $d = $cat[$slug];
+
+        $doctor = [
+            'name'   => $d['name'],
+            'spec'   => $d['spec'],
+            'center' => $d['center'],
+            'exp'    => $d['exp'] . ' ans d\'expérience',
+            'img'    => $d['img'],
+            'bio'    => $d['bio'],
+            'stats'  => [
+                ['icon' => 'star',     'value' => $d['rating'], 'label' => $d['reviews'] . ' Reviews'],
+                ['icon' => 'chat',     'value' => $d['exp'],    'label' => 'Years Exp.'],
+                ['icon' => 'patients', 'value' => '1.2k',       'label' => 'Patients'],
+            ],
+        ];
+
+        $this->view('profile/doctor', [
+            'title'     => $d['name'],
+            'doctor'    => $doctor,
+            'badge'     => $d['spec'],
+            'questions' => [],
+            'answers'   => [],
+            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start sm:items-center bg-slate-100 min-h-screen p-0 sm:p-4',
+        ]);
+    }
+
     /** Date MySQL (Y-m-d H:i:s) → « 12 oct. » en français. */
     public function formatDate($datetime)
     {

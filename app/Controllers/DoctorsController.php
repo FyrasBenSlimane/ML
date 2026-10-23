@@ -1,19 +1,27 @@
 <?php
 /**
  * Contrôleur de la liste des médecins.
+ * Chaque médecin ouvre une fiche de profil (même interface que la fiche Doza).
  */
 class DoctorsController extends Controller
 {
     public function index()
     {
         $this->requireRole('patient');
-        // Données d'exemple — à remplacer par un appel au modèle/BDD.
-        // 'link' (optionnel) = route ouverte au clic sur la carte (défaut : 'profile').
+
+        // Catalogue partagé avec l'écran de profil (/profile/doctor/<slug>).
+        $cat = require APP_PATH . '/Config/doctors.php';
+
+        // 'link' = route ouverte au clic sur la carte.
+        $ryan  = $cat['ryan']  + ['link' => 'profile/doctor/ryan'];
+        $sarah = $cat['sarah'] + ['link' => 'profile/doctor/sarah'];
+        $lucas = $cat['lucas'] + ['link' => 'profile/doctor/lucas'];
+
         $doctors = [
-            ['name' => 'Dr. Ryan Scott',   'spec' => 'Neurologist',           'rating' => '4.8', 'reviews' => 280, 'exp' => '8+',  'img' => 'doctor3.jpg', 'bg' => 'bg-sky-50/80'],
-            ['name' => 'Dr. Sarah Jenkins','spec' => 'Pediatrician',          'rating' => '4.9', 'reviews' => 340, 'exp' => '7+',  'img' => 'doctor4.jpg', 'bg' => 'bg-amber-50/80'],
-            ['name' => 'Sora',             'spec' => 'Assistant santé · IA',  'rating' => '4.7', 'reviews' => 190, 'exp' => '9+',  'img' => 'doctor6.jpg', 'bg' => 'bg-rose-50/60', 'link' => 'sora'],
-            ['name' => 'Dr. Lucas Bennett','spec' => 'General Practitioner',  'rating' => '4.8', 'reviews' => 175, 'exp' => '5+',  'img' => 'doctor.png',  'bg' => 'bg-indigo-50/70'],
+            $ryan,
+            $sarah,
+            ['name' => 'Sora', 'spec' => 'Assistant santé · IA', 'rating' => '4.7', 'reviews' => 190, 'exp' => '9+', 'img' => 'doctor6.jpg', 'bg' => 'bg-rose-50/60', 'link' => 'sora'],
+            $lucas,
         ];
 
         $data = [
