@@ -29,6 +29,52 @@ class ProfileController extends Controller
         ]);
     }
 
+    /** Fiche « Doza » (Doctor Profile & Overview) : bio, stats et historique questions / réponses du patient. */
+    public function doza()
+    {
+        $this->requireRole('patient');
+        $user = $this->currentUser();
+
+        $doctor = [
+            'name'     => 'Doza',
+            'spec'     => 'Détection du changement d\'insuline · IA',
+            'center'   => 'Assistant de dosage d\'insuline',
+            'exp'      => 'Modèle prédictif',
+            'img'      => 'doctor5.jpg',
+            'badgeImg' => 'doctor6.jpg',
+            'bio'      => "Specialized in pediatric diagnostics and personalized treatment "
+                        . "protocols. Collaborating with clinical AI models to deliver rapid, "
+                        . "evidence-based care for every young patient.",
+            'stats'    => [
+                ['icon' => 'star',     'value' => '4.9',  'label' => '320 Reviews'],
+                ['icon' => 'chat',     'value' => '1.4k', 'label' => 'Questions Answered'],
+                ['icon' => 'patients', 'value' => '5.2k', 'label' => 'Patients'],
+            ],
+        ];
+
+        // Historique réel du patient connecté (sessions Doza enregistrées en base).
+        $questions = [];
+        $answers   = [];
+        try {
+            foreach ($this->model('Consultation')->recentByUser($user['id'], 50) as $row) {
+                $date = $this->formatDate($row->created_at);
+                $questions[] = ['text' => $row->question, 'tag' => $row->tag, 'date' => $date];
+                $answers[]   = ['text' => $row->answer, 'result' => $row->result,
+                                'confidence' => $row->probability . '%', 'date' => $date];
+            }
+        } catch (Throwable $e) {
+            // Base indisponible : historique vide.
+        }
+
+        $this->view('profile/doza', [
+            'title'     => 'Doza',
+            'doctor'    => $doctor,
+            'questions' => $questions,
+            'answers'   => $answers,
+            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start sm:items-center bg-slate-100 min-h-screen p-0 sm:p-4',
+        ]);
+    }
+
     /** Date MySQL (Y-m-d H:i:s) → « 12 oct. » en français. */
     public function formatDate($datetime)
     {

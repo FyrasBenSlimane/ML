@@ -1,5 +1,6 @@
 <!-- ============ PORTAIL PERSONNEL ============ -->
-<div class="relative w-full max-w-md min-h-screen flex flex-col pb-10 screen-ambient">
+<!-- Cadre mobile (même format que l'écran d'accueil) -->
+<div class="relative w-full max-w-[400px] h-[844px] max-h-screen sm:max-h-[92vh] overflow-y-auto flex flex-col pb-6 bg-[#E7F6F3] shadow-2xl border-[8px] border-slate-800/80 sm:border-slate-700/60 sm:rounded-[44px] screen-ambient">
 
     <!-- Barre supérieure -->
     <header class="sticky top-0 z-40 px-6 pt-4 pb-3 flex justify-between items-center bg-white/40 backdrop-blur-md">

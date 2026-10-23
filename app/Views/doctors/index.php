@@ -64,7 +64,7 @@
         <!-- ===== Carte d'accès à Doza (assistant IA) — placée en premier ===== -->
         <article class="relative rounded-3xl p-3.5 flex items-center shadow-soft-card hover:shadow-md active:scale-[0.99] transition bg-white ring-1 ring-teal-300/40">
             <!-- Clic sur toute la carte → fiche du médecin -->
-            <a href="<?= BASE_URL ?>profile" class="absolute inset-0 z-10 rounded-3xl" aria-label="Ouvrir la fiche de Doza"></a>
+            <a href="<?= BASE_URL ?>profile/doza" class="absolute inset-0 z-10 rounded-3xl" aria-label="Ouvrir la fiche de Doza"></a>
 
             <!-- Avatar Doza (photo) -->
             <div class="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner border border-white/80 bg-teal-50">

@@ -22,7 +22,7 @@ class PersonnelController extends Controller
             'title'          => 'Espace personnel',
             'user'           => $user,
             'readmitUrl'     => $url,
-            'bodyClass'      => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
+            'bodyClass'      => 'bg-slate-900 min-h-screen flex items-center justify-center p-0 sm:p-6 antialiased font-sans text-slate-800 selection:bg-teal-100 select-none',
         ]);
     }
 

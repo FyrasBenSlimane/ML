@@ -33,7 +33,10 @@
       ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="min-h-full bg-surface text-on-surface flex flex-col font-body-md text-body-md antialiased relative overflow-x-hidden">
-    <?= $content ?>
+<body class="min-h-screen bg-slate-900 text-on-surface flex items-center justify-center p-0 sm:p-6 font-body-md text-body-md antialiased select-none">
+    <!-- Cadre mobile (même format que l'écran d'accueil) -->
+    <main class="relative w-full max-w-[400px] h-[844px] max-h-screen sm:max-h-[92vh] bg-surface overflow-y-auto shadow-2xl border-[8px] border-slate-800/80 sm:border-slate-700/60 sm:rounded-[44px] flex flex-col">
+        <?= $content ?>
+    </main>
 </body>
 </html>

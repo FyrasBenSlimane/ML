@@ -1,8 +1,8 @@
 <!-- Fond ambiant -->
-<div class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_75%_50%_at_50%_0%,rgba(107,216,203,0.3),transparent_75%)]"></div>
+<div class="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_75%_50%_at_50%_0%,rgba(107,216,203,0.3),transparent_75%)]"></div>
 
 <!-- En-tête -->
-<header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+<header class="sticky top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
     <div class="h-16 px-margin flex items-center gap-space-sm">
         <a aria-label="Retour" href="<?= BASE_URL ?>" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors">
             <span class="material-symbols-outlined text-[20px]">arrow_back</span>
@@ -11,7 +11,7 @@
     </div>
 </header>
 
-<main class="relative z-10 flex-1 flex flex-col w-full bg-surface pt-16 pb-safe">
+<main class="relative z-10 flex-1 flex flex-col w-full bg-surface pb-safe">
     <div class="flex flex-col w-full px-margin pb-space-xl max-w-md mx-auto">
 
         <p class="font-body-sm text-body-sm text-on-surface-variant my-space-md text-center">Rejoignez MedCare : votre espace santé, Doza et Sora.</p>

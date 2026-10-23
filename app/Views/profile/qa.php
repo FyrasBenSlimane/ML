@@ -16,7 +16,7 @@
 
     <!-- Navigation supérieure : retour vers la fiche · badge · menu -->
     <nav class="px-5 pt-3 pb-2 flex justify-between items-center z-20 shrink-0">
-        <a href="<?= BASE_URL ?>profile" aria-label="Retour" class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/25 active:scale-95 transition-transform shadow-sm">
+        <a href="<?= BASE_URL ?>profile/doza" aria-label="Retour" class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/25 active:scale-95 transition-transform shadow-sm">
             <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </a>
         <div class="flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur-md rounded-full border border-white/20">
