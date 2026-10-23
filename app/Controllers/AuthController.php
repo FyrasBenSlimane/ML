@@ -35,13 +35,16 @@ class AuthController extends Controller
                 $old['email'] = trim($_POST['email'] ?? '');
                 $password = $_POST['password'] ?? '';
 
-                if ($old['email'] === '' || $password === '') {
-                    $errors['global'] = 'Veuillez renseigner votre e-mail et votre mot de passe.';
-                } else {
+                // Messages d'erreur par champ (affichés sous le champ concerné).
+                if ($old['email'] === '') { $errors['email'] = 'Veuillez renseigner votre e-mail.'; }
+                if ($password === '')     { $errors['password'] = 'Veuillez renseigner votre mot de passe.'; }
+
+                if (empty($errors)) {
                     try {
                         $user = $this->model('User')->findByEmail($old['email']);
                         if ($user && password_verify($password, $user->password_hash)) {
-                            $this->loginUser($user);
+                            // « Se souvenir de moi » : cookie de session prolongé (30 j) si coché.
+                            $this->loginUser($user, !empty($_POST['remember']));
                             $this->redirect($this->homeFor($user->role));
                         }
                         $errors['global'] = 'Identifiants incorrects.';
@@ -133,6 +136,12 @@ class AuthController extends Controller
         ], 'auth');
     }
 
+    /** Page « Mot de passe oublié ? » — simple consigne, pas de réinitialisation automatique. */
+    public function forgot()
+    {
+        $this->view('auth/forgot', ['title' => 'Mot de passe oublié'], 'auth');
+    }
+
     public function logout()
     {
         $_SESSION = [];
@@ -144,8 +153,11 @@ class AuthController extends Controller
         $this->redirect('auth/login');
     }
 
-    /** Ouvre la session pour un utilisateur (régénère l'id de session). */
-    private function loginUser($user)
+    /**
+     * Ouvre la session pour un utilisateur (régénère l'id de session).
+     * $remember = true → prolonge le cookie de session à 30 jours (« Se souvenir de moi »).
+     */
+    private function loginUser($user, $remember = false)
     {
         session_regenerate_id(true);
         $_SESSION['user'] = [
@@ -155,5 +167,17 @@ class AuthController extends Controller
             'email'      => $user->email,
             'role'       => $user->role,
         ];
+
+        if ($remember) {
+            $p = session_get_cookie_params();
+            setcookie(session_name(), session_id(), [
+                'expires'  => time() + 30 * 24 * 3600,
+                'path'     => $p['path'] ?: '/',
+                'domain'   => $p['domain'],
+                'secure'   => $p['secure'],
+                'httponly' => true,
+                'samesite' => $p['samesite'] ?: 'Lax',
+            ]);
+        }
     }
 }
