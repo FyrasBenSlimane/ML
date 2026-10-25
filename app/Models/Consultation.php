@@ -107,6 +107,15 @@ class Consultation extends Model
         return $ids;
     }
 
+    /** Historique des évaluations Doza réalisées PAR ce médecin (fiche médecin). */
+    public function recentByPersonnel($personnelId, $limit = 50)
+    {
+        $limit = (int) $limit;
+        return $this->db->query(
+            "SELECT * FROM consultations WHERE personnel_id = :m ORDER BY created_at DESC, id DESC LIMIT $limit"
+        )->bind(':m', (int) $personnelId)->all();
+    }
+
     /**
      * Dernière session Doza réalisée par ce médecin pour ce patient.
      * Sert de source_id vérifié côté serveur pour l'alerte (jamais fourni par le client).

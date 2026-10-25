@@ -26,7 +26,7 @@
         </a>
         <div class="flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur-md rounded-full border border-white/20">
             <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
-            <span class="text-[11px] font-semibold text-white tracking-wide uppercase">Doza Clinical AI</span>
+            <span class="text-[11px] font-semibold text-white tracking-wide uppercase">Doza · IA clinique</span>
         </div>
         <button aria-label="Plus d'options" class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/25 active:scale-95 transition-transform shadow-sm">
             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.2"></circle><circle cx="12" cy="12" r="2.2"></circle><circle cx="19" cy="12" r="2.2"></circle></svg>
@@ -79,12 +79,12 @@
         <div class="pt-5 px-6 pb-2">
             <div class="flex items-center justify-around relative">
                 <button type="button" data-tab="questions" class="tab-btn relative pb-2.5 px-4 text-center">
-                    <span class="tab-label text-sm font-bold text-slate-800">My Questions</span>
+                    <span class="tab-label text-sm font-bold text-slate-800">Mes questions</span>
                     <span class="tab-underline absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-teal-500 rounded-full"></span>
                 </button>
                 <span class="h-4 w-px bg-slate-200"></span>
                 <button type="button" data-tab="answers" class="tab-btn relative pb-2.5 px-4 text-center">
-                    <span class="tab-label text-sm font-semibold text-slate-400 hover:text-slate-600 transition-colors">My Answers</span>
+                    <span class="tab-label text-sm font-semibold text-slate-400 hover:text-slate-600 transition-colors">Mes réponses</span>
                     <span class="tab-underline absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-teal-500 rounded-full hidden"></span>
                 </button>
             </div>

@@ -73,6 +73,20 @@ class Notification extends Model
         )->bind(':p', (int) $patientId)->all();
     }
 
+    /** Alertes d'un patient pour une source donnée (doza|sora), plus récentes d'abord. */
+    public function listByPatientAndSource($patientId, $source, $limit = 50)
+    {
+        $limit = (int) $limit;
+        return $this->db->query(
+            "SELECT n.*, u.first_name AS sender_first, u.last_name AS sender_last
+             FROM notifications n
+             LEFT JOIN users u ON u.id = n.sender_id
+             WHERE n.patient_id = :p AND n.source = :s
+             ORDER BY n.created_at DESC, n.id DESC
+             LIMIT $limit"
+        )->bind(':p', (int) $patientId)->bind(':s', $source)->all();
+    }
+
     /** Marque une alerte comme lue — uniquement si elle appartient à ce patient. */
     public function markRead($id, $patientId)
     {

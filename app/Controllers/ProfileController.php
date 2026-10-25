@@ -77,40 +77,54 @@ class ProfileController extends Controller
     /** Fiche « Doza » (Doctor Profile & Overview) : bio, stats et historique questions / réponses du patient. */
     public function doza()
     {
-        // Fiche Doza réservée au médecin (rôle personnel).
-        $this->requireRole('personnel');
+        $this->requireLogin();
         $user = $this->currentUser();
 
-        $doctor = [
-            'name'     => 'Doza',
-            'spec'     => 'Détection du changement d\'insuline · IA',
-            'center'   => 'Assistant de dosage d\'insuline',
-            'exp'      => 'Modèle prédictif',
-            'img'      => 'doctor5.jpg',
-            'badgeImg' => 'doctor6.jpg',
-            'bio'      => "Specialized in pediatric diagnostics and personalized treatment "
-                        . "protocols. Collaborating with clinical AI models to deliver rapid, "
-                        . "evidence-based care for every young patient.",
-            'stats'    => [
-                ['icon' => 'star',     'value' => '4.9',  'label' => '320 Reviews'],
-                ['icon' => 'chat',     'value' => '1.4k', 'label' => 'Questions Answered'],
-                ['icon' => 'patients', 'value' => '5.2k', 'label' => 'Patients'],
-            ],
-        ];
+        // Patient : fiche « but du modèle + mes alertes » (jamais de résultat brut).
+        if (($user['role'] ?? '') === 'patient') {
+            $this->modelFichePatient('doza', [
+                'name'    => 'Doza',
+                'spec'    => "Détection du changement d'insuline · IA",
+                'img'     => 'doctor5.jpg',
+                'badge'   => 'Doza · IA clinique',
+                'purpose' => "Doza est un assistant d'intelligence artificielle qui aide votre médecin à repérer "
+                           . "si votre traitement par insuline pourrait nécessiter un ajustement pendant votre "
+                           . "séjour. C'est votre médecin qui l'utilise, puis vous informe des décisions à prendre.",
+            ]);
+            return;
+        }
 
-        // Historique réel du patient connecté (sessions Doza enregistrées en base).
+        // Médecin : fiche clinique + historique des évaluations qu'il a réalisées.
         $questions = [];
         $answers   = [];
+        $patients  = [];
         try {
-            foreach ($this->model('Consultation')->recentByUser($user['id'], 50) as $row) {
+            foreach ($this->model('Consultation')->recentByPersonnel($user['id'], 50) as $row) {
                 $date = $this->formatDate($row->created_at);
                 $questions[] = ['text' => $row->question, 'tag' => $row->tag, 'date' => $date];
                 $answers[]   = ['text' => $row->answer, 'result' => $row->result,
                                 'confidence' => $row->probability . '%', 'date' => $date];
+                if (!empty($row->user_id)) { $patients[$row->user_id] = true; }
             }
         } catch (Throwable $e) {
             // Base indisponible : historique vide.
         }
+
+        $doctor = [
+            'name'     => 'Doza',
+            'spec'     => "Détection du changement d'insuline · IA",
+            'center'   => "Assistant de dosage d'insuline",
+            'exp'      => 'Modèle prédictif',
+            'img'      => 'doctor5.jpg',
+            'badgeImg' => 'doctor6.jpg',
+            'bio'      => "Modèle d'aide à la décision : estime la probabilité qu'un ajustement de la dose "
+                        . "d'insuline soit nécessaire pendant le séjour, à partir des données cliniques du patient.",
+            'stats'    => [
+                ['icon' => 'star',     'value' => '4.9',                    'label' => 'Fiabilité'],
+                ['icon' => 'chat',     'value' => (string) count($answers),  'label' => 'Évaluations'],
+                ['icon' => 'patients', 'value' => (string) count($patients), 'label' => 'Patients suivis'],
+            ],
+        ];
 
         $this->view('profile/doza', [
             'title'     => 'Doza',
@@ -118,6 +132,26 @@ class ProfileController extends Controller
             'questions' => $questions,
             'answers'   => $answers,
             'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start sm:items-center bg-slate-100 min-h-screen p-0 sm:p-4',
+        ]);
+    }
+
+    /** Fiche patient d'un modèle (Doza/Sora) : but du modèle + alertes reçues pour ce modèle. */
+    private function modelFichePatient($source, array $meta)
+    {
+        $user   = $this->currentUser();
+        $alerts = [];
+        try {
+            $alerts = $this->model('Notification')->listByPatientAndSource($user['id'], $source, 50);
+        } catch (Throwable $e) {
+            // Base indisponible : pas d'alertes.
+        }
+        $this->view('profile/patient_model', [
+            'title'     => $meta['name'],
+            'model'     => $meta,
+            'source'    => $source,
+            'alerts'    => $alerts,
+            'csrf'      => $this->csrfToken(),
+            'bodyClass' => 'bg-slate-900 min-h-screen flex items-center justify-center p-0 sm:p-6 antialiased font-sans text-slate-800 selection:bg-teal-100 select-none',
         ]);
     }
 
@@ -142,8 +176,8 @@ class ProfileController extends Controller
             'img'    => $d['img'],
             'bio'    => $d['bio'],
             'stats'  => [
-                ['icon' => 'star',     'value' => $d['rating'], 'label' => $d['reviews'] . ' Reviews'],
-                ['icon' => 'chat',     'value' => $d['exp'],    'label' => 'Years Exp.'],
+                ['icon' => 'star',     'value' => $d['rating'], 'label' => $d['reviews'] . ' avis'],
+                ['icon' => 'chat',     'value' => $d['exp'],    'label' => "ans d'exp."],
                 ['icon' => 'patients', 'value' => '1.2k',       'label' => 'Patients'],
             ],
         ];
@@ -161,9 +195,38 @@ class ProfileController extends Controller
     /** Fiche « Sora » (Doctor Profile & Overview) : même interface que Doza, côté patient. */
     public function sora()
     {
-        // Fiche Sora réservée au médecin (rôle personnel).
-        $this->requireRole('personnel');
+        $this->requireLogin();
         $user = $this->currentUser();
+
+        // Patient : fiche « but du modèle + mes alertes ».
+        if (($user['role'] ?? '') === 'patient') {
+            $this->modelFichePatient('sora', [
+                'name'    => 'Sora',
+                'spec'    => 'Profil de sortie · IA',
+                'img'     => 'doctor6.jpg',
+                'badge'   => 'Sora · IA clinique',
+                'purpose' => "Sora est un assistant d'intelligence artificielle qui aide votre médecin à préparer "
+                           . "votre sortie de l'hôpital et à organiser votre suivi (contrôle du diabète). C'est votre "
+                           . "médecin qui l'utilise, puis vous transmet les recommandations adaptées.",
+            ]);
+            return;
+        }
+
+        // Médecin : fiche Sora + historique des fiches qu'il a réalisées.
+        $questions = [];
+        $answers   = [];
+        $patients  = [];
+        try {
+            foreach ($this->model('SoraFiche')->recentByPersonnel($user['id'], 50) as $row) {
+                $date = $this->formatDate($row->created_at);
+                $questions[] = ['text' => 'Fiche de sortie — ' . $row->profil, 'tag' => 'Sora', 'date' => $date];
+                $answers[]   = ['text' => $row->profil, 'result' => $row->resultat_suivi,
+                                'confidence' => $row->resultat_controle, 'date' => $date];
+                if (!empty($row->user_id)) { $patients[$row->user_id] = true; }
+            }
+        } catch (Throwable $e) {
+            // Base indisponible : historique vide.
+        }
 
         $doctor = [
             'name'   => 'Sora',
@@ -171,32 +234,18 @@ class ProfileController extends Controller
             'center' => 'Assistant de sortie',
             'exp'    => 'Modèle prédictif',
             'img'    => 'doctor6.jpg',
-            'bio'    => "Compagnon de sortie : suivi et contrôle du diabète pour préparer l'après-hospitalisation.",
+            'bio'    => "Compagnon de sortie : prépare le suivi et le contrôle du diabète pour l'après-hospitalisation.",
             'stats'  => [
-                ['icon' => 'star',     'value' => '4.7',  'label' => '190 Reviews'],
-                ['icon' => 'chat',     'value' => '1.1k', 'label' => 'Fiches'],
-                ['icon' => 'patients', 'value' => '3.4k', 'label' => 'Patients'],
+                ['icon' => 'star',     'value' => '4.7',                    'label' => 'Fiabilité'],
+                ['icon' => 'chat',     'value' => (string) count($answers),  'label' => 'Fiches'],
+                ['icon' => 'patients', 'value' => (string) count($patients), 'label' => 'Patients suivis'],
             ],
         ];
-
-        // Historique réel des fiches Sora du patient connecté.
-        $questions = [];
-        $answers   = [];
-        try {
-            foreach ($this->model('SoraFiche')->recentByUser($user['id'], 50) as $row) {
-                $date = $this->formatDate($row->created_at);
-                $questions[] = ['text' => 'Fiche de sortie — ' . $row->profil, 'tag' => 'Sora', 'date' => $date];
-                $answers[]   = ['text' => $row->profil, 'result' => $row->resultat_suivi,
-                                'confidence' => $row->resultat_controle, 'date' => $date];
-            }
-        } catch (Throwable $e) {
-            // Base indisponible : historique vide.
-        }
 
         $this->view('profile/doctor', [
             'title'     => 'Sora',
             'doctor'    => $doctor,
-            'badge'     => 'Sora · Santé IA',
+            'badge'     => 'Sora · IA',
             'questions' => $questions,
             'answers'   => $answers,
             'plusLink'  => 'sora',

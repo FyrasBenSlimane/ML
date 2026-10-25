@@ -88,19 +88,6 @@
             <div id="result-level" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[13px] font-semibold mb-2 bg-slate-100 text-slate-600">—</div>
             <p id="result-message" class="text-[19px] font-semibold leading-snug max-w-xs" style="color:#134E4A">—</p>
             <p id="result-rate" class="text-[12.5px] text-slate-500 mt-1.5 max-w-xs"></p>
-
-            <!-- 3. Avertissement — TOUJOURS affiché (encart ambre doux) -->
-            <div class="mt-3 flex items-start gap-2.5 text-left px-3.5 py-2.5 rounded-2xl bg-amber-50/60 border border-amber-200/60 w-full">
-                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L1 21h22L12 2zm0 5l7.5 13h-15L12 7zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"></path>
-                </svg>
-                <p class="text-[13px] text-slate-700 leading-snug">
-                    <span class="font-medium text-slate-800">Ne modifiez jamais votre dose vous-même.</span> Parlez-en à votre médecin ou à votre infirmier.
-                </p>
-            </div>
-
-            <!-- 4. Mention bas de carte (disclaimer discret) -->
-            <p class="mt-2 text-[11px] text-slate-400 font-normal">Démo éducative — ne remplace pas l'avis médical</p>
         </div>
     </div>
 
@@ -176,18 +163,12 @@
 
     <!-- Boutons de navigation sous la carte -->
     <div class="mt-auto px-4 pt-3 flex flex-col gap-2">
-        <a href="<?= BASE_URL ?>doctors" class="h-11 rounded-2xl bg-gradient-to-r from-[#1EACA0] to-[#12897F] text-white font-bold text-[14px] shadow-teal-glow flex items-center justify-center gap-2 active:scale-95 transition">
+        <a href="<?= BASE_URL ?>doza" class="h-11 rounded-2xl bg-gradient-to-r from-[#1EACA0] to-[#12897F] text-white font-bold text-[14px] shadow-teal-glow flex items-center justify-center gap-2 active:scale-95 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            Prendre rendez-vous avec un médecin
-        </a>
-        <a href="<?= BASE_URL ?>doza" class="h-10 rounded-2xl bg-white/80 border border-teal-200/60 text-teal-700 font-semibold text-[13px] flex items-center justify-center gap-2 hover:bg-white active:scale-95 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M4 4v6h6M20 20v-6h-6" stroke-linecap="round" stroke-linejoin="round"></path>
                 <path d="M20 10a8 8 0 00-14.3-3.7L4 8M4 14a8 8 0 0014.3 3.7L20 16" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            Refaire le test
+            Nouvelle évaluation
         </a>
     </div>
 
@@ -295,7 +276,7 @@
       }
       explainEl.innerHTML = html;
 
-      texteALire = zone + '. ' + z.message + ' ' + AVERTISSEMENT;
+      texteALire = zone + '. ' + z.message;
     }
 
     // ===== 4. Lecture audio (Web Speech API), uniquement au clic (pas d'auto-play) =====

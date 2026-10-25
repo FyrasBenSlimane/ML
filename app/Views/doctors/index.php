@@ -97,18 +97,9 @@
                 <p class="text-[10px] text-slate-400 mt-1 truncate">Ne remplace pas l'avis d'un médecin</p>
             </div>
 
-            <!-- Actions (au-dessus du lien étiré) : chat & mode vocal -->
-            <div class="relative z-20 flex flex-col space-y-2 ml-2 flex-shrink-0">
-                <a href="<?= BASE_URL ?>doza" aria-label="Discuter avec Doza" class="w-9 h-9 rounded-full bg-white/90 border border-slate-100 flex items-center justify-center text-teal-600 shadow-sm hover:bg-teal-50 active:scale-95 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </a>
-                <a href="<?= BASE_URL ?>doza?voice=1" aria-label="Mode vocal : Doza lit les questions" class="w-9 h-9 rounded-full bg-teal-primary text-white flex items-center justify-center shadow-sm shadow-teal-600/30 hover:bg-teal-600 active:scale-95 transition">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
-                    </svg>
-                </a>
+            <!-- Flèche : ouvrir la fiche Doza -->
+            <div class="ml-2 flex-shrink-0 text-teal-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
             </div>
         </article>
 
