@@ -3,39 +3,58 @@
  * Accueil médecin (rôle personnel) — maquette « Doza Santé ».
  * CTA « Lancer une évaluation » + grille Doza / Sora / ReadmitGuard / médecins.
  */
+$ini = strtoupper(mb_substr($user['first_name'] ?? '', 0, 1) . mb_substr($user['last_name'] ?? '', 0, 1));
 ?>
 <!-- ============ ACCUEIL MÉDECIN ============ -->
 <div class="relative w-full max-w-[400px] h-[844px] max-h-screen sm:max-h-[92vh] overflow-hidden flex flex-col bg-[#E7F6F3] shadow-2xl border-[8px] border-slate-800/80 sm:border-slate-700/60 sm:rounded-[44px] screen-ambient">
 
-    <!-- Barre supérieure : marque + déconnexion -->
-    <header class="shrink-0 px-5 pt-4 pb-2 flex items-center justify-between bg-white/40 backdrop-blur-md">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/20 flex items-center justify-center text-teal-600 shadow-sm">
-                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+    <!-- ===== Bandeau d'en-tête dégradé (marque + salutation + avatar) ===== -->
+    <div class="shrink-0 relative overflow-hidden px-5 pt-5 pb-11 bg-gradient-to-br from-[#16b5a6] via-[#0d9488] to-[#0f766e]">
+        <!-- Lueurs & onde cardiaque décoratives -->
+        <div class="pointer-events-none absolute -top-12 -right-10 w-44 h-44 rounded-full bg-white/15 blur-2xl"></div>
+        <div class="pointer-events-none absolute -bottom-16 -left-10 w-48 h-48 rounded-full bg-emerald-200/25 blur-3xl"></div>
+        <svg class="pointer-events-none absolute right-4 bottom-6 w-40 h-16 text-white/10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 120 40"><path d="M0 20h22l6-13 10 26 8-20 6 10 6-3h56" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+
+        <!-- Marque + déconnexion -->
+        <div class="relative z-10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-white shadow-sm">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                </div>
+                <div>
+                    <span class="block text-[9px] uppercase tracking-[0.18em] font-extrabold text-white/80">Doza Santé</span>
+                    <span class="block text-sm font-extrabold text-white leading-none">Espace médecin</span>
+                </div>
             </div>
-            <div>
-                <span class="block text-[9px] uppercase tracking-wider font-extrabold text-teal-800">Doza Santé</span>
-                <span class="block text-sm font-extrabold text-slate-800 leading-none">Espace médecin</span>
+            <a href="<?= BASE_URL ?>auth/logout" aria-label="Déconnexion" class="w-9 h-9 rounded-full bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-white hover:bg-white/30 active:scale-95 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </a>
+        </div>
+
+        <!-- Salutation + avatar -->
+        <div class="relative z-10 mt-5 flex items-end justify-between">
+            <div class="min-w-0">
+                <h1 class="text-[22px] font-extrabold text-white leading-tight tracking-tight">Bonjour, Dr <?= htmlspecialchars($user['first_name']) ?> !</h1>
+                <p class="text-[11px] text-teal-50/90 font-medium mt-0.5">Vos outils d'aide à la décision clinique</p>
+            </div>
+            <div class="shrink-0 w-12 h-12 rounded-2xl bg-white/90 text-teal-700 flex items-center justify-center text-base font-extrabold shadow-lg ring-2 ring-white/60">
+                <?= htmlspecialchars($ini) ?>
             </div>
         </div>
-        <a href="<?= BASE_URL ?>auth/logout" aria-label="Déconnexion" class="w-9 h-9 rounded-full bg-white/80 border border-white flex items-center justify-center text-slate-600 shadow-sm hover:bg-white active:scale-95 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-        </a>
-    </header>
+    </div>
 
     <!-- Contenu défilant -->
-    <main class="flex-1 overflow-y-auto px-5 pt-2 pb-6 space-y-4 no-scrollbar">
+    <main class="flex-1 overflow-y-auto px-5 pb-6 space-y-4 no-scrollbar">
 
-        <!-- Salutation -->
-        <div class="px-1">
-            <h1 class="text-lg font-extrabold text-slate-900 leading-tight">Bonjour, Dr <?= htmlspecialchars($user['first_name']) ?> !</h1>
-            <p class="text-[11px] text-slate-500 font-medium">Vos outils d'aide à la décision clinique</p>
-        </div>
-
-        <!-- Recherche -->
-        <div class="flex items-center bg-white/90 backdrop-blur rounded-2xl px-3 py-2.5 shadow-sm border border-white">
-            <svg class="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" placeholder="Rechercher un outil, un médecin..." class="bg-transparent text-xs text-slate-700 placeholder-slate-400 w-full focus:outline-none font-medium">
+        <!-- Recherche (flottante, remontée sur le bandeau) -->
+        <div class="-mt-6 relative z-20 flex items-center gap-2">
+            <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-3 shadow-[0_12px_28px_-10px_rgba(13,148,136,0.35)] border border-white">
+                <svg class="w-4 h-4 text-teal-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" placeholder="Rechercher un outil, un médecin..." class="bg-transparent text-xs text-slate-700 placeholder-slate-400 w-full focus:outline-none font-medium">
+            </div>
+            <button type="button" aria-label="Filtres" class="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-600 to-teal-700 text-white flex items-center justify-center shadow-[0_10px_20px_-6px_rgba(13,148,136,0.6)] active:scale-95 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 5h18M6 12h12M10 19h4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </button>
         </div>
 
         <!-- CTA : lancer une évaluation -->
