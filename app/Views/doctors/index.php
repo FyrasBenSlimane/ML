@@ -28,11 +28,22 @@
             </svg>
         </a>
         <h1 class="text-lg font-bold text-slate-800 tracking-tight">Find Doctors</h1>
-        <button aria-label="Filtrer" class="w-10 h-10 rounded-2xl flex items-center justify-center text-slate-700 hover:bg-white/60 transition active:scale-95">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M3 4h18M6 10h12m-8 6h4" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-        </button>
+        <div class="flex items-center gap-1">
+            <!-- Cloche : alertes du patient (badge des non lues) -->
+            <a href="<?= BASE_URL ?>notifications" aria-label="Mes alertes" class="relative w-10 h-10 rounded-2xl flex items-center justify-center text-slate-700 hover:bg-white/60 transition active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4-5.7V5a2 2 0 10-4 0v.3C7.7 6.2 6 8.4 6 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <?php if (!empty($unread)): ?>
+                <span class="absolute top-0.5 right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center shadow"><?= (int) $unread > 9 ? '9+' : (int) $unread ?></span>
+                <?php endif; ?>
+            </a>
+            <button aria-label="Filtrer" class="w-10 h-10 rounded-2xl flex items-center justify-center text-slate-700 hover:bg-white/60 transition active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M3 4h18M6 10h12m-8 6h4" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
     </section>
 
     <!-- Barre de recherche -->

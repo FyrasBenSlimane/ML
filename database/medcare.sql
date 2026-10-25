@@ -63,3 +63,30 @@ CREATE TABLE IF NOT EXISTS `sora_fiches` (
     INDEX (`user_id`),
     CONSTRAINT `fk_sora_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+--  Protection du patient : les évaluations Doza/Sora sont réalisées PAR un
+--  membre du personnel (médecin) POUR un patient. On trace les deux.
+--  Migrations idempotentes (MariaDB / XAMPP supporte IF NOT EXISTS).
+-- ------------------------------------------------------------
+ALTER TABLE `consultations` ADD COLUMN IF NOT EXISTS `personnel_id` INT NULL AFTER `user_id`;
+ALTER TABLE `sora_fiches`   ADD COLUMN IF NOT EXISTS `personnel_id` INT NULL AFTER `user_id`;
+
+-- Alertes envoyées au patient par le médecin après une évaluation.
+-- Le patient ne lit QUE ses propres alertes ; il ne voit jamais la sortie du modèle.
+CREATE TABLE IF NOT EXISTS `notifications` (
+    `id`         INT AUTO_INCREMENT PRIMARY KEY,
+    `patient_id` INT NOT NULL,                              -- destinataire (rôle patient)
+    `sender_id`  INT NULL,                                  -- médecin émetteur (rôle personnel)
+    `source`     ENUM('doza','sora') NOT NULL,              -- modèle à l'origine de l'alerte
+    `source_id`  INT NULL,                                  -- id de la consultation / fiche liée
+    `niveau`     ENUM('info','attention','important') NOT NULL DEFAULT 'info',
+    `titre`      VARCHAR(120) NOT NULL,
+    `message`    TEXT NOT NULL,                             -- message rassurant, sans chiffres
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `read_at`    DATETIME NULL,
+    INDEX (`patient_id`),
+    INDEX (`patient_id`, `read_at`),
+    CONSTRAINT `fk_notif_patient` FOREIGN KEY (`patient_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_notif_sender`  FOREIGN KEY (`sender_id`)  REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

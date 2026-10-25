@@ -90,6 +90,44 @@ class Controller
         }
     }
 
+    // ============== Patient en cours d'évaluation (session médecin) ==============
+    // Le médecin sélectionne un patient (par son ID Patient) AVANT toute évaluation
+    // Doza/Sora. Le patient est mémorisé en session — jamais pris depuis le client.
+
+    /** Patient confirmé en session : ['id','name','code'] ou null. */
+    protected function evalPatient()
+    {
+        return $_SESSION['eval_patient'] ?? null;
+    }
+
+    /** Mémorise le patient sélectionné (à partir d'une ligne users). */
+    protected function setEvalPatient($user)
+    {
+        $_SESSION['eval_patient'] = [
+            'id'   => (int) $user->id,
+            'name' => trim($user->first_name . ' ' . $user->last_name),
+            'code' => User::patientCode($user->id),
+        ];
+    }
+
+    /** Oublie le patient sélectionné. */
+    protected function clearEvalPatient()
+    {
+        unset($_SESSION['eval_patient']);
+    }
+
+    /**
+     * Exige qu'un patient soit sélectionné ; sinon redirige vers l'écran de
+     * sélection (avec l'étape suivante). Renvoie le patient en session.
+     */
+    protected function requireEvalPatient($next)
+    {
+        if (empty($_SESSION['eval_patient'])) {
+            $this->redirect('patient/select?next=' . urlencode($next));
+        }
+        return $_SESSION['eval_patient'];
+    }
+
     // ===================== Jeton CSRF =====================
 
     /** Jeton CSRF de la session (créé si absent). */

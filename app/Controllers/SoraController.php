@@ -10,17 +10,28 @@ class SoraController extends Controller
 {
     public function index()
     {
-        // Ouvert au patient et au médecin (rôle personnel).
-        $this->requireLogin();
-        $this->view('sora/index', ['title' => 'Sora · Fiche patient'], 'blank');
+        // Réservé au médecin, sur un patient confirmé.
+        $this->requireRole('personnel');
+        $patient = $this->requireEvalPatient('sora');
+        $this->view('sora/index', [
+            'title'   => 'Sora · Fiche patient',
+            'patient' => $patient,
+        ], 'blank');
     }
 
     /** Écran "Profil du patient" (résultat de la fiche). */
     public function profil()
     {
-        // Ouvert au patient et au médecin (rôle personnel).
-        $this->requireLogin();
-        $this->view('sora/profil', ['title' => 'Sora · Profil du patient'], 'blank');
+        // Résultat réservé au médecin ; le patient ne voit jamais la sortie du modèle.
+        $this->requireRole('personnel');
+        $patient = $this->requireEvalPatient('sora');
+        $this->view('sora/profil', [
+            'title'          => 'Sora · Profil du patient',
+            'patient'        => $patient,
+            'csrf'           => $this->csrfToken(),
+            'alertSource'    => 'sora',
+            'alertTemplates' => require APP_PATH . '/Config/notifications.php',
+        ], 'blank');
     }
 
     /**
@@ -33,15 +44,20 @@ class SoraController extends Controller
         $payload = json_decode(file_get_contents('php://input'), true) ?: [];
         $f = isset($payload['fiche']) && is_array($payload['fiche']) ? $payload['fiche'] : [];
         $r = isset($payload['resultat']) && is_array($payload['resultat']) ? $payload['resultat'] : [];
-        $uid = $this->currentUser()['id'] ?? null;
 
-        if (!$uid) {
-            echo json_encode(['ok' => false, 'error' => 'not_logged_in']);
+        // Réservé au médecin, sur un patient confirmé en session.
+        if (($this->currentUser()['role'] ?? null) !== 'personnel' || empty($this->evalPatient())) {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'error' => 'no_patient']);
             return;
         }
+        $patientId   = $this->evalPatient()['id'];
+        $personnelId = $this->currentUser()['id'];
+
         try {
             $ok = $this->model('SoraFiche')->create([
-                'user_id'           => $uid,
+                'user_id'           => $patientId,
+                'personnel_id'      => $personnelId,
                 'age'               => $f['age'] ?? '',
                 'hosp_days'         => $f['hosp_days'] ?? 0,
                 'medications'       => $f['medications'] ?? 0,

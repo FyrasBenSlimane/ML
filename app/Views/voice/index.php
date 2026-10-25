@@ -27,7 +27,7 @@
 
     <!-- Navigation supérieure -->
     <section class="px-5 pt-2 pb-1 flex items-center justify-between">
-        <a href="<?= BASE_URL ?>doctors" aria-label="Retour" class="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-700 hover:bg-white/60 hover:text-teal-brand transition active:scale-95">
+        <a href="<?= BASE_URL ?>personnel" aria-label="Retour" class="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-700 hover:bg-white/60 hover:text-teal-brand transition active:scale-95">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
@@ -39,6 +39,9 @@
             </svg>
         </div>
     </section>
+
+    <!-- Patient en cours d'évaluation -->
+    <?php $bannerNext = 'doza'; require APP_PATH . '/Views/partials/patient_banner.php'; ?>
 
     <!-- Pastille d'état (texte mis à jour par le JS pendant la lecture audio) -->
     <div class="flex justify-center items-center mt-2 mb-1">
@@ -103,6 +106,73 @@
 
     <!-- Explication par patient (rempli par le JS depuis la réponse de l'API) -->
     <div id="result-explain" class="px-4 mt-3 space-y-2"></div>
+
+    <?php if (isset($csrf, $alertSource, $alertTemplates) && !empty($patient)): ?>
+    <!-- ===== Bloc médecin : envoyer une alerte au patient (message sans chiffres) ===== -->
+    <div class="px-4 mt-3">
+        <div class="rounded-[22px] p-4 bg-white/95 shadow-glass ring-1 ring-teal-brand/15">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4-5.7V5a2 2 0 10-4 0v.3C7.7 6.2 6 8.4 6 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-[13px] font-bold text-slate-800">Envoyer une alerte au patient</h3>
+                    <p class="text-[10.5px] text-slate-500">Destinataire : <?= htmlspecialchars($patient['name']) ?> · #<?= htmlspecialchars($patient['code']) ?></p>
+                </div>
+            </div>
+            <span id="alert-level" class="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700">Niveau : —</span>
+            <textarea id="alert-message" rows="4" class="w-full mt-2 rounded-2xl border border-teal-900/10 bg-white text-[12.5px] text-slate-700 p-3 focus:outline-none focus:ring-2 focus:ring-teal-300 resize-none"></textarea>
+            <button id="alert-send" type="button" class="mt-2 w-full h-10 rounded-2xl bg-gradient-to-r from-[#1EACA0] to-[#12897F] text-white font-bold text-[13px] shadow-teal-glow active:scale-[0.99] transition">Envoyer l'alerte</button>
+            <p id="alert-feedback" class="hidden mt-2 text-[12px] font-semibold text-center"></p>
+            <p class="mt-2 text-[10.5px] text-slate-400 text-center">Le patient ne reçoit pas le résultat du modèle, seulement ce message.</p>
+        </div>
+    </div>
+
+    <script>
+      (function () {
+        const BASE = '<?= BASE_URL ?>';
+        const CSRF = <?= json_encode($csrf) ?>;
+        const SOURCE = <?= json_encode($alertSource) ?>;
+        const TPL = <?= json_encode($alertTemplates, JSON_UNESCAPED_UNICODE) ?>;
+        const LBL = { info: 'Information', attention: 'À regarder', important: 'Important' };
+
+        const zone = window.__dozaZone || 'Risque intermédiaire';
+        const t = (TPL[SOURCE] && TPL[SOURCE][zone]) || TPL['default'];
+        let niveau = t.niveau, titre = t.titre;
+
+        const msgEl = document.getElementById('alert-message');
+        const lvlEl = document.getElementById('alert-level');
+        const btn   = document.getElementById('alert-send');
+        const fb    = document.getElementById('alert-feedback');
+
+        msgEl.value = t.message;
+        lvlEl.textContent = 'Niveau : ' + (LBL[niveau] || niveau);
+
+        btn.addEventListener('click', function () {
+          const message = (msgEl.value || '').trim();
+          if (!message) { return; }
+          btn.disabled = true; btn.textContent = 'Envoi…';
+          fetch(BASE + 'notifications/send', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ csrf: CSRF, source: SOURCE, niveau: niveau, titre: titre, message: message })
+          }).then(function (r) { return r.json().catch(function () { return {}; }); })
+            .then(function (d) {
+              fb.classList.remove('hidden');
+              if (d && d.ok) {
+                fb.textContent = '✓ Alerte envoyée au patient.'; fb.style.color = '#0d9488';
+                btn.textContent = 'Envoyée'; msgEl.disabled = true;
+              } else {
+                fb.textContent = "Échec de l'envoi" + (d && d.error ? ' (' + d.error + ')' : '') + '.'; fb.style.color = '#e11d48';
+                btn.disabled = false; btn.textContent = "Envoyer l'alerte";
+              }
+            }, function () {
+              fb.classList.remove('hidden'); fb.textContent = 'Service indisponible.'; fb.style.color = '#e11d48';
+              btn.disabled = false; btn.textContent = "Envoyer l'alerte";
+            });
+        });
+      })();
+    </script>
+    <?php endif; ?>
 
     <!-- Boutons de navigation sous la carte -->
     <div class="mt-auto px-4 pt-3 flex flex-col gap-2">
@@ -198,6 +268,7 @@
     // ===== 3. Afficher le résultat complet renvoyé par l'API =====
     function afficherResultat(res) {
       const zone = res.zone || zoneDepuisP(res.proba);
+      window.__dozaZone = zone; // utilisé par le bloc « Envoyer une alerte »
       const z = ZONES[zone] || ZONES['Risque intermédiaire'];
 
       niveauEl.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-[13px] font-semibold mb-2 ' + z.classes;

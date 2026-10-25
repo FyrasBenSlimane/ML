@@ -17,6 +17,7 @@ class SoraFiche extends Model
         $sql = "CREATE TABLE IF NOT EXISTS sora_fiches (
                     id                INT AUTO_INCREMENT PRIMARY KEY,
                     user_id           INT NOT NULL,
+                    personnel_id      INT NULL,
                     age               VARCHAR(10),
                     hosp_days         INT,
                     medications       INT,
@@ -34,8 +35,11 @@ class SoraFiche extends Model
                     created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     INDEX (user_id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        // Pas de DDL à chaque requête : vérifié une fois via information_schema.
-        $this->ensureSchema('sora_fiches', $sql);
+        // Pas de DDL à chaque requête : vérifié une fois via un SELECT léger.
+        // personnel_id (médecin qui a réalisé l'évaluation) ajouté si table ancienne.
+        $this->ensureSchema('sora_fiches', $sql, [
+            'personnel_id' => "ALTER TABLE sora_fiches ADD COLUMN personnel_id INT NULL AFTER user_id",
+        ]);
     }
 
     /** Enregistre une fiche + ses résultats pour un patient. */
@@ -43,15 +47,16 @@ class SoraFiche extends Model
     {
         return $this->db->query(
             "INSERT INTO sora_fiches
-                (user_id, age, hosp_days, medications, diagnostics, diagnosis, glucose,
+                (user_id, personnel_id, age, hosp_days, medications, diagnostics, diagnosis, glucose,
                  antidiabetic, insulin, metformin,
                  proba_suivi, resultat_suivi, proba_controle, resultat_controle, profil)
              VALUES
-                (:user_id, :age, :hosp_days, :medications, :diagnostics, :diagnosis, :glucose,
+                (:user_id, :personnel_id, :age, :hosp_days, :medications, :diagnostics, :diagnosis, :glucose,
                  :antidiabetic, :insulin, :metformin,
                  :proba_suivi, :resultat_suivi, :proba_controle, :resultat_controle, :profil)"
         )
         ->bind(':user_id',           (int) $d['user_id'])
+        ->bind(':personnel_id',      isset($d['personnel_id']) ? (int) $d['personnel_id'] : null)
         ->bind(':age',               $d['age'])
         ->bind(':hosp_days',         (int) $d['hosp_days'])
         ->bind(':medications',       (int) $d['medications'])
@@ -104,5 +109,19 @@ class SoraFiche extends Model
             $ids[] = (int) $row->user_id;
         }
         return $ids;
+    }
+
+    /**
+     * Dernière fiche Sora réalisée par ce médecin pour ce patient.
+     * Sert de source_id vérifié côté serveur pour l'alerte. Renvoie l'id (int) ou 0.
+     */
+    public function latestIdForPatientBy($patientId, $personnelId)
+    {
+        $row = $this->db->query(
+            "SELECT id FROM sora_fiches
+             WHERE user_id = :p AND personnel_id = :m
+             ORDER BY id DESC LIMIT 1"
+        )->bind(':p', (int) $patientId)->bind(':m', (int) $personnelId)->single();
+        return $row ? (int) $row->id : 0;
     }
 }

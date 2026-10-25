@@ -65,4 +65,28 @@ class User extends Model
     {
         return (bool) $this->findByEmail($email);
     }
+
+    // ===================== Identifiant Patient (#PT-xxxxx) =====================
+    // Format unique dérivé de users.id, commun à tous les modèles (Doza, Sora, …).
+    // Centralisé ici pour être réutilisable partout.
+
+    /** id interne -> code patient « PT-00007 » (affiché « #PT-00007 »). */
+    public static function patientCode($id)
+    {
+        return 'PT-' . str_pad((string) (int) $id, 5, '0', STR_PAD_LEFT);
+    }
+
+    /** Code saisi (« #PT-00007 », « PT-7 », « 7 »…) -> id interne (int) ou null. */
+    public static function parsePatientCode($code)
+    {
+        $digits = preg_replace('/\D+/', '', (string) $code);
+        return $digits === '' ? null : (int) $digits;
+    }
+
+    /** Utilisateur par id UNIQUEMENT s'il existe et a le rôle patient, sinon null. */
+    public function findPatientById($id)
+    {
+        $u = $this->findById($id);
+        return ($u && $u->role === 'patient') ? $u : null;
+    }
 }

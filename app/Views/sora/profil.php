@@ -45,6 +45,9 @@
 </div>
 </header>
 
+<!-- Patient en cours d'évaluation -->
+<?php $bannerNext = 'sora'; require APP_PATH . '/Views/partials/patient_banner.php'; ?>
+
 <main class="relative z-10 flex-1 space-y-4">
 
 <!-- Recommandation clinique -->
@@ -109,12 +112,32 @@
 </div>
 
 <p class="text-center text-[11px] text-slate-400 px-4">Outil d'aide à l'orientation, ne remplace pas l'avis d'un médecin.</p>
+
+<?php if (isset($csrf, $alertSource, $alertTemplates) && !empty($patient)): ?>
+<!-- ===== Bloc médecin : envoyer une alerte au patient (message sans chiffres) ===== -->
+<div class="rounded-[26px] p-4 bg-white/95 shadow-neu-card border border-white/80">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-xl bg-serene-500/10 text-serene-700 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4-5.7V5a2 2 0 10-4 0v.3C7.7 6.2 6 8.4 6 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<h3 class="text-[13px] font-bold text-slate-800">Envoyer une alerte au patient</h3>
+<p class="text-[10.5px] text-slate-500">Destinataire : <?= htmlspecialchars($patient['name']) ?> · #<?= htmlspecialchars($patient['code']) ?></p>
+</div>
+</div>
+<span id="alert-level" class="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-serene-500/10 text-serene-700">Niveau : —</span>
+<textarea id="alert-message" rows="4" class="w-full mt-2 rounded-2xl border border-teal-900/10 bg-white text-[12.5px] text-slate-700 p-3 focus:outline-none focus:ring-2 focus:ring-serene-300 resize-none shadow-neu-inset"></textarea>
+<button id="alert-send" type="button" class="mt-2 w-full h-10 rounded-2xl bg-gradient-to-r from-serene-600 to-serene-700 text-white font-bold text-[13px] shadow-neu-btn active:scale-[0.99] transition">Envoyer l'alerte</button>
+<p id="alert-feedback" class="hidden mt-2 text-[12px] font-semibold text-center"></p>
+<p class="mt-2 text-[10.5px] text-slate-400 text-center">Le patient ne reçoit pas le résultat du modèle, seulement ce message.</p>
+</div>
+<?php endif; ?>
 </main>
 
 <!-- Bottom navigation -->
 <nav aria-label="Navigation principale" class="fixed bottom-4 left-0 right-0 max-w-sm mx-auto px-4 z-40">
 <div class="bg-white/95 backdrop-blur-xl border border-white/90 rounded-3xl py-2 px-3 shadow-neu-dock flex items-center justify-around">
-<a class="flex flex-col items-center py-1 px-3 text-slate-500 hover:text-serene-700 transition" href="<?= BASE_URL ?>"><span class="text-xl">🏡</span><span class="text-[11px] font-semibold mt-0.5">Accueil</span></a>
+<a class="flex flex-col items-center py-1 px-3 text-slate-500 hover:text-serene-700 transition" href="<?= BASE_URL ?>personnel"><span class="text-xl">🏡</span><span class="text-[11px] font-semibold mt-0.5">Accueil</span></a>
 <a class="flex flex-col items-center py-1 px-3 text-slate-500 hover:text-serene-700 transition" href="<?= BASE_URL ?>sora"><span class="text-xl">📋</span><span class="text-[11px] font-semibold mt-0.5">Patient</span></a>
 <a aria-current="page" class="flex flex-col items-center py-1.5 px-5 rounded-2xl bg-gradient-to-r from-serene-600 to-serene-700 text-white shadow-md shadow-serene-700/30" href="<?= BASE_URL ?>sora/profil"><span class="text-lg">💚</span><span class="text-[11px] font-bold">Profil</span></a>
 </div>
@@ -135,6 +158,9 @@
 
     function afficher(r) {
       const suivi = r.suivi, ctrl = r.controle;
+      // Expose le résultat de SUIVI au bloc « Envoyer une alerte » (clé des modèles de message).
+      window.__soraSuivi = suivi.resultat;
+      document.dispatchEvent(new CustomEvent('sora:result', { detail: { suivi: suivi.resultat } }));
       const couleurSuivi = suivi.classe === 1 ? '#d97706' : '#0d9488'; // seuil 0,23 : renforcé=ambre, léger=teal
       const couleurCtrl  = ctrl.classe === 1 ? '#d97706' : '#0d9488';
 
@@ -181,7 +207,7 @@
         return;
       }
       afficher(data);
-      // Enregistrement de la fiche + resultats pour le patient connecte (best effort).
+      // Enregistrement de la fiche + resultats pour le patient (best effort).
       fetch('<?= BASE_URL ?>sora/save', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fiche: fiche, resultat: data })
@@ -189,4 +215,58 @@
     })();
   })();
 </script>
+
+<?php if (isset($csrf, $alertSource, $alertTemplates) && !empty($patient)): ?>
+<!-- Bloc « Envoyer une alerte » : pré-remplissage selon le résultat de suivi -->
+<script>
+  (function () {
+    const BASE = '<?= BASE_URL ?>';
+    const CSRF = <?= json_encode($csrf) ?>;
+    const SOURCE = <?= json_encode($alertSource) ?>;
+    const TPL = <?= json_encode($alertTemplates, JSON_UNESCAPED_UNICODE) ?>;
+    const LBL = { info: 'Information', attention: 'À regarder', important: 'Important' };
+
+    const msgEl = document.getElementById('alert-message');
+    const lvlEl = document.getElementById('alert-level');
+    const btn   = document.getElementById('alert-send');
+    const fb    = document.getElementById('alert-feedback');
+    let niveau = (TPL['default'] || {}).niveau || 'info';
+    let titre  = (TPL['default'] || {}).titre || 'Message de votre médecin';
+    let filled = false;
+
+    function remplir(suivi) {
+      const t = (TPL[SOURCE] && TPL[SOURCE][suivi]) || TPL['default'];
+      niveau = t.niveau; titre = t.titre; msgEl.value = t.message;
+      lvlEl.textContent = 'Niveau : ' + (LBL[niveau] || niveau);
+      filled = true;
+    }
+    document.addEventListener('sora:result', function (e) { remplir(e.detail && e.detail.suivi); });
+    // Repli si le résultat n'arrive pas (API indisponible) : message par défaut.
+    setTimeout(function () { if (!filled) remplir(null); }, 2500);
+
+    btn.addEventListener('click', function () {
+      const message = (msgEl.value || '').trim();
+      if (!message) { return; }
+      btn.disabled = true; btn.textContent = 'Envoi…';
+      fetch(BASE + 'notifications/send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ csrf: CSRF, source: SOURCE, niveau: niveau, titre: titre, message: message })
+      }).then(function (r) { return r.json().catch(function () { return {}; }); })
+        .then(function (d) {
+          fb.classList.remove('hidden');
+          if (d && d.ok) {
+            fb.textContent = '✓ Alerte envoyée au patient.'; fb.style.color = '#0d9488';
+            btn.textContent = 'Envoyée'; msgEl.disabled = true;
+          } else {
+            fb.textContent = "Échec de l'envoi" + (d && d.error ? ' (' + d.error + ')' : '') + '.'; fb.style.color = '#e11d48';
+            btn.disabled = false; btn.textContent = "Envoyer l'alerte";
+          }
+        }, function () {
+          fb.classList.remove('hidden'); fb.textContent = 'Service indisponible.'; fb.style.color = '#e11d48';
+          btn.disabled = false; btn.textContent = "Envoyer l'alerte";
+        });
+    });
+  })();
+</script>
+<?php endif; ?>
 </body></html>

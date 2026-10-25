@@ -7,8 +7,16 @@ class DoctorsController extends Controller
 {
     public function index()
     {
-        // Liste ouverte au patient et au médecin (rôle personnel).
-        $this->requireLogin();
+        // Accueil patient : liste réservée au rôle patient.
+        $this->requireRole('patient');
+
+        // Alertes non lues du patient (badge de la cloche).
+        $unread = 0;
+        try {
+            $unread = $this->model('Notification')->unreadCountByPatient($this->currentUser()['id']);
+        } catch (Throwable $e) {
+            // Base indisponible : pas de badge, pas de blocage.
+        }
 
         // Catalogue partagé avec l'écran de profil (/profile/doctor/<slug>).
         $cat = require APP_PATH . '/Config/doctors.php';
@@ -29,6 +37,7 @@ class DoctorsController extends Controller
             'title'       => 'Find Doctors',
             'doctors'     => $doctors,
             'specialties' => ['All', 'Cardiologist', 'Neurologist', 'Pediatrician', 'Dentist', 'Orthopedic'],
+            'unread'      => $unread,
             // Écran plein format (pas de cadre sombre centré)
             'bodyClass'   => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
         ];

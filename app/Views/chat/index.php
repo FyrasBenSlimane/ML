@@ -26,7 +26,7 @@
 
     <!-- En-tête : retour · Doza · profil -->
     <section class="shrink-0 px-5 py-2 flex items-center justify-between bg-white/40 backdrop-blur-md">
-        <a href="<?= BASE_URL ?>doctors" aria-label="Retour" class="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center text-slate-700 hover:text-teal-brand shadow-sm transition active:scale-95">
+        <a href="<?= BASE_URL ?>personnel" aria-label="Retour" class="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center text-slate-700 hover:text-teal-brand shadow-sm transition active:scale-95">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
@@ -38,6 +38,9 @@
             </svg>
         </div>
     </section>
+
+    <!-- Patient en cours d'évaluation -->
+    <?php $bannerNext = 'doza'; require APP_PATH . '/Views/partials/patient_banner.php'; ?>
 
     <!-- Indicateur de progression (masqué tant que la 1re question n'est pas posée) -->
     <div class="shrink-0 px-5 pt-1 pb-1 flex justify-center">

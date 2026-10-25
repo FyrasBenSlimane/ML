@@ -59,7 +59,7 @@
         <!-- Titre section -->
         <div class="flex justify-between items-center pt-1">
             <h3 class="text-xs font-extrabold text-slate-900">Outils & médecins</h3>
-            <a href="<?= BASE_URL ?>doctors" class="text-[10px] font-bold text-teal-700">Voir tout</a>
+            <a href="<?= BASE_URL ?>patient/select?next=doza" class="text-[10px] font-bold text-teal-700">Évaluer un patient</a>
         </div>
 
         <!-- Grille : Doza · Sora · ReadmitGuard · médecins -->
@@ -121,9 +121,9 @@
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
             <span class="text-[9px] font-bold">Accueil</span>
         </a>
-        <a href="<?= BASE_URL ?>doctors" class="flex flex-col items-center text-slate-400 hover:text-teal-700 transition">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2M16 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            <span class="text-[9px] font-medium">Médecins</span>
+        <a href="<?= BASE_URL ?>patient/select?next=doza" class="flex flex-col items-center text-slate-400 hover:text-teal-700 transition">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            <span class="text-[9px] font-medium">Évaluer</span>
         </a>
         <a href="<?= BASE_URL ?>profile" class="flex flex-col items-center text-slate-400 hover:text-teal-700 transition">
             <svg class="w-5 h-5 mb-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>

@@ -12,10 +12,12 @@ class DozaController extends Controller
     /** Conversation guidée. */
     public function index()
     {
-        // Évaluation ouverte au patient et au médecin (rôle personnel).
-        $this->requireLogin();
+        // Évaluation réservée au médecin (rôle personnel), sur un patient confirmé.
+        $this->requireRole('personnel');
+        $patient = $this->requireEvalPatient('doza');
         $data = [
             'title'     => 'Doza',
+            'patient'   => $patient,
             'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
         ];
         $this->view('chat/index', $data);
@@ -28,6 +30,13 @@ class DozaController extends Controller
     public function save()
     {
         header('Content-Type: application/json; charset=utf-8');
+
+        // Évaluation réservée au médecin, sur un patient confirmé en session.
+        if (($this->currentUser()['role'] ?? null) !== 'personnel' || empty($this->evalPatient())) {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'error' => 'no_patient']);
+            return;
+        }
 
         // Lecture du corps JSON
         $payload = json_decode(file_get_contents('php://input'), true);
@@ -54,12 +63,15 @@ class DozaController extends Controller
 
         // Domaine principal (motif d'hospitalisation) → tag lisible
         $tag = $this->tagFromDiag($answers['diag_1_group'] ?? null);
-        $uid = $this->currentUser()['id'] ?? null;
+        // user_id = patient évalué (session) ; personnel_id = médecin connecté.
+        $patientId   = $this->evalPatient()['id'] ?? null;
+        $personnelId = $this->currentUser()['id'] ?? null;
 
         try {
             $model = $this->model('Consultation');
             $ok = $model->create([
-                'user_id'      => $uid,
+                'user_id'      => $patientId,
+                'personnel_id' => $personnelId,
                 'tag'          => $tag,
                 'question'     => "Dois-je ajuster ma dose d'insuline ?",
                 'answer'       => $answer,
@@ -94,17 +106,22 @@ class DozaController extends Controller
     /** Écran de résultat : /doza/resultat?p=0.70 */
     public function resultat()
     {
-        // Lecture ouverte au patient et au médecin (rôle personnel).
-        $this->requireLogin();
+        // Résultat réservé au médecin ; le patient ne voit jamais la sortie du modèle.
+        $this->requireRole('personnel');
+        $patient = $this->requireEvalPatient('doza');
         // Probabilité renvoyée par le modèle (0 à 1), bornée par sécurité.
         $p = isset($_GET['p']) ? (float) $_GET['p'] : 0.70;
         if ($p < 0) { $p = 0; }
         if ($p > 1) { $p = 1; }
 
         $data = [
-            'title'     => 'Doza',
-            'p'         => $p,
-            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
+            'title'          => 'Doza',
+            'p'              => $p,
+            'patient'        => $patient,
+            'csrf'           => $this->csrfToken(),
+            'alertSource'    => 'doza',
+            'alertTemplates' => require APP_PATH . '/Config/notifications.php',
+            'bodyClass'      => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
         ];
         $this->view('voice/index', $data);
     }

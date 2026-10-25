@@ -14,13 +14,13 @@ class ProfileController extends Controller
         $role = $user['role'] ?? 'patient';
         $isMedecin = ($role === 'personnel');
 
-        $doza = [];
-        $sora = [];
-        // Compteurs : patient = ses sessions Doza + ses fiches Sora ;
+        // Compteurs : patient = ses sessions Doza + ses fiches Sora (nombre, sans résultat) ;
         //             médecin = patients évalués (distincts) + total des évaluations.
+        // IMPORTANT : le patient ne voit JAMAIS les résultats des modèles — aucun historique ici.
         $stats = $isMedecin
             ? [['value' => 0, 'label' => 'Patients évalués'], ['value' => 0, 'label' => 'Évaluations']]
             : [['value' => 0, 'label' => 'Sessions Doza'],    ['value' => 0, 'label' => 'Fiches Sora']];
+        $unread = 0;
 
         try {
             $consultations = $this->model('Consultation');
@@ -35,30 +35,32 @@ class ProfileController extends Controller
                     ['value' => $consultations->countAll() + $fiches->countAll(), 'label' => 'Évaluations'],
                 ];
             } else {
-                $doza  = $consultations->recentByUser($user['id'], 30);
-                $sora  = $fiches->recentByUser($user['id'], 30);
                 $stats = [
                     ['value' => $consultations->countByUser($user['id']), 'label' => 'Sessions Doza'],
                     ['value' => $fiches->countByUser($user['id']),        'label' => 'Fiches Sora'],
                 ];
+                $unread = $this->model('Notification')->unreadCountByPatient($user['id']);
             }
         } catch (Throwable $e) {
-            // Base indisponible : compteurs à 0 et historiques vides, pas de blocage.
+            // Base indisponible : compteurs à 0, pas de blocage.
         }
 
         $this->view('profile/index', [
             'title'       => 'Mon profil',
             'user'        => $user,
             'isMedecin'   => $isMedecin,
-            'dozaId'      => 'DZ-' . str_pad((string) ($user['id'] ?? 0), 5, '0', STR_PAD_LEFT),
+            // ID Patient #PT-xxxxx (format centralisé) ; côté médecin : identifiant interne.
+            'idLabel'     => $isMedecin ? 'Identifiant' : 'ID Patient',
+            'idValue'     => $isMedecin
+                                ? 'MED-' . str_pad((string) ($user['id'] ?? 0), 5, '0', STR_PAD_LEFT)
+                                : User::patientCode($user['id'] ?? 0),
             'initials'    => $this->initials($user),
             'roleBadge'   => $isMedecin ? 'Médecin' : 'Patient Doza',
             'stats'       => $stats,
-            // Dossier médical : médecin → fiche Doza ; patient → son historique (ancre sur cette page).
-            'dossierLink' => $isMedecin ? 'profile/doza' : '#historique',
+            'unread'      => $unread,
+            // Dossier : médecin → fiche Doza ; patient → ses alertes (jamais de résultats bruts).
+            'dossierLink' => $isMedecin ? 'profile/doza' : 'notifications',
             'backLink'    => $isMedecin ? 'personnel' : 'doctors',
-            'doza'        => $doza,
-            'sora'        => $sora,
             'bodyClass'   => 'bg-slate-900 min-h-screen flex items-center justify-center p-0 sm:p-6 antialiased font-sans text-slate-800 selection:bg-teal-100 select-none',
         ]);
     }
@@ -75,8 +77,8 @@ class ProfileController extends Controller
     /** Fiche « Doza » (Doctor Profile & Overview) : bio, stats et historique questions / réponses du patient. */
     public function doza()
     {
-        // Lecture ouverte au patient et au médecin (rôle personnel).
-        $this->requireLogin();
+        // Fiche Doza réservée au médecin (rôle personnel).
+        $this->requireRole('personnel');
         $user = $this->currentUser();
 
         $doctor = [
@@ -159,8 +161,8 @@ class ProfileController extends Controller
     /** Fiche « Sora » (Doctor Profile & Overview) : même interface que Doza, côté patient. */
     public function sora()
     {
-        // Lecture ouverte au patient et au médecin (rôle personnel).
-        $this->requireLogin();
+        // Fiche Sora réservée au médecin (rôle personnel).
+        $this->requireRole('personnel');
         $user = $this->currentUser();
 
         $doctor = [

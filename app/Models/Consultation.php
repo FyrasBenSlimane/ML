@@ -23,6 +23,7 @@ class Consultation extends Model
         $sql = "CREATE TABLE IF NOT EXISTS consultations (
                     id           INT AUTO_INCREMENT PRIMARY KEY,
                     user_id      INT          NULL,
+                    personnel_id INT          NULL,
                     tag          VARCHAR(50)  NOT NULL,
                     question     VARCHAR(255) NOT NULL,
                     answer       TEXT         NOT NULL,
@@ -31,10 +32,13 @@ class Consultation extends Model
                     answers_json TEXT         NULL,
                     created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        // Pas de DDL à chaque requête : vérifié une fois via information_schema.
-        // Si la table existe déjà mais sans user_id (ancienne version), on l'ajoute (NULL pour l'historique).
+        // Pas de DDL à chaque requête : vérifié une fois via un SELECT léger.
+        // Colonnes ajoutées si une ancienne table existe déjà :
+        //   - user_id      : patient évalué
+        //   - personnel_id : médecin qui a réalisé l'évaluation
         $this->ensureSchema('consultations', $sql, [
-            'user_id' => "ALTER TABLE consultations ADD COLUMN user_id INT NULL AFTER id",
+            'user_id'      => "ALTER TABLE consultations ADD COLUMN user_id INT NULL AFTER id",
+            'personnel_id' => "ALTER TABLE consultations ADD COLUMN personnel_id INT NULL AFTER user_id",
         ]);
     }
 
@@ -42,10 +46,11 @@ class Consultation extends Model
     public function create(array $d)
     {
         $this->db->query(
-            "INSERT INTO consultations (user_id, tag, question, answer, result, probability, answers_json)
-             VALUES (:user_id, :tag, :question, :answer, :result, :probability, :answers_json)"
+            "INSERT INTO consultations (user_id, personnel_id, tag, question, answer, result, probability, answers_json)
+             VALUES (:user_id, :personnel_id, :tag, :question, :answer, :result, :probability, :answers_json)"
         )
         ->bind(':user_id',      isset($d['user_id']) ? (int) $d['user_id'] : null)
+        ->bind(':personnel_id', isset($d['personnel_id']) ? (int) $d['personnel_id'] : null)
         ->bind(':tag',          $d['tag'])
         ->bind(':question',     $d['question'])
         ->bind(':answer',       $d['answer'])
@@ -100,5 +105,20 @@ class Consultation extends Model
             $ids[] = (int) $row->user_id;
         }
         return $ids;
+    }
+
+    /**
+     * Dernière session Doza réalisée par ce médecin pour ce patient.
+     * Sert de source_id vérifié côté serveur pour l'alerte (jamais fourni par le client).
+     * Renvoie l'id (int) ou 0.
+     */
+    public function latestIdForPatientBy($patientId, $personnelId)
+    {
+        $row = $this->db->query(
+            "SELECT id FROM consultations
+             WHERE user_id = :p AND personnel_id = :m
+             ORDER BY id DESC LIMIT 1"
+        )->bind(':p', (int) $patientId)->bind(':m', (int) $personnelId)->single();
+        return $row ? (int) $row->id : 0;
     }
 }

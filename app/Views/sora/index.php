@@ -62,7 +62,7 @@
 <!-- Header -->
 <header class="relative z-10 w-full pt-1 pb-3">
 <div class="flex items-center justify-between mt-1 px-1">
-<a href="<?= BASE_URL ?>doctors" aria-label="Retour" class="w-10 h-10 rounded-2xl bg-white/80 border border-white/90 shadow-sm flex items-center justify-center text-teal-800 hover:bg-white active:scale-95 transition-all">
+<a href="<?= BASE_URL ?>personnel" aria-label="Retour" class="w-10 h-10 rounded-2xl bg-white/80 border border-white/90 shadow-sm flex items-center justify-center text-teal-800 hover:bg-white active:scale-95 transition-all">
 <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.75 19.5L8.25 12l7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </a>
 <div class="text-center">
@@ -87,6 +87,9 @@
 </div>
 </section>
 </header>
+
+<!-- Patient en cours d'évaluation -->
+<?php $bannerNext = 'sora'; require APP_PATH . '/Views/partials/patient_banner.php'; ?>
 
 <!-- Form -->
 <main class="relative z-10 mt-1 flex-1">

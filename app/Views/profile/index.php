@@ -17,7 +17,7 @@ $fullName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''))
         </a>
         <div class="text-center">
             <h1 class="text-base font-extrabold text-slate-900 leading-tight">Mon profil</h1>
-            <p class="text-[10px] font-bold text-teal-700 tracking-tight">Doza ID : #<?= htmlspecialchars($dozaId) ?></p>
+            <p class="text-[10px] font-bold text-teal-700 tracking-tight"><?= htmlspecialchars($idLabel) ?> : #<?= htmlspecialchars($idValue) ?></p>
         </div>
         <a href="<?= BASE_URL ?>auth/logout" aria-label="Déconnexion" class="w-10 h-10 rounded-2xl bg-white/80 border border-white flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
@@ -75,9 +75,12 @@ $fullName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''))
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                     </div>
                     <div>
-                        <h3 class="text-xs font-bold text-slate-800">Dossier médical</h3>
+                        <h3 class="text-xs font-bold text-slate-800"><?= $isMedecin ? 'Dossier médical' : 'Messages de mon médecin' ?></h3>
                         <p class="text-[10px] text-slate-500 font-medium">
-                            <?= $isMedecin ? "Fiche Doza & suivi clinique" : "Mes sessions Doza & fiches Sora" ?>
+                            <?= $isMedecin ? "Fiche Doza & suivi clinique" : "Mes alertes" ?>
+                            <?php if (!$isMedecin && !empty($unread)): ?>
+                                <span class="ml-1 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold align-middle"><?= (int) $unread > 9 ? '9+' : (int) $unread ?></span>
+                            <?php endif; ?>
                         </p>
                     </div>
                 </div>
@@ -121,47 +124,8 @@ $fullName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''))
         </div>
 
         <?php if (!$isMedecin): ?>
-        <!-- Historiques du patient (cible du bouton « Voir » du dossier médical) -->
-        <div id="historique" class="pt-2 space-y-4 scroll-mt-4">
-            <section>
-                <h2 class="text-sm font-bold text-slate-700 mb-2 px-1">Mes sessions Doza</h2>
-                <?php if (empty($doza)): ?>
-                    <p class="text-[12.5px] text-slate-400 px-1">Aucune session pour l'instant.</p>
-                <?php else: ?>
-                    <div class="space-y-2">
-                        <?php foreach ($doza as $c): ?>
-                        <div class="rounded-2xl p-3.5 bg-white/90 shadow-soft-card flex items-center justify-between">
-                            <div class="min-w-0">
-                                <p class="text-[13px] font-semibold text-slate-800 truncate"><?= htmlspecialchars($c->result) ?></p>
-                                <p class="text-[11px] text-slate-400"><?= htmlspecialchars($this->formatDate($c->created_at)) ?> · <?= htmlspecialchars($c->tag) ?></p>
-                            </div>
-                            <span class="text-[12px] font-bold text-teal-700 shrink-0 ml-2"><?= (int) $c->probability ?> %</span>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
-
-            <section>
-                <h2 class="text-sm font-bold text-slate-700 mb-2 px-1">Mes fiches Sora</h2>
-                <?php if (empty($sora)): ?>
-                    <p class="text-[12.5px] text-slate-400 px-1">Aucune fiche pour l'instant.</p>
-                <?php else: ?>
-                    <div class="space-y-2">
-                        <?php foreach ($sora as $s): ?>
-                        <div class="rounded-2xl p-3.5 bg-white/90 shadow-soft-card">
-                            <p class="text-[13px] font-semibold text-slate-800"><?= htmlspecialchars($s->profil) ?></p>
-                            <p class="text-[11px] text-slate-400 mt-0.5">
-                                <?= htmlspecialchars($this->formatDate($s->created_at)) ?> ·
-                                <?= htmlspecialchars($s->resultat_suivi) ?> ·
-                                <?= htmlspecialchars($s->resultat_controle) ?>
-                            </p>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
-        </div>
+        <!-- Rappel : le patient ne consulte que les messages de son médecin (jamais les résultats bruts). -->
+        <a href="<?= BASE_URL ?>notifications" class="block text-center text-[11px] font-semibold text-teal-700 py-2">Voir toutes mes alertes →</a>
         <?php endif; ?>
     </main>
 
@@ -171,9 +135,9 @@ $fullName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''))
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
             <span class="text-[9px] font-medium">Accueil</span>
         </a>
-        <a href="<?= BASE_URL ?>doctors" class="flex flex-col items-center text-slate-400 hover:text-teal-700 transition">
+        <a href="<?= BASE_URL ?><?= $isMedecin ? 'patient/select?next=doza' : 'doctors' ?>" class="flex flex-col items-center text-slate-400 hover:text-teal-700 transition">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2M16 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            <span class="text-[9px] font-medium">Médecins</span>
+            <span class="text-[9px] font-medium"><?= $isMedecin ? 'Évaluer' : 'Médecins' ?></span>
         </a>
         <a href="<?= BASE_URL ?>profile" class="flex flex-col items-center text-teal-700">
             <svg class="w-5 h-5 mb-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
