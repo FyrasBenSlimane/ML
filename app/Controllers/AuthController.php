@@ -70,10 +70,10 @@ class AuthController extends Controller
         }
 
         $errors = [];
-        $old = ['first_name' => '', 'last_name' => '', 'email' => '', 'phone' => '', 'role' => 'patient'];
+        $old = ['fullname' => '', 'email' => '', 'phone' => '', 'role' => 'patient'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            foreach (['first_name', 'last_name', 'email', 'phone', 'role'] as $k) {
+            foreach (['fullname', 'email', 'phone', 'role'] as $k) {
                 $old[$k] = trim($_POST[$k] ?? '');
             }
             $password = $_POST['password'] ?? '';
@@ -83,11 +83,15 @@ class AuthController extends Controller
                 $old['role'] = 'patient';
             }
 
+            // « Nom complet » (champ unique de la maquette) → prénom + nom.
+            $parts     = preg_split('/\s+/', $old['fullname'], 2);
+            $firstName = $parts[0] ?? '';
+            $lastName  = isset($parts[1]) ? trim($parts[1]) : '';
+
             if (!$this->verifyCsrf($_POST['csrf'] ?? '')) {
                 $errors['global'] = 'Session expirée, veuillez réessayer.';
             } else {
-                if ($old['first_name'] === '') $errors['first_name'] = 'Le prénom est obligatoire.';
-                if ($old['last_name'] === '')  $errors['last_name']  = 'Le nom est obligatoire.';
+                if ($old['fullname'] === '') $errors['fullname'] = 'Le nom complet est obligatoire.';
                 if (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
                     $errors['email'] = "L'adresse e-mail n'est pas valide.";
                 }
@@ -108,8 +112,8 @@ class AuthController extends Controller
                             $errors['email'] = 'Cette adresse e-mail est déjà utilisée.';
                         } else {
                             $id = $userModel->create([
-                                'first_name' => $old['first_name'],
-                                'last_name'  => $old['last_name'],
+                                'first_name' => $firstName,
+                                'last_name'  => $lastName,
                                 'email'      => $old['email'],
                                 'phone'      => $old['phone'],
                                 'password'   => $password,
