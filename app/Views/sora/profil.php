@@ -22,16 +22,16 @@
     .bg-medical-pattern {
       background-image:
         radial-gradient(circle at 18% 12%, rgba(20,184,166,0.16) 0%, transparent 45%),
-        radial-gradient(circle at 85% 20%, rgba(254,215,170,0.26) 0%, transparent 40%),
-        radial-gradient(circle at 80% 88%, rgba(253,186,116,0.2) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(20,184,166,0.16) 0%, transparent 40%),
+        radial-gradient(circle at 80% 88%, rgba(13,148,136,0.16) 0%, transparent 45%),
         radial-gradient(#14b8a6 0.75px, transparent 0.75px);
       background-size: 100% 100%, 100% 100%, 100% 100%, 26px 26px;
     }
     .gauge-arc { transition: stroke-dasharray .9s cubic-bezier(.22,1,.36,1); }
   </style>
 </head>
-<body class="bg-gradient-to-b from-[#e6fbf7] via-[#f2faf7] to-[#fbeee6] text-slate-800 antialiased font-sans min-h-screen flex justify-center selection:bg-serene-200">
-<div class="relative w-full max-w-md min-h-screen bg-medical-pattern overflow-x-hidden flex flex-col pb-40 pt-3 px-4 sm:px-5">
+<body class="bg-gradient-to-b from-[#e6fbf7] via-[#eef9f6] to-[#ddf3ee] text-slate-800 antialiased font-sans min-h-screen flex justify-center selection:bg-serene-200">
+<div class="relative w-full max-w-[400px] min-h-screen bg-medical-pattern overflow-x-hidden flex flex-col pb-40 pt-3 px-4 sm:px-5">
 
 <!-- Header -->
 <header class="relative z-10 w-full pt-1 pb-2">
@@ -136,7 +136,7 @@
 </main>
 
 <!-- Bottom navigation -->
-<nav aria-label="Navigation principale" class="fixed bottom-4 left-0 right-0 max-w-sm mx-auto px-4 z-40">
+<nav aria-label="Navigation principale" class="fixed bottom-4 left-0 right-0 max-w-[400px] mx-auto px-4 z-40">
 <div class="bg-white/95 backdrop-blur-xl border border-white/90 rounded-3xl py-2 px-3 shadow-neu-dock flex items-center justify-around">
 <a class="flex flex-col items-center py-1 px-3 text-slate-500 hover:text-serene-700 transition" href="<?= BASE_URL ?>personnel"><span class="text-xl">🏡</span><span class="text-[11px] font-semibold mt-0.5">Accueil</span></a>
 <a class="flex flex-col items-center py-1 px-3 text-slate-500 hover:text-serene-700 transition" href="<?= BASE_URL ?>sora"><span class="text-xl">📋</span><span class="text-[11px] font-semibold mt-0.5">Patient</span></a>
