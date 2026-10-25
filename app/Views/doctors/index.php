@@ -170,11 +170,11 @@
             </svg>
             <span class="text-[10px] font-medium tracking-tight">Records</span>
         </button>
-        <button class="flex flex-col items-center justify-center text-slate-400 hover:text-teal-600 transition group flex-1">
+        <a href="<?= BASE_URL ?>profile" aria-label="Profil" class="flex flex-col items-center justify-center text-slate-400 hover:text-teal-600 transition group flex-1">
             <svg class="w-5 h-5 mb-0.5 group-hover:scale-110 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <span class="text-[10px] font-medium tracking-tight">Profile</span>
-        </button>
+            <span class="text-[10px] font-medium tracking-tight">Profil</span>
+        </a>
     </nav>
 </div>
