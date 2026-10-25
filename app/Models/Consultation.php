@@ -73,4 +73,32 @@ class Consultation extends Model
             "SELECT * FROM consultations WHERE user_id = :uid ORDER BY created_at DESC, id DESC LIMIT $limit"
         )->bind(':uid', (int) $userId)->all();
     }
+
+    /** Nombre de sessions Doza d'un patient (compteur du profil). */
+    public function countByUser($userId)
+    {
+        $row = $this->db->query(
+            "SELECT COUNT(*) AS n FROM consultations WHERE user_id = :uid"
+        )->bind(':uid', (int) $userId)->single();
+        return $row ? (int) $row->n : 0;
+    }
+
+    /** Nombre total de sessions Doza enregistrées (compteur médecin). */
+    public function countAll()
+    {
+        $row = $this->db->query("SELECT COUNT(*) AS n FROM consultations")->single();
+        return $row ? (int) $row->n : 0;
+    }
+
+    /** Identifiants des patients ayant au moins une session Doza (compteur médecin). */
+    public function distinctUserIds()
+    {
+        $ids = [];
+        foreach ($this->db->query(
+            "SELECT DISTINCT user_id FROM consultations WHERE user_id IS NOT NULL"
+        )->all() as $row) {
+            $ids[] = (int) $row->user_id;
+        }
+        return $ids;
+    }
 }

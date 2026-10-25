@@ -12,7 +12,8 @@ class DozaController extends Controller
     /** Conversation guidée. */
     public function index()
     {
-        $this->requireRole('patient');
+        // Évaluation ouverte au patient et au médecin (rôle personnel).
+        $this->requireLogin();
         $data = [
             'title'     => 'Doza',
             'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
@@ -93,7 +94,8 @@ class DozaController extends Controller
     /** Écran de résultat : /doza/resultat?p=0.70 */
     public function resultat()
     {
-        $this->requireRole('patient');
+        // Lecture ouverte au patient et au médecin (rôle personnel).
+        $this->requireLogin();
         // Probabilité renvoyée par le modèle (0 à 1), bornée par sécurité.
         $p = isset($_GET['p']) ? (float) $_GET['p'] : 0.70;
         if ($p < 0) { $p = 0; }

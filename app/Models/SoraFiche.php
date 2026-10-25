@@ -77,4 +77,32 @@ class SoraFiche extends Model
             "SELECT * FROM sora_fiches WHERE user_id = :uid ORDER BY created_at DESC, id DESC LIMIT $limit"
         )->bind(':uid', (int) $userId)->all();
     }
+
+    /** Nombre de fiches Sora d'un patient (compteur du profil). */
+    public function countByUser($userId)
+    {
+        $row = $this->db->query(
+            "SELECT COUNT(*) AS n FROM sora_fiches WHERE user_id = :uid"
+        )->bind(':uid', (int) $userId)->single();
+        return $row ? (int) $row->n : 0;
+    }
+
+    /** Nombre total de fiches Sora enregistrées (compteur médecin). */
+    public function countAll()
+    {
+        $row = $this->db->query("SELECT COUNT(*) AS n FROM sora_fiches")->single();
+        return $row ? (int) $row->n : 0;
+    }
+
+    /** Identifiants des patients ayant au moins une fiche Sora (compteur médecin). */
+    public function distinctUserIds()
+    {
+        $ids = [];
+        foreach ($this->db->query(
+            "SELECT DISTINCT user_id FROM sora_fiches WHERE user_id IS NOT NULL"
+        )->all() as $row) {
+            $ids[] = (int) $row->user_id;
+        }
+        return $ids;
+    }
 }

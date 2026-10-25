@@ -7,7 +7,8 @@ class DoctorsController extends Controller
 {
     public function index()
     {
-        $this->requireRole('patient');
+        // Liste ouverte au patient et au médecin (rôle personnel).
+        $this->requireLogin();
 
         // Catalogue partagé avec l'écran de profil (/profile/doctor/<slug>).
         $cat = require APP_PATH . '/Config/doctors.php';

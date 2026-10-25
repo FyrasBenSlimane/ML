@@ -10,14 +10,16 @@ class SoraController extends Controller
 {
     public function index()
     {
-        $this->requireRole('patient');
+        // Ouvert au patient et au médecin (rôle personnel).
+        $this->requireLogin();
         $this->view('sora/index', ['title' => 'Sora · Fiche patient'], 'blank');
     }
 
     /** Écran "Profil du patient" (résultat de la fiche). */
     public function profil()
     {
-        $this->requireRole('patient');
+        // Ouvert au patient et au médecin (rôle personnel).
+        $this->requireLogin();
         $this->view('sora/profil', ['title' => 'Sora · Profil du patient'], 'blank');
     }
 

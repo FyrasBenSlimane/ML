@@ -18,10 +18,20 @@ class PersonnelController extends Controller
         $token = $this->buildReadmitToken($user);
         $url = rtrim(READMITGUARD_URL, '/') . '/?token=' . urlencode($token);
 
+        // Catalogue des médecins — même source que DoctorsController ; chaque carte
+        // ouvre la fiche de profil existante (/profile/doctor/<slug>).
+        $cat = require APP_PATH . '/Config/doctors.php';
+        $doctors = [
+            $cat['ryan']  + ['link' => 'profile/doctor/ryan'],
+            $cat['sarah'] + ['link' => 'profile/doctor/sarah'],
+            $cat['lucas'] + ['link' => 'profile/doctor/lucas'],
+        ];
+
         $this->view('personnel/index', [
-            'title'          => 'Espace personnel',
+            'title'          => 'Accueil médecin',
             'user'           => $user,
             'readmitUrl'     => $url,
+            'doctors'        => $doctors,
             'bodyClass'      => 'bg-slate-900 min-h-screen flex items-center justify-center p-0 sm:p-6 antialiased font-sans text-slate-800 selection:bg-teal-100 select-none',
         ]);
     }

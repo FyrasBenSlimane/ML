@@ -8,31 +8,75 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $this->requireRole('patient');
+        // Profil accessible au patient ET au médecin (rôle personnel).
+        $this->requireLogin();
         $user = $this->currentUser();
+        $role = $user['role'] ?? 'patient';
+        $isMedecin = ($role === 'personnel');
 
         $doza = [];
         $sora = [];
+        // Compteurs : patient = ses sessions Doza + ses fiches Sora ;
+        //             médecin = patients évalués (distincts) + total des évaluations.
+        $stats = $isMedecin
+            ? [['value' => 0, 'label' => 'Patients évalués'], ['value' => 0, 'label' => 'Évaluations']]
+            : [['value' => 0, 'label' => 'Sessions Doza'],    ['value' => 0, 'label' => 'Fiches Sora']];
+
         try {
-            $doza = $this->model('Consultation')->recentByUser($user['id'], 30);
-            $sora = $this->model('SoraFiche')->recentByUser($user['id'], 30);
+            $consultations = $this->model('Consultation');
+            $fiches        = $this->model('SoraFiche');
+            if ($isMedecin) {
+                $patients = array_unique(array_merge(
+                    $consultations->distinctUserIds(),
+                    $fiches->distinctUserIds()
+                ));
+                $stats = [
+                    ['value' => count($patients),                            'label' => 'Patients évalués'],
+                    ['value' => $consultations->countAll() + $fiches->countAll(), 'label' => 'Évaluations'],
+                ];
+            } else {
+                $doza  = $consultations->recentByUser($user['id'], 30);
+                $sora  = $fiches->recentByUser($user['id'], 30);
+                $stats = [
+                    ['value' => $consultations->countByUser($user['id']), 'label' => 'Sessions Doza'],
+                    ['value' => $fiches->countByUser($user['id']),        'label' => 'Fiches Sora'],
+                ];
+            }
         } catch (Throwable $e) {
-            // Base indisponible : historiques vides, pas de blocage.
+            // Base indisponible : compteurs à 0 et historiques vides, pas de blocage.
         }
 
         $this->view('profile/index', [
-            'title'     => 'Mon profil',
-            'user'      => $user,
-            'doza'      => $doza,
-            'sora'      => $sora,
-            'bodyClass' => 'font-sans text-slate-800 antialiased selection:bg-teal-100 flex justify-center items-start',
+            'title'       => 'Mon profil',
+            'user'        => $user,
+            'isMedecin'   => $isMedecin,
+            'dozaId'      => 'DZ-' . str_pad((string) ($user['id'] ?? 0), 5, '0', STR_PAD_LEFT),
+            'initials'    => $this->initials($user),
+            'roleBadge'   => $isMedecin ? 'Médecin' : 'Patient Doza',
+            'stats'       => $stats,
+            // Dossier médical : médecin → fiche Doza ; patient → son historique (ancre sur cette page).
+            'dossierLink' => $isMedecin ? 'profile/doza' : '#historique',
+            'backLink'    => $isMedecin ? 'personnel' : 'doctors',
+            'doza'        => $doza,
+            'sora'        => $sora,
+            'bodyClass'   => 'bg-slate-900 min-h-screen flex items-center justify-center p-0 sm:p-6 antialiased font-sans text-slate-800 selection:bg-teal-100 select-none',
         ]);
+    }
+
+    /** Initiales (majuscules) à partir du prénom et du nom, pour l'avatar sans photo. */
+    private function initials(array $user)
+    {
+        $fn = trim((string) ($user['first_name'] ?? ''));
+        $ln = trim((string) ($user['last_name'] ?? ''));
+        $i  = ($fn !== '' ? mb_substr($fn, 0, 1) : '') . ($ln !== '' ? mb_substr($ln, 0, 1) : '');
+        return mb_strtoupper($i !== '' ? $i : 'U');
     }
 
     /** Fiche « Doza » (Doctor Profile & Overview) : bio, stats et historique questions / réponses du patient. */
     public function doza()
     {
-        $this->requireRole('patient');
+        // Lecture ouverte au patient et au médecin (rôle personnel).
+        $this->requireLogin();
         $user = $this->currentUser();
 
         $doctor = [
@@ -78,7 +122,8 @@ class ProfileController extends Controller
     /** Fiche d'un autre médecin de la liste — même interface que la fiche Doza. */
     public function doctor($slug = '')
     {
-        $this->requireRole('patient');
+        // Lecture ouverte au patient et au médecin (rôle personnel).
+        $this->requireLogin();
 
         $cat  = require APP_PATH . '/Config/doctors.php';
         $slug = preg_replace('/[^a-z0-9_-]/', '', strtolower((string) $slug));
@@ -114,7 +159,8 @@ class ProfileController extends Controller
     /** Fiche « Sora » (Doctor Profile & Overview) : même interface que Doza, côté patient. */
     public function sora()
     {
-        $this->requireRole('patient');
+        // Lecture ouverte au patient et au médecin (rôle personnel).
+        $this->requireLogin();
         $user = $this->currentUser();
 
         $doctor = [
