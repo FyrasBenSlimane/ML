@@ -20,7 +20,7 @@
     <!-- En-tête -->
     <div class="flex items-center gap-2 z-10">
         <span class="w-2.5 h-2.5 rounded-full bg-teal-600 shadow-sm shadow-teal-500/50 animate-pulse"></span>
-        <span class="text-xs font-extrabold tracking-widest text-slate-800 dark:text-slate-100 uppercase">Doza Santé</span>
+        <span class="text-xs font-extrabold tracking-widest text-slate-800 dark:text-slate-100 uppercase">MAAK</span>
     </div>
 
     <!-- Contenu -->
@@ -41,7 +41,7 @@
             Retour à la connexion
         </a>
         <div class="text-center mt-5">
-            <p class="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase">Serene Pulse</p>
+            <p class="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase">MAAK</p>
             <p class="text-[9px] font-semibold tracking-wider text-slate-400 mt-0.5">Votre santé • sécurisée • notre priorité</p>
             <div class="w-32 h-1 bg-slate-300/80 dark:bg-slate-600 rounded-full mx-auto mt-3"></div>
         </div>

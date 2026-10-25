@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($title) ? htmlspecialchars($title) . ' · MedCare' : 'MedCare' ?></title>
+    <title><?= isset($title) ? htmlspecialchars($title) . ' · MAAK' : 'MAAK' ?></title>
+    <link rel="icon" type="image/jpeg" href="<?= ASSETS_URL ?>/img/doctor5.jpg">
+    <link rel="apple-touch-icon" href="<?= ASSETS_URL ?>/img/doctor5.jpg">
 
     <!-- Tailwind CSS v3 (CDN) + plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -13,7 +15,7 @@
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Configuration Tailwind (thème MedCare — commun à tous les écrans) -->
+    <!-- Configuration Tailwind (thème MAAK — commun à tous les écrans) -->
     <script>
       tailwind.config = {
         theme: {

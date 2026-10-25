@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title><?= isset($title) ? htmlspecialchars($title) . ' · MedCare' : 'MedCare' ?></title>
+    <title><?= isset($title) ? htmlspecialchars($title) . ' · MAAK' : 'MAAK' ?></title>
+    <link rel="icon" type="image/jpeg" href="<?= ASSETS_URL ?>/img/doctor5.jpg">
+    <link rel="apple-touch-icon" href="<?= ASSETS_URL ?>/img/doctor5.jpg">
 
     <!-- Polices : Plus Jakarta Sans + Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">

@@ -1,6 +1,6 @@
 <?php
 /**
- * Inscription — design « Rejoignez-nous » (néomorphique Doza Santé).
+ * Inscription — design « Rejoignez-nous » (néomorphique MAAK).
  * Les champs et la logique restent ceux du backend : rôle Patient/Personnel,
  * nom complet (scindé en prénom/nom), e-mail, téléphone, code établissement
  * (personnel), mot de passe + confirmation, CSRF.
@@ -39,7 +39,7 @@
                 </a>
                 <div class="flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-[#0a8a7c] shadow-[0_0_8px_rgba(10,138,124,0.6)]"></span>
-                    <span class="text-xs font-black tracking-widest text-[#0e3342] uppercase">Doza Santé</span>
+                    <span class="text-xs font-black tracking-widest text-[#0e3342] uppercase">MAAK</span>
                 </div>
             </div>
             <button type="button" aria-label="Mode sombre" class="neu-circle-btn w-9 h-9 rounded-full flex items-center justify-center text-[#123e4c]">
@@ -49,12 +49,8 @@
 
         <!-- Hero : goutte + titre -->
         <section class="flex flex-col items-center mt-1 mb-3">
-            <div class="neu-raised-card w-[72px] h-[72px] rounded-[22px] flex items-center justify-center mb-2.5 relative">
-                <div class="absolute inset-0 rounded-[22px] bg-gradient-to-tr from-teal-500/10 to-transparent pointer-events-none"></div>
-                <svg class="w-9 h-9 drop-shadow-sm" fill="none" viewBox="0 0 36 36">
-                    <path d="M12.5 24.5C9.5 22 8 18.5 10 14.5C11.5 11.5 16.5 8 18 6C19 9.5 24 14.5 23.5 19C23 23.5 19.5 27 15 26.5C13.8 26.3 12.8 25.5 12.5 24.5Z" fill="#1d61d6"></path>
-                    <path d="M18 10C19.5 13 25.5 17 25 21C24.5 24.5 21.5 27 18 27C17 27 16.2 26.7 15.5 26.2C18.5 24.8 20.5 21.5 20 18C19.5 14.5 18 12.5 18 10Z" fill="#38a9f5"></path>
-                </svg>
+            <div class="neu-raised-card w-[72px] h-[72px] rounded-[22px] overflow-hidden mb-2.5 relative">
+                <img src="<?= ASSETS_URL ?>/img/doctor5.jpg" alt="MAAK" class="w-full h-full object-cover object-top">
             </div>
             <h1 class="text-2xl font-extrabold text-[#0d2a36] tracking-tight">Rejoignez-nous</h1>
             <p class="text-xs text-[#708d96] font-medium mt-0.5 tracking-wide">Créez votre espace santé Doza &amp; Sora</p>
@@ -204,7 +200,7 @@
                 Vous avez déjà un compte ?
                 <a class="font-bold text-[#0a8a7c] hover:underline" href="<?= BASE_URL ?>auth/login">Se connecter</a>
             </p>
-            <div class="text-[8px] tracking-[0.2em] font-bold text-[#98b3ba] uppercase mb-1">Serene Pulse</div>
+            <div class="text-[8px] tracking-[0.2em] font-bold text-[#98b3ba] uppercase mb-1">MAAK</div>
             <div class="text-[8px] font-bold text-[#86a3aa] tracking-wider uppercase mb-1.5">Votre santé • Sécurisée • Notre priorité</div>
             <div class="w-32 h-1 bg-[#a3bebe]/60 rounded-full mx-auto"></div>
         </footer>

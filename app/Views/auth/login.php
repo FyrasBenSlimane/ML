@@ -2,7 +2,7 @@
 <script>(function(){try{var t=localStorage.getItem('doza-theme');if(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches){t='dark';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();</script>
 
 <style>
-  /* Doza Santé — soft neumorphism (clair + sombre). */
+  /* MAAK — soft neumorphism (clair + sombre). */
   .login-root{ font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
     background:linear-gradient(to bottom,#EBF9F6,#F1FAF8,#F7FCFB); }
   .dark .login-root{ background:linear-gradient(to bottom,#0b141b,#0f1b23,#0b141b); }
@@ -32,7 +32,7 @@
     <div class="flex items-center justify-between z-10">
         <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-teal-600 shadow-sm shadow-teal-500/50 animate-pulse"></span>
-            <span class="text-xs font-extrabold tracking-widest text-slate-800 dark:text-slate-100 uppercase">Doza Santé</span>
+            <span class="text-xs font-extrabold tracking-widest text-slate-800 dark:text-slate-100 uppercase">MAAK</span>
         </div>
         <button id="themeToggle" type="button" aria-label="Basculer le thème clair/sombre" aria-pressed="false"
                 class="w-10 h-10 rounded-full neu-flat flex items-center justify-center text-slate-700 dark:text-slate-200 transition active:scale-95">
@@ -43,10 +43,8 @@
 
     <!-- 2. Médaillon + titres -->
     <div class="flex flex-col items-center z-10">
-        <div class="w-24 h-24 rounded-3xl neu-flat flex items-center justify-center mb-5">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-400/20 to-teal-400/20 flex items-center justify-center">
-                <svg class="w-8 h-8 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-            </div>
+        <div class="w-24 h-24 rounded-3xl neu-flat flex items-center justify-center mb-5 p-2">
+            <img src="<?= ASSETS_URL ?>/img/doctor5.jpg" alt="MAAK" class="w-full h-full object-cover object-top rounded-2xl">
         </div>
         <h1 class="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">Bon retour</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Connectez-vous à votre espace santé Doza</p>
@@ -147,7 +145,7 @@
 
     <!-- 5. Pied de page -->
     <div class="text-center z-10">
-        <p class="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase">Serene Pulse</p>
+        <p class="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase">MAAK</p>
         <p class="text-[9px] font-semibold tracking-wider text-slate-400 mt-0.5">Votre santé • sécurisée • notre priorité</p>
         <div class="w-32 h-1 bg-slate-300/80 dark:bg-slate-600 rounded-full mx-auto mt-3"></div>
     </div>

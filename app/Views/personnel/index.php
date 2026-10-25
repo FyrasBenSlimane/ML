@@ -1,6 +1,6 @@
 <?php
 /**
- * Accueil médecin (rôle personnel) — maquette « Doza Santé ».
+ * Accueil médecin (rôle personnel) — maquette « MAAK ».
  * CTA « Lancer une évaluation » + grille Doza / Sora / ReadmitGuard / médecins.
  */
 $ini = strtoupper(mb_substr($user['first_name'] ?? '', 0, 1) . mb_substr($user['last_name'] ?? '', 0, 1));
@@ -18,11 +18,11 @@ $ini = strtoupper(mb_substr($user['first_name'] ?? '', 0, 1) . mb_substr($user['
         <!-- Marque + déconnexion -->
         <div class="relative z-10 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-white shadow-sm">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                <div class="w-9 h-9 rounded-xl overflow-hidden border border-white/40 shadow-sm">
+                    <img src="<?= ASSETS_URL ?>/img/doctor5.jpg" alt="MAAK" class="w-full h-full object-cover object-top">
                 </div>
                 <div>
-                    <span class="block text-[9px] uppercase tracking-[0.18em] font-extrabold text-white/80">Doza Santé</span>
+                    <span class="block text-[9px] uppercase tracking-[0.18em] font-extrabold text-white/80">MAAK</span>
                     <span class="block text-sm font-extrabold text-white leading-none">Espace médecin</span>
                 </div>
             </div>

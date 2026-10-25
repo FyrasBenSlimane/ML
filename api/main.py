@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-API FastAPI pour l'application MedCare / Doza.
+API FastAPI pour l'application MAAK / Doza.
 
 Lancer depuis la racine du projet :
     uvicorn main:app --app-dir api --port 8001
@@ -27,7 +27,7 @@ from accompagnement import (predire as predire_controle,
 # --- Modèle M1 "Suivi" (suivi renforcé / léger) — bloc /sora ---
 from sora_suivi import predire as predire_suivi, modele_disponible as suivi_disponible
 
-app = FastAPI(title="MedCare — API Doza & Accompagnement", version="1.0")
+app = FastAPI(title="MAAK — API Doza & Accompagnement", version="1.0")
 
 # CORS limité au site PHP local (XAMPP sur :80, serveur intégré PHP sur :8000, etc.).
 app.add_middleware(

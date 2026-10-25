@@ -93,56 +93,56 @@
     // Les valeurs envoyées sont converties en categories du modele par l'API /predict
     // (voir le dictionnaire commente cote API). "Je ne sais pas" -> Unknown / Not_Tested.
     const FLOW = [
-      { gate: true, texte: "Bonjour 👋 Je suis Doza. Prenez-vous de l'insuline ?",
+      { gate: true, texte: "Bonjour Docteur. Le patient est-il traité par insuline ?",
         reponses: [ {label:'Oui', value:'oui'}, {label:'Non', value:'non'} ] },
 
-      { key:'age_ordinal', texte:"Quel âge avez-vous ?",
+      { key:'age_ordinal', texte:"Tranche d'âge du patient ?",
         reponses:[ {label:'18–39',value:3},{label:'40–49',value:4},{label:'50–59',value:5},
                    {label:'60–69',value:6},{label:'70–79',value:7},{label:'80+',value:8} ] },
 
-      { key:'gender', texte:"Vous êtes…",
+      { key:'gender', texte:"Sexe du patient ?",
         reponses:[ {label:'Homme',value:1},{label:'Femme',value:0} ] },
 
-      { key:'admission_type_id', texte:"Votre hospitalisation était…",
-        reponses:[ {label:'En urgence',value:1},{label:'Urgente non vitale',value:2},
-                   {label:'Programmée',value:3},{label:'Je ne sais pas',value:0} ] },
+      { key:'admission_type_id', texte:"Type d'admission ?",
+        reponses:[ {label:'Urgence',value:1},{label:'Urgente non vitale',value:2},
+                   {label:'Programmée',value:3},{label:'Inconnu',value:0} ] },
 
-      { key:'admission_source_id', texte:"Comment êtes-vous arrivé à l'hôpital ?",
-        reponses:[ {label:'Par les urgences',value:7},{label:'Envoyé par mon médecin',value:1},
-                   {label:"Transféré d'un autre établissement",value:6},{label:'Autre',value:0},
-                   {label:'Je ne sais pas',value:'jnsp'} ] },
+      { key:'admission_source_id', texte:"Mode d'admission (provenance) ?",
+        reponses:[ {label:'Via les urgences',value:7},{label:'Adressé par un médecin',value:1},
+                   {label:"Transfert d'un autre établissement",value:6},{label:'Autre',value:0},
+                   {label:'Inconnu',value:'jnsp'} ] },
 
-      { key:'medical_specialty', texte:"Dans quel service êtes-vous hospitalisé ?",
+      { key:'medical_specialty', texte:"Service d'hospitalisation ?",
         reponses:[ {label:'Médecine interne',value:'InternalMedicine'},{label:'Urgences',value:'Emergency/Trauma'},
                    {label:'Médecine générale',value:'Family/GeneralPractice'},{label:'Cardiologie',value:'Cardiology'},
-                   {label:'Autre service',value:'Other'},{label:'Je ne sais pas',value:'Unknown'} ] },
+                   {label:'Autre service',value:'Other'},{label:'Inconnu',value:'Unknown'} ] },
 
-      { key:'diag_1_group', texte:"Pour quelle raison principale êtes-vous hospitalisé ?",
-        reponses:[ {label:'Diabète',value:'Diabetes'},{label:'Cœur / vaisseaux',value:'Circulatory'},
-                   {label:'Poumons',value:'Respiratory'},{label:'Digestif',value:'Digestive'},
-                   {label:'Reins / urinaire',value:'Genitourinary'},{label:'Os / articulations',value:'Musculoskeletal'},
-                   {label:'Chute / blessure',value:'Injury'},{label:'Cancer',value:'Neoplasms'},
+      { key:'diag_1_group', texte:"Diagnostic principal (motif d'hospitalisation) ?",
+        reponses:[ {label:'Diabète',value:'Diabetes'},{label:'Cardiovasculaire',value:'Circulatory'},
+                   {label:'Respiratoire',value:'Respiratory'},{label:'Digestif',value:'Digestive'},
+                   {label:'Génito-urinaire',value:'Genitourinary'},{label:'Ostéo-articulaire',value:'Musculoskeletal'},
+                   {label:'Traumatisme',value:'Injury'},{label:'Néoplasie',value:'Neoplasms'},
                    {label:'Autre',value:'Other'} ] },
 
-      { key:'number_emergency', texte:"Combien de fois êtes-vous allé aux urgences cette année ?",
+      { key:'number_emergency', texte:"Passages aux urgences sur les 12 derniers mois ?",
         reponses:[ {label:'0',value:0},{label:'1',value:1},{label:'2',value:2},{label:'3 ou plus',value:3} ] },
 
-      { key:'number_inpatient', texte:"Combien de fois avez-vous été hospitalisé cette année ?",
+      { key:'number_inpatient', texte:"Hospitalisations sur les 12 derniers mois ?",
         reponses:[ {label:'0',value:0},{label:'1',value:1},{label:'2',value:2},{label:'3 ou plus',value:3} ] },
 
-      { key:'number_outpatient', texte:"Combien de consultations à l'hôpital avez-vous eues cette année ?",
+      { key:'number_outpatient', texte:"Consultations externes sur les 12 derniers mois ?",
         reponses:[ {label:'0',value:0},{label:'1–2',value:2},{label:'3–5',value:4},{label:'6 ou plus',value:6} ] },
 
-      { key:'A1Cresult', texte:"Connaissez-vous votre dernière HbA1c (hémoglobine glyquée) ?",
-        reponses:[ {label:'Moins de 7 %',value:1},{label:'Entre 7 et 8 %',value:2},
-                   {label:'Plus de 8 %',value:3},{label:'Je ne sais pas',value:0} ] },
+      { key:'A1Cresult', texte:"Dernière HbA1c (hémoglobine glyquée) du patient ?",
+        reponses:[ {label:'< 7 %',value:1},{label:'7 – 8 %',value:2},
+                   {label:'> 8 %',value:3},{label:'Non réalisée',value:0} ] },
 
-      { key:'num_medications', texte:"Combien de médicaments différents prenez-vous au total ?",
+      { key:'num_medications', texte:"Nombre total de médicaments différents ?",
         reponses:[ {label:'1 à 5',value:3},{label:'6 à 10',value:8},{label:'11 à 15',value:13},
                    {label:'16 à 20',value:18},{label:'Plus de 20',value:25} ] },
 
-      { key:'sulfonylurea', texte:"Prenez-vous un sulfamide hypoglycémiant (glyburide ou glipizide) ?",
-        reponses:[ {label:'Oui',value:1},{label:'Non',value:0},{label:'Je ne sais pas',value:0} ] },
+      { key:'sulfonylurea', texte:"Traitement par sulfamide hypoglycémiant (glyburide / glipizide) ?",
+        reponses:[ {label:'Oui',value:1},{label:'Non',value:0},{label:'Inconnu',value:0} ] },
     ];
 
     // Réponses collectées (c'est ce qui sera envoyé au modèle)
@@ -266,7 +266,7 @@
       if (FLOW[i].gate) {
         if (rep.value === 'non') {
           majProgression(-1); // on cache la progression
-          messageDoza('<p class="text-[14px] leading-relaxed" style="color:#134E4A">Cet outil concerne les patients traités par insuline. Parlez-en à votre médecin.</p>');
+          messageDoza('<p class="text-[14px] leading-relaxed" style="color:#134E4A">Cet outil concerne uniquement les patients traités par insuline. L\'évaluation ne s\'applique pas à ce patient.</p>');
           return; // on s'arrête, pas de prédiction
         }
         poserQuestion(i + 1);
@@ -297,7 +297,7 @@
       majProgression(-1);
       messageDoza(
         '<div class="flex items-center gap-2">' +
-          '<p class="text-[14px]" style="color:#134E4A">Merci ! J\'analyse vos réponses…</p>' +
+          '<p class="text-[14px]" style="color:#134E4A">Analyse des données du patient en cours…</p>' +
           '<span class="flex gap-1">' +
             '<span class="w-1.5 h-1.5 rounded-full bg-teal-brand animate-bounce"></span>' +
             '<span class="w-1.5 h-1.5 rounded-full bg-teal-brand animate-bounce" style="animation-delay:.15s"></span>' +

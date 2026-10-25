@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <!-- ===== CARTE : RÉSULTAT DU MODÈLE ML (charte "Serene Pulse") ===== -->
+    <!-- ===== CARTE : RÉSULTAT DU MODÈLE ML (charte "MAAK") ===== -->
     <div class="mt-2 px-4">
         <div class="relative rounded-[28px] p-4 glass-panel shadow-glass ring-1 ring-teal-brand/15 text-center flex flex-col items-center">
 
