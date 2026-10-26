@@ -41,7 +41,7 @@ class TeamScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Team ReadmitGuard',
+                        const Text('Team MAAK معاك',
                             style: TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w800)),
                         const SizedBox(height: 4),
                         const Text('Six AI companions, one platform.',

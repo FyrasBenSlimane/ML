@@ -54,8 +54,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   .then()
                   .shimmer(duration: 1200.ms, color: Colors.white54),
               const SizedBox(height: 22),
-              const Text('ReadmitGuard',
-                      style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: -1))
+              const Text('MAAK معاك',
+                      style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800))
                   .animate()
                   .fadeIn(delay: 300.ms, duration: 600.ms)
                   .slideY(begin: 0.4),

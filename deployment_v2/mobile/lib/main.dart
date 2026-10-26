@@ -18,5 +18,5 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final api = ApiClient(() => settings.state.serverUrl);
   final auth = AuthCubit.restore(api, prefs);
-  runApp(ReadmitGuardApp(settings: settings, api: api, auth: auth));
+  runApp(MaakApp(settings: settings, api: api, auth: auth));
 }

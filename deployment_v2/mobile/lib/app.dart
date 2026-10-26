@@ -14,8 +14,8 @@ import 'features/teemo/data/teemo_repository.dart';
 /// Wires the shared services every module can use:
 ///   ApiClient (server address from Settings), TeemoRepository, AuthCubit,
 ///   ActivePatientCubit, SettingsCubit, ServerStatusCubit and HistoryCubit.
-class ReadmitGuardApp extends StatelessWidget {
-  const ReadmitGuardApp({
+class MaakApp extends StatelessWidget {
+  const MaakApp({
     super.key,
     required this.settings,
     required this.api,
@@ -42,7 +42,7 @@ class ReadmitGuardApp extends StatelessWidget {
           BlocProvider(create: (_) => HistoryCubit()),
         ],
         child: MaterialApp(
-          title: 'ReadmitGuard',
+          title: 'MAAK معاك',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
           builder: (context, child) => DefaultTextStyle.merge(

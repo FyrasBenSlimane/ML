@@ -108,7 +108,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 4),
                       Text(
                         _register
-                            ? 'Join the ReadmitGuard portal.'
+                            ? 'Join the MAAK معاك portal.'
                             : 'Sign in to continue.',
                         style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
                       ),
@@ -190,9 +190,9 @@ class _AuthScreenState extends State<AuthScreen> {
           child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 46),
         ).animate().scale(begin: const Offset(0.4, 0.4), duration: 700.ms, curve: Curves.elasticOut),
         const SizedBox(height: 14),
-        const Text('ReadmitGuard',
+        const Text('MAAK معاك',
             style: TextStyle(
-                color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1)),
+                color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800)),
         const Text('Care that watches over you',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ],

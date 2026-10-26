@@ -14,7 +14,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, FastAPI
 
-log = logging.getLogger("readmitguard.registry")
+log = logging.getLogger("maak.registry")
 
 
 @dataclass

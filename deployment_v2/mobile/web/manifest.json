@@ -1,11 +1,11 @@
 {
-    "name": "readmitguard",
-    "short_name": "readmitguard",
+    "name": "MAAK معاك",
+    "short_name": "MAAK معاك",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "ReadmitGuard - AI readmission care companion",
+    "description": "MAAK معاك - AI readmission care companion",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

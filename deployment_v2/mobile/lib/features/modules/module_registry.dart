@@ -44,7 +44,7 @@ class ModelModule {
   Color get color => gradient.colors[1];
 }
 
-/// The six companions of ReadmitGuard. Teemo is live; the other five slots are
+/// The six companions of MAAK معاك. Teemo is live; the other five slots are
 /// reserved for teammates and show an integration guide until they plug in.
 /// Teemo's entry is wired by the shell (it opens the Teemo tab).
 const kModules = <ModelModule>[

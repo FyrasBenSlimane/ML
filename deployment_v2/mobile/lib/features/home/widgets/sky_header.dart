@@ -212,7 +212,7 @@ class _Logo extends StatelessWidget {
             child: const Icon(Icons.health_and_safety_rounded, size: 16, color: Color(0xFF14B8A6)),
           ),
           const SizedBox(width: 6),
-          const Text('ReadmitGuard',
+          const Text('MAAK معاك',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13)),
         ],
       ),

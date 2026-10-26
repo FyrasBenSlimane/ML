@@ -1,5 +1,5 @@
 """
-ReadmitGuard v2 API — entry point.
+MAAK معاك v2 API — entry point.
 
     uvicorn app.main:app --host 0.0.0.0 --port 8000
 
@@ -16,9 +16,9 @@ from app.core.config import API_PREFIX
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(name)s  %(message)s")
 
 app = FastAPI(
-    title="ReadmitGuard API",
+    title="MAAK معاك API",
     version="2.0.0",
-    description="Model modules for the ReadmitGuard mobile app. "
+    description="Model modules for the MAAK معاك mobile app. "
                 "Each team member's model lives in app/modules/<id>.",
 )
 
