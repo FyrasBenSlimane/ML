@@ -1,8 +1,8 @@
 # Plugging your model into ReadmitGuard
 
-Each teammate already has a reserved slot in the app's **Team** tab (CareStep, MedOracle,
-RxPredict, DailyGuard, BedSense). Tapping it shows these same steps. Nothing in Teemo's code
-needs to change.
+Each teammate has a reserved slot in the app's **Team** tab (CareStep, RxPredict,
+DailyGuard, BedSense). MedOracle is already integrated as a physician-only, live module.
+Tapping a reserved slot shows these same steps. Nothing in Teemo's code needs to change.
 
 ## 1. Backend (5 minutes)
 
@@ -79,3 +79,15 @@ The Team hub, the home strip and the navigation now open your screen.
 - [ ] `python -m pytest -q` in `backend/` passes (add tests in `backend/tests/`)
 - [ ] `flutter analyze` shows no issues
 - [ ] your model's sklearn/lightgbm/xgboost versions are compatible with `requirements.txt`
+
+## MedOracle deployment
+
+MedOracle is registered in the app and mounted at `/api/v1/medoracle`. Its model
+artifacts are required at `backend/artifacts/medoracle/`; `/meta` and `/predict`
+require physician authentication, and `/predict` also requires a confirmed patient
+code so the portal can log the evaluation. The Flutter screen and API use the existing
+design system and doctor/patient gate.
+
+The model compares group-level differences at matched clinical severity using
+historical US hospital data (1999–2008). It must be presented as descriptive context,
+not an individual prediction, causal conclusion, or clinical recommendation.

@@ -1,0 +1,139 @@
+{
+  "features": [
+    "number_diagnoses",
+    "number_inpatient",
+    "number_emergency",
+    "number_outpatient",
+    "admission_type_id",
+    "admission_source_id",
+    "diag_1_group",
+    "diag_2_group",
+    "diag_3_group",
+    "A1Cresult",
+    "max_glu_serum"
+  ],
+  "numeric_features": [
+    "number_diagnoses",
+    "number_inpatient",
+    "number_emergency",
+    "number_outpatient"
+  ],
+  "categorical_features": [
+    "admission_type_id",
+    "admission_source_id",
+    "diag_1_group",
+    "diag_2_group",
+    "diag_3_group",
+    "A1Cresult",
+    "max_glu_serum"
+  ],
+  "defaults": {
+    "number_diagnoses": 7,
+    "number_inpatient": 0,
+    "number_emergency": 0,
+    "number_outpatient": 0,
+    "admission_type_id": 1,
+    "admission_source_id": 7,
+    "diag_1_group": "Circulatory",
+    "diag_2_group": "Circulatory",
+    "diag_3_group": "Circulatory",
+    "A1Cresult": "Not_Tested",
+    "max_glu_serum": "Not_Tested"
+  },
+  "options": {
+    "admission_type_id": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "admission_source_id": [
+      1,
+      10,
+      14,
+      17,
+      2,
+      20,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "diag_1_group": [
+      "Circulatory",
+      "Diabetes",
+      "Digestive",
+      "External",
+      "Genitourinary",
+      "Injury",
+      "Musculoskeletal",
+      "Neoplasms",
+      "Other",
+      "Respiratory"
+    ],
+    "diag_2_group": [
+      "Circulatory",
+      "Diabetes",
+      "Digestive",
+      "External",
+      "Genitourinary",
+      "Injury",
+      "Musculoskeletal",
+      "Neoplasms",
+      "Other",
+      "Respiratory"
+    ],
+    "diag_3_group": [
+      "Circulatory",
+      "Diabetes",
+      "Digestive",
+      "External",
+      "Genitourinary",
+      "Injury",
+      "Musculoskeletal",
+      "Neoplasms",
+      "Other",
+      "Respiratory"
+    ],
+    "A1Cresult": [
+      ">7",
+      ">8",
+      "Norm",
+      "Not_Tested"
+    ],
+    "max_glu_serum": [
+      ">200",
+      ">300",
+      "Norm",
+      "Not_Tested"
+    ]
+  },
+  "metrics": {
+    "time_in_hospital": {
+      "rmse": 2.8269790619337116,
+      "mae": 2.207316495314625,
+      "r2": 0.1510740567133405
+    },
+    "num_procedures": {
+      "rmse": 1.4333476757100843,
+      "mae": 1.1098737716674805,
+      "r2": 0.26354408264160156
+    }
+  },
+  "training_rows": 43162,
+  "test_rows": 10819,
+  "split_sha256": {
+    "train": "fd3ac424d7d133a6975e1033d3aca9d5df2948d96ba27602133fac624595a3ff",
+    "test": "ebf02d9640254aea2946c15bc0f4b7cc61516553bcf12048f11555628419ce13"
+  },
+  "sklearn_version": "1.9.1",
+  "lightgbm_version": "4.7.0",
+  "xgboost_version": "3.4.1"
+}

@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../auth/patient_gate.dart';
 import '../avatar/avatar_profile.dart';
 import '../doza/screens/doza_chat_screen.dart';
+import '../medoracle/medoracle_screen.dart';
 import '../sora/screens/sora_questionnaire_screen.dart';
 
 enum ModuleStatus { live, reserved }
@@ -69,9 +70,11 @@ const kModules = <ModelModule>[
     id: 'medoracle',
     name: 'MedOracle',
     owner: 'Faycel',
-    tagline: 'Clinical analytics & what-if',
+    tagline: 'Analyse comparative de l’équité des soins',
     icon: Icons.analytics_rounded,
     gradient: AppColors.violetGradient,
+    status: ModuleStatus.live,
+    entry: _medOracleEntry,
   ),
   ModelModule(
     id: 'doza',
@@ -115,3 +118,5 @@ Widget _dozaEntry(BuildContext _) =>
     const PatientGate(module: 'doza', child: DozaChatScreen());
 Widget _soraEntry(BuildContext _) =>
     const PatientGate(module: 'sora', child: SoraQuestionnaireScreen());
+Widget _medOracleEntry(BuildContext _) =>
+    const PatientGate(module: 'medoracle', child: MedOracleScreen());

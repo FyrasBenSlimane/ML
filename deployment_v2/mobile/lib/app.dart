@@ -45,6 +45,10 @@ class ReadmitGuardApp extends StatelessWidget {
           title: 'ReadmitGuard',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
+          builder: (context, child) => DefaultTextStyle.merge(
+            style: const TextStyle(decoration: TextDecoration.none),
+            child: child ?? const SizedBox.shrink(),
+          ),
           home: const SplashScreen(),
         ),
       ),

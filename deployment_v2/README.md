@@ -7,14 +7,17 @@ deployment_v2/
 ├── backend/                     FastAPI — one plug-in module per team member
 │   ├── app/main.py              entry point (auto-discovers modules)
 │   ├── app/core/                registry, shared female TTS (/api/v1/tts), config
+│   ├── app/modules/medoracle/   physician-only equity-of-care comparison
 │   ├── app/modules/teemo/       Ryma's model: features, model, SHAP, care plan, narrative
 │   ├── app/modules/_template/   copy this to add a model
+│   ├── artifacts/medoracle/     MedOracle model, metadata and source coefficients
 │   ├── artifacts/teemo/         model files + reference.json (built from the data splits)
 │   ├── scripts/build_teemo_reference.py
 │   └── tests/                   pytest (11 tests)
 ├── mobile/                      Flutter app (Android / iOS / web)
 │   ├── lib/core/                theme, settings, API client, server status
 │   ├── lib/features/avatar/     reusable talking-avatar stage (video + voice + subtitles)
+│   ├── lib/features/medoracle/  physician-only comparative analysis form and results
 │   ├── lib/features/teemo/      assessment wizard, analysing, results, profile
 │   ├── lib/features/home/       day/night sky home screen
 │   ├── lib/features/modules/    team hub, registry, reserved slots, _template
@@ -33,13 +36,19 @@ or manually: `python -m uvicorn app.main:app --host 0.0.0.0 --port 8000`
 
 * API docs: http://localhost:8000/docs
 * Tests: `python -m pytest -q`
-* The saved joblib model files need **scikit-learn 1.9.1 and lightgbm 4.7.0** (see `requirements.txt`).
+* The saved joblib model files need **scikit-learn 1.9.1, lightgbm 4.7.0 and xgboost 3.4.1** (see `requirements.txt`).
 * The neural female voice (edge-tts, `en-US-AvaNeural`) needs internet on the server.
   Without it the app falls back to the phone's own female voice automatically.
 
+  MedOracle uses the model files in `backend/artifacts/medoracle/`; keep them with the
+  deployment and use the pinned `xgboost==3.4.1`, scikit-learn and LightGBM dependencies.
+  It is listed as live at `/api/v1/modules`, and both its metadata and comparison
+  endpoints require an authenticated physician.
+
 ## 2. Run the app
 
-Flutter SDK: `C:\Users\rimar\flutter` (add `C:\Users\rimar\flutter\bin` to PATH).
+Flutter SDK must be installed and available on `PATH` (`flutter doctor -v` checks the setup).
+On Windows, enable Developer Mode if Flutter reports that plugin symlinks are unavailable.
 
 ```powershell
 cd mobile
@@ -76,3 +85,30 @@ To build an APK: install Android Studio (it brings the Android SDK), run `flutte
 
 The home header follows the real clock (blue day, sunset, purple starry night with a lit hospital).
 Tap the *Live* chip to preview Dawn / Day / Dusk / Night.
+
+## 4. MedOracle (physician only)
+
+Open MedOracle from the Team tab. The app requires the physician to confirm a patient,
+then compares two demographic profiles at the same supplied clinical severity. Each
+comparison shows adjusted group differences, approximate 95% confidence intervals,
+and the model's context estimate. The patient code is sent with the evaluation so the
+portal can enforce and log the physician/patient association.
+
+This is a retrospective group comparison on US hospital data from 1999–2008. It is
+not an individual prediction or treatment recommendation; associations do not establish
+causation or prove unequal care. The reconstructed severity regressors report test RMSE
+of about 2.83 days for length of stay and 1.43 procedures on the held-out source split.
+These estimates are population context only. The reconstruction is close to, but not
+bit-for-bit identical with, the source report (about 2.81 and 1.42 respectively); the
+metadata records the exact train/test split hashes and runtime library versions.
+
+To rebuild the artifacts, provide the original equity split directory explicitly:
+
+```powershell
+cd backend
+python scripts\build_medoracle_artifacts.py --data-dir "C:\path\to\source\data\splits\equity"
+```
+
+The directory must contain `train_with_sensitive.parquet` and
+`test_with_sensitive.parquet` from the model's source pipeline. Do not substitute
+another project split; it changes the reference population and model metrics.
