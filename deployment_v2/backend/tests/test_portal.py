@@ -137,6 +137,48 @@ def test_alerte_arrive_au_bon_patient_seulement():
     assert client.get("/api/v1/notifications", headers=_bearer(pa_token)).json()[0]["lu"] is True
 
 
+def test_alerte_sora_arrive_au_bon_patient_seulement():
+    """Mêmes règles que Doza, côté Sora : patient résolu par son ID, évaluation
+    appartenant au patient, et le patient ne lit que ses propres alertes."""
+    doc = _register("Med", "Sora", _email("meds"), role="medecin",
+                    code=MEDECIN_CODE_DEFAULT).json()
+    pa = _register("Alice", "A", _email("a")).json()["user"]
+    pb = _register("Bruno", "B", _email("b")).json()["user"]
+    pa_token = client.post("/api/v1/auth/login",
+                           json={"email": pa["email"], "password": PWD}).json()["token"]
+    pb_token = client.post("/api/v1/auth/login",
+                           json={"email": pb["email"], "password": PWD}).json()["token"]
+    med_h = _bearer(doc["token"])
+
+    # Sans évaluation Sora préalable, l'alerte Sora est refusée.
+    early = client.post("/api/v1/notifications", headers=med_h, json={
+        "patient_code": pa["code"], "module": "sora",
+        "niveau": "info", "titre": "Bonjour", "message": "Test"})
+    assert early.status_code == 403
+
+    # Le médecin évalue A avec Sora (fiche par défaut).
+    ev = client.post("/api/v1/sora/predict", json={},
+                     headers={**med_h, "X-Patient-Code": pa["code"]})
+    assert ev.status_code == 200, ev.text
+
+    # Puis envoie une alerte Sora bienveillante (sans chiffre) à A.
+    sent = client.post("/api/v1/notifications", headers=med_h, json={
+        "patient_code": pa["code"], "module": "sora", "niveau": "attention",
+        "titre": "Votre suivi après l'hôpital",
+        "message": "Votre médecin organise la suite de votre suivi."})
+    assert sent.status_code == 200
+
+    # A voit son alerte Sora ; B ne voit rien.
+    a_list = client.get("/api/v1/notifications", headers=_bearer(pa_token)).json()
+    assert len(a_list) == 1 and a_list[0]["module"] == "sora"
+    assert a_list[0]["titre"] == "Votre suivi après l'hôpital"
+    assert client.get("/api/v1/notifications", headers=_bearer(pb_token)).json() == []
+
+    # B ne peut pas toucher l'alerte de A.
+    assert client.post(f"/api/v1/notifications/{a_list[0]['id']}/read",
+                       headers=_bearer(pb_token)).status_code == 404
+
+
 def test_alerte_refusee_si_id_ne_correspond_pas_a_evaluation():
     """Le médecin a évalué A ; il ne peut pas alerter B avec l'ID de B."""
     doc = _register("Med", "Trois", _email("med3"), role="medecin",

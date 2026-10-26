@@ -27,9 +27,12 @@ abstract class SpeechEngine {
 // ----------------------------------------------------------------- neural
 /// Female neural voice synthesized by the backend (/api/v1/tts, edge-tts).
 class NeuralSpeechEngine extends SpeechEngine {
-  NeuralSpeechEngine(this._api);
+  NeuralSpeechEngine(this._api, {this.voice});
 
   final ApiClient _api;
+
+  /// Voix serveur demandée (ex. « fr-FR-DeniseNeural »). Null = voix par défaut.
+  final String? voice;
   final AudioPlayer _player = AudioPlayer();
   final Map<String, Future<_Clip>> _clips = {};
   Completer<void>? _done;
@@ -39,7 +42,9 @@ class NeuralSpeechEngine extends SpeechEngine {
   Future<_Clip> _clip(String text) {
     return _clips.putIfAbsent(text, () async {
       try {
-        final body = await _api.postJson('/api/v1/tts', {'text': text},
+        final body = await _api.postJson(
+            '/api/v1/tts',
+            {'text': text, if (voice != null) 'voice': voice},
             timeout: const Duration(seconds: 20));
         return _Clip.fromJson(body, text, _api.baseUrl);
       } catch (_) {

@@ -15,6 +15,7 @@ import '../../shared/widgets/pressable.dart';
 import '../avatar/avatar_profile.dart';
 import '../doza/screens/doza_patient_profile_screen.dart';
 import '../home/widgets/sky_scene.dart';
+import '../sora/screens/sora_patient_profile_screen.dart';
 import '../settings/settings_sheet.dart';
 
 /// The patient's world: a gentle home with the alerts their doctor sent, and a
@@ -106,7 +107,27 @@ class _AlertsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _DozaCard(),
+        _AvatarCard(
+          avatar: AvatarProfile.doza,
+          module: 'doza',
+          title: 'Doza',
+          subtitle: 'Votre assistant insuline',
+          gradient: AppColors.coralGradient,
+          haloPrimary: AppColors.coral,
+          haloSecondary: AppColors.pink,
+          screen: (_) => const DozaPatientProfileScreen(),
+        ),
+        const SizedBox(height: 14),
+        _AvatarCard(
+          avatar: AvatarProfile.sora,
+          module: 'sora',
+          title: 'Sora',
+          subtitle: 'Votre suivi après l\'hôpital',
+          gradient: AppColors.amberGradient,
+          haloPrimary: AppColors.amber,
+          haloSecondary: const Color(0xFFFB923C),
+          screen: (_) => const SoraPatientProfileScreen(),
+        ),
         const SizedBox(height: 16),
         const Center(
           child: Text('Vos résultats médicaux restent avec votre médecin.',
@@ -118,18 +139,37 @@ class _AlertsSection extends StatelessWidget {
   }
 }
 
-/// Carte « Doza » de l'accueil : ouvre l'assistant insuline du patient. Quand
-/// un message du médecin n'est pas lu, la carte s'illumine en rose et affiche
-/// une pastille « nouveau message » ; les messages se consultent dans l'écran
-/// Doza. Au retour sur l'accueil, les alertes sont rafraîchies (règle B).
-class _DozaCard extends StatefulWidget {
-  const _DozaCard();
+/// Carte d'avatar de l'accueil : ouvre l'écran patient de l'assistant. Quand un
+/// message du médecin n'est pas lu, la carte s'illumine et affiche une pastille
+/// « nouveau message » ; les messages se consultent dans l'écran de l'avatar.
+/// Au retour sur l'accueil, les alertes sont rafraîchies (règle B). Réutilisée
+/// pour Doza et Sora : paramétrer plutôt que dupliquer.
+class _AvatarCard extends StatefulWidget {
+  const _AvatarCard({
+    required this.avatar,
+    required this.module,
+    required this.title,
+    required this.subtitle,
+    required this.gradient,
+    required this.haloPrimary,
+    required this.haloSecondary,
+    required this.screen,
+  });
+
+  final AvatarProfile avatar;
+  final String module;
+  final String title;
+  final String subtitle;
+  final LinearGradient gradient;
+  final Color haloPrimary;
+  final Color haloSecondary;
+  final WidgetBuilder screen;
 
   @override
-  State<_DozaCard> createState() => _DozaCardState();
+  State<_AvatarCard> createState() => _AvatarCardState();
 }
 
-class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixin {
+class _AvatarCardState extends State<_AvatarCard> with SingleTickerProviderStateMixin {
   late final AnimationController _pulse =
       AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
         ..repeat(reverse: true);
@@ -146,7 +186,7 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: cubit,
-          child: const DozaPatientProfileScreen(),
+          child: Builder(builder: widget.screen),
         ),
       ),
     );
@@ -155,12 +195,13 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
+    final module = widget.module;
     final unread = context.select((PatientAlertsCubit c) =>
-        c.state.alerts.where((a) => a.module == 'doza' && !a.lu).length);
+        c.state.alerts.where((a) => a.module == module && !a.lu).length);
     final hasAlert = unread > 0;
 
     final card = SoftCard(
-      gradient: AppColors.coralGradient,
+      gradient: widget.gradient,
       onTap: _open,
       child: Row(
         children: [
@@ -176,7 +217,7 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
                   boxShadow: AppColors.glow(Colors.black, strength: 0.12),
                 ),
                 child: ClipOval(
-                  child: Image.asset(AvatarProfile.doza.faceAsset,
+                  child: Image.asset(widget.avatar.faceAsset,
                       fit: BoxFit.cover, alignment: Alignment.topCenter),
                 ),
               ),
@@ -190,7 +231,7 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.coral, width: 3),
+                      border: Border.all(color: widget.haloPrimary, width: 3),
                     ),
                   )
                       .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -203,12 +244,12 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Doza',
-                    style: TextStyle(
+                Text(widget.title,
+                    style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
                 const SizedBox(height: 2),
-                const Text('Votre assistant insuline',
-                    style: TextStyle(
+                Text(widget.subtitle,
+                    style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
                 if (hasAlert) ...[
                   const SizedBox(height: 8),
@@ -227,7 +268,7 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
       ),
     );
 
-    // Halo rose pulsé autour de la carte lorsqu'un message n'est pas lu.
+    // Halo pulsé autour de la carte lorsqu'un message n'est pas lu.
     return AnimatedBuilder(
       animation: _pulse,
       builder: (_, child) {
@@ -238,12 +279,12 @@ class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixi
             boxShadow: hasAlert
                 ? [
                     BoxShadow(
-                      color: AppColors.coral.withValues(alpha: 0.35 + 0.45 * t),
+                      color: widget.haloPrimary.withValues(alpha: 0.35 + 0.45 * t),
                       blurRadius: 22 + 30 * t,
                       spreadRadius: 1 + 4 * t,
                     ),
                     BoxShadow(
-                      color: AppColors.pink.withValues(alpha: 0.22 + 0.30 * t),
+                      color: widget.haloSecondary.withValues(alpha: 0.22 + 0.30 * t),
                       blurRadius: 32 + 24 * t,
                       spreadRadius: 1 + 2 * t,
                     ),

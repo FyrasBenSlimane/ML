@@ -60,7 +60,10 @@ class AvatarVoiceCubit extends Cubit<AvatarVoiceState> {
     required List<SpeechSegment> segments,
     required ApiClient api,
     required VoiceEngine preferred,
-  }) : _engine = preferred == VoiceEngine.neural ? NeuralSpeechEngine(api) : DeviceSpeechEngine(),
+    String? voice,
+  }) : _engine = preferred == VoiceEngine.neural
+            ? NeuralSpeechEngine(api, voice: voice)
+            : DeviceSpeechEngine(),
         super(AvatarVoiceState(segments: segments)) {
     if (segments.isNotEmpty) _engine.prefetch(segments.first.text);
   }

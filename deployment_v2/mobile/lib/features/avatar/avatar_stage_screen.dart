@@ -51,6 +51,7 @@ class AvatarStageScreen extends StatelessWidget {
         segments: segments,
         api: ctx.read<ApiClient>(),
         preferred: ctx.read<SettingsCubit>().state.voiceEngine,
+        voice: avatar.voice,
       ),
       child: _StageView(avatar: avatar, title: title),
     );

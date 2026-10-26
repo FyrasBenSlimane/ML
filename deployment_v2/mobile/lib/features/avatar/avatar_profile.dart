@@ -14,6 +14,7 @@ class AvatarProfile {
     required this.gradient,
     required this.accent,
     this.videoAsset,
+    this.voice,
   });
 
   final String id;
@@ -33,6 +34,10 @@ class AvatarProfile {
 
   final LinearGradient gradient;
   final Color accent;
+
+  /// Voix neurale côté serveur (edge-tts), ex. « fr-FR-DeniseNeural ». Sans
+  /// valeur, le serveur utilise sa voix par défaut.
+  final String? voice;
 
   String get heroTag => 'avatar-$id';
 
@@ -68,6 +73,7 @@ class AvatarProfile {
     portraitAsset: 'assets/sora/sora_portrait.png',
     gradient: AppColors.amberGradient,
     accent: AppColors.amber,
+    voice: 'fr-FR-DeniseNeural',
   );
 }
 
