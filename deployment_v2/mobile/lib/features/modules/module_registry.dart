@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../avatar/avatar_profile.dart';
-import '../doza/screens/doza_questionnaire_screen.dart';
+import '../doza/screens/doza_chat_screen.dart';
 import '../sora/screens/sora_questionnaire_screen.dart';
 
 enum ModuleStatus { live, reserved }
@@ -109,5 +109,5 @@ const kModules = <ModelModule>[
 ];
 
 // Entry builders (top-level tear-offs are const, so kModules stays const).
-Widget _dozaEntry(BuildContext _) => const DozaQuestionnaireScreen();
+Widget _dozaEntry(BuildContext _) => const DozaChatScreen();
 Widget _soraEntry(BuildContext _) => const SoraQuestionnaireScreen();
