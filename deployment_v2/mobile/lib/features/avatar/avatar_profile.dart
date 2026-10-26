@@ -54,6 +54,7 @@ class AvatarProfile {
     role: 'Changement de dose d\'insuline',
     faceAsset: 'assets/doza/doza_face.png',
     portraitAsset: 'assets/doza/doza_portrait.png',
+    videoAsset: 'assets/doza/doza_talk.mp4',
     gradient: AppColors.coralGradient,
     accent: AppColors.coral,
   );

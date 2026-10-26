@@ -135,3 +135,52 @@ def test_alerte_arrive_au_bon_patient_seulement():
     assert client.post(f"/api/v1/notifications/{a_list[0]['id']}/read",
                        headers=_bearer(pb_token)).status_code == 404
     assert client.get("/api/v1/notifications", headers=_bearer(pa_token)).json()[0]["lu"] is True
+
+
+def test_alerte_refusee_si_id_ne_correspond_pas_a_evaluation():
+    """Le médecin a évalué A ; il ne peut pas alerter B avec l'ID de B."""
+    doc = _register("Med", "Trois", _email("med3"), role="medecin",
+                    code=MEDECIN_CODE_DEFAULT).json()
+    pa = _register("Alice", "A", _email("a")).json()["user"]
+    pb = _register("Bruno", "B", _email("b")).json()["user"]
+    med_h = _bearer(doc["token"])
+
+    # Le médecin évalue UNIQUEMENT le patient A avec Doza.
+    ev = client.post("/api/v1/doza/predict", json={"answers": {}},
+                     headers={**med_h, "X-Patient-Code": pa["code"]})
+    assert ev.status_code == 200
+
+    # Tenter d'alerter B (dont l'ID ne correspond à aucune évaluation) → refusé.
+    bad = client.post("/api/v1/notifications", headers=med_h, json={
+        "patient_code": pb["code"], "module": "doza", "niveau": "info",
+        "titre": "Erreur", "message": "Mauvais patient"})
+    assert bad.status_code == 403
+
+    # B ne reçoit donc rien.
+    pb_token = client.post("/api/v1/auth/login",
+                           json={"email": pb["email"], "password": PWD}).json()["token"]
+    assert client.get("/api/v1/notifications", headers=_bearer(pb_token)).json() == []
+
+
+def test_alerte_refusee_sans_jeton_medecin():
+    """Envoyer une alerte exige un jeton médecin : ni anonyme, ni patient."""
+    doc = _register("Med", "Quatre", _email("med4"), role="medecin",
+                    code=MEDECIN_CODE_DEFAULT).json()
+    pa = _register("Alice", "A", _email("a")).json()["user"]
+    med_h = _bearer(doc["token"])
+
+    # Le médecin évalue A (pour que seul le jeton soit en cause ensuite).
+    assert client.post("/api/v1/doza/predict", json={"answers": {}},
+                       headers={**med_h, "X-Patient-Code": pa["code"]}).status_code == 200
+
+    body = {"patient_code": pa["code"], "module": "doza", "niveau": "info",
+            "titre": "Bonjour", "message": "Test"}
+
+    # Sans aucun jeton → 401.
+    assert client.post("/api/v1/notifications", json=body).status_code == 401
+
+    # Avec un jeton de patient → 403 (action réservée au médecin).
+    pa_token = client.post("/api/v1/auth/login",
+                           json={"email": pa["email"], "password": PWD}).json()["token"]
+    assert client.post("/api/v1/notifications", headers=_bearer(pa_token),
+                       json=body).status_code == 403

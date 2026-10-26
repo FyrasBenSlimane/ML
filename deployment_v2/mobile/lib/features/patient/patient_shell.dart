@@ -13,6 +13,8 @@ import '../../core/theme/app_colors.dart';
 import '../../shared/widgets/ambient.dart';
 import '../../shared/widgets/cards.dart';
 import '../../shared/widgets/pressable.dart';
+import '../avatar/avatar_profile.dart';
+import '../doza/screens/doza_patient_profile_screen.dart';
 import '../home/widgets/sky_scene.dart';
 import '../settings/settings_sheet.dart';
 
@@ -136,6 +138,8 @@ class _AlertsSection extends StatelessWidget {
               .animate(interval: 70.ms)
               .fadeIn(duration: 400.ms)
               .slideY(begin: 0.08, curve: Curves.easeOutCubic),
+        const SizedBox(height: 22),
+        const _DozaCard(),
         const SizedBox(height: 16),
         const Center(
           child: Text('Vos résultats médicaux restent avec votre médecin.',
@@ -143,6 +147,62 @@ class _AlertsSection extends StatelessWidget {
               style: TextStyle(color: AppColors.muted, fontSize: 11.5)),
         ),
       ],
+    );
+  }
+}
+
+/// Carte « Doza » sous les messages : ouvre l'assistant insuline du patient.
+/// Au retour sur l'accueil, les alertes sont rafraîchies (règle B).
+class _DozaCard extends StatelessWidget {
+  const _DozaCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return SoftCard(
+      gradient: AppColors.coralGradient,
+      onTap: () async {
+        final cubit = context.read<PatientAlertsCubit>();
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const DozaPatientProfileScreen()),
+        );
+        await cubit.load();
+      },
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+              boxShadow: AppColors.glow(Colors.black, strength: 0.12),
+            ),
+            child: ClipOval(
+              child: Image.asset(AvatarProfile.doza.faceAsset,
+                  fit: BoxFit.cover, alignment: Alignment.topCenter),
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Doza',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
+                SizedBox(height: 2),
+                Text('Votre assistant insuline',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+              ],
+            ),
+          ),
+          const GlassPanel(
+            radius: 14,
+            opacity: 0.25,
+            padding: EdgeInsets.all(10),
+            child: Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
+          ),
+        ],
+      ),
     );
   }
 }
