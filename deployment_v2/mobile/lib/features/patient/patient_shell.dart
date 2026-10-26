@@ -87,7 +87,7 @@ class _PatientHome extends StatelessWidget {
                   color: AppColors.bg,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(36)),
                 ),
-                padding: EdgeInsets.fromLTRB(16, 46, 16, 120 + MediaQuery.paddingOf(context).bottom),
+                padding: EdgeInsets.fromLTRB(16, 92, 16, 120 + MediaQuery.paddingOf(context).bottom),
                 child: const _AlertsSection(),
               ),
             ),
