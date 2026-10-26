@@ -39,7 +39,7 @@ from app.core.security import (
 log = logging.getLogger("maak.portal")
 
 # Modules dont le /predict est réservé au médecin et journalisé.
-GUARDED_MODULES = ("doza", "sora", "teemo", "medoracle")
+GUARDED_MODULES = ("doza", "sora", "teemo", "medoracle", "carestep", "bedsense")
 _PREDICT_RE = re.compile(r"^/api/v1/(" + "|".join(GUARDED_MODULES) + r")/predict/?$")
 
 
