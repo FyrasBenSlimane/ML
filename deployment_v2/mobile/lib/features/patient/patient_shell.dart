@@ -163,7 +163,12 @@ class _DozaCard extends StatelessWidget {
       onTap: () async {
         final cubit = context.read<PatientAlertsCubit>();
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const DozaPatientProfileScreen()),
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: cubit,
+              child: const DozaPatientProfileScreen(),
+            ),
+          ),
         );
         await cubit.load();
       },
