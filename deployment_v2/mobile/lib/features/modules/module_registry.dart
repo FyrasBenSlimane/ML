@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../avatar/avatar_profile.dart';
+import '../doza/screens/doza_questionnaire_screen.dart';
+import '../sora/screens/sora_questionnaire_screen.dart';
 
 enum ModuleStatus { live, reserved }
 
@@ -71,20 +73,26 @@ const kModules = <ModelModule>[
     gradient: AppColors.violetGradient,
   ),
   ModelModule(
-    id: 'rxpredict',
-    name: 'RxPredict',
+    id: 'doza',
+    name: 'Doza',
     owner: 'Emna',
-    tagline: 'Treatment & insulin changes',
+    tagline: 'Changement de dose d\'insuline',
     icon: Icons.medication_rounded,
     gradient: AppColors.coralGradient,
+    status: ModuleStatus.live,
+    avatar: AvatarProfile.doza,
+    entry: _dozaEntry,
   ),
   ModelModule(
-    id: 'dailyguard',
-    name: 'DailyGuard',
+    id: 'sora',
+    name: 'Sora',
     owner: 'Fatma',
-    tagline: 'Follow-up & medication reminders',
-    icon: Icons.notifications_active_rounded,
+    tagline: 'Profil de sortie : suivi & contrôle',
+    icon: Icons.assignment_turned_in_rounded,
     gradient: AppColors.amberGradient,
+    status: ModuleStatus.live,
+    avatar: AvatarProfile.sora,
+    entry: _soraEntry,
   ),
   ModelModule(
     id: 'bedsense',
@@ -99,3 +107,7 @@ const kModules = <ModelModule>[
     ),
   ),
 ];
+
+// Entry builders (top-level tear-offs are const, so kModules stays const).
+Widget _dozaEntry(BuildContext _) => const DozaQuestionnaireScreen();
+Widget _soraEntry(BuildContext _) => const SoraQuestionnaireScreen();

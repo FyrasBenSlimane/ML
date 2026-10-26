@@ -46,6 +46,28 @@ class AvatarProfile {
     gradient: AppColors.brandGradient,
     accent: AppColors.teal,
   );
+
+  /// Doza — Emna's insulin-dose-change advisor (coral).
+  static const doza = AvatarProfile(
+    id: 'doza',
+    name: 'Doza',
+    role: 'Changement de dose d\'insuline',
+    faceAsset: 'assets/doza/doza_face.png',
+    portraitAsset: 'assets/doza/doza_portrait.png',
+    gradient: AppColors.coralGradient,
+    accent: AppColors.coral,
+  );
+
+  /// Sora — Fatma's discharge-profile advisor (amber).
+  static const sora = AvatarProfile(
+    id: 'sora',
+    name: 'Sora',
+    role: 'Profil de sortie du patient',
+    faceAsset: 'assets/sora/sora_face.png',
+    portraitAsset: 'assets/sora/sora_portrait.png',
+    gradient: AppColors.amberGradient,
+    accent: AppColors.amber,
+  );
 }
 
 /// One subtitle line of an avatar's script. `kind` lets the UI pick an icon.
