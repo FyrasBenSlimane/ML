@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../core/auth/auth_cubit.dart';
 import '../../core/network/api_client.dart';
@@ -104,41 +103,9 @@ class _AlertsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<PatientAlertsCubit>().state;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader('Mes messages', icon: Icons.favorite_rounded),
-        if (state.status == AlertsStatus.loading)
-          const Padding(
-            padding: EdgeInsets.only(top: 40),
-            child: Center(child: CircularProgressIndicator(color: AppColors.teal)),
-          )
-        else if (state.status == AlertsStatus.error)
-          _InfoCard(
-            icon: Icons.wifi_off_rounded,
-            color: AppColors.coral,
-            title: 'Connexion impossible',
-            body: state.error ?? 'Réessayez dans un instant.',
-          )
-        else if (state.alerts.isEmpty)
-          const _InfoCard(
-            icon: Icons.spa_rounded,
-            color: AppColors.teal,
-            title: 'Aucun message pour le moment',
-            body: 'Quand votre médecin vous écrira, vous le verrez apparaître ici.',
-          )
-        else
-          ...state.alerts
-              .map((a) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _AlertTile(alert: a),
-                  ))
-              .toList()
-              .animate(interval: 70.ms)
-              .fadeIn(duration: 400.ms)
-              .slideY(begin: 0.08, curve: Curves.easeOutCubic),
-        const SizedBox(height: 22),
         const _DozaCard(),
         const SizedBox(height: 16),
         const Center(
@@ -151,52 +118,102 @@ class _AlertsSection extends StatelessWidget {
   }
 }
 
-/// Carte « Doza » sous les messages : ouvre l'assistant insuline du patient.
-/// Au retour sur l'accueil, les alertes sont rafraîchies (règle B).
-class _DozaCard extends StatelessWidget {
+/// Carte « Doza » de l'accueil : ouvre l'assistant insuline du patient. Quand
+/// un message du médecin n'est pas lu, la carte s'illumine en rose et affiche
+/// une pastille « nouveau message » ; les messages se consultent dans l'écran
+/// Doza. Au retour sur l'accueil, les alertes sont rafraîchies (règle B).
+class _DozaCard extends StatefulWidget {
   const _DozaCard();
 
   @override
+  State<_DozaCard> createState() => _DozaCardState();
+}
+
+class _DozaCardState extends State<_DozaCard> with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
+        ..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  Future<void> _open() async {
+    final cubit = context.read<PatientAlertsCubit>();
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: cubit,
+          child: const DozaPatientProfileScreen(),
+        ),
+      ),
+    );
+    await cubit.load();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SoftCard(
+    final unread = context.select((PatientAlertsCubit c) =>
+        c.state.alerts.where((a) => a.module == 'doza' && !a.lu).length);
+    final hasAlert = unread > 0;
+
+    final card = SoftCard(
       gradient: AppColors.coralGradient,
-      onTap: () async {
-        final cubit = context.read<PatientAlertsCubit>();
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: cubit,
-              child: const DozaPatientProfileScreen(),
-            ),
-          ),
-        );
-        await cubit.load();
-      },
+      onTap: _open,
       child: Row(
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-              boxShadow: AppColors.glow(Colors.black, strength: 0.12),
-            ),
-            child: ClipOval(
-              child: Image.asset(AvatarProfile.doza.faceAsset,
-                  fit: BoxFit.cover, alignment: Alignment.topCenter),
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: AppColors.glow(Colors.black, strength: 0.12),
+                ),
+                child: ClipOval(
+                  child: Image.asset(AvatarProfile.doza.faceAsset,
+                      fit: BoxFit.cover, alignment: Alignment.topCenter),
+                ),
+              ),
+              if (hasAlert)
+                Positioned(
+                  right: -2,
+                  top: -2,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.coral, width: 3),
+                    ),
+                  )
+                      .animate(onPlay: (c) => c.repeat(reverse: true))
+                      .scaleXY(begin: 1, end: 1.3, duration: 700.ms, curve: Curves.easeInOut),
+                ),
+            ],
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Doza',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
-                SizedBox(height: 2),
-                Text('Votre assistant insuline',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+                const Text('Doza',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
+                const SizedBox(height: 2),
+                const Text('Votre assistant insuline',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+                if (hasAlert) ...[
+                  const SizedBox(height: 8),
+                  _NewMessagePill(count: unread),
+                ],
               ],
             ),
           ),
@@ -209,112 +226,61 @@ class _DozaCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
 
-class _AlertTile extends StatelessWidget {
-  const _AlertTile({required this.alert});
-
-  final PatientAlert alert;
-
-  (Color, IconData) get _style => switch (alert.niveau) {
-        'important' => (AppColors.coral, Icons.favorite_rounded),
-        'attention' => (AppColors.amber, Icons.spa_rounded),
-        _ => (AppColors.green, Icons.check_circle_rounded),
-      };
-
-  @override
-  Widget build(BuildContext context) {
-    final (color, icon) = _style;
-    return SoftCard(
-      padding: const EdgeInsets.all(16),
-      border: alert.lu ? null : Border.all(color: color.withValues(alpha: 0.5), width: 1.4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              IconBadge(icon, color: color, size: 42),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(alert.titre,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
-                    Text('${alert.medecin} · ${DateFormat('d MMM · HH:mm').format(alert.createdAt)}',
-                        style: const TextStyle(color: AppColors.muted, fontSize: 12)),
-                  ],
-                ),
-              ),
-              if (!alert.lu)
-                Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-            ],
+    // Halo rose pulsé autour de la carte lorsqu'un message n'est pas lu.
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (_, child) {
+        final t = Curves.easeInOut.transform(_pulse.value);
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: hasAlert
+                ? [
+                    BoxShadow(
+                      color: AppColors.coral.withValues(alpha: 0.35 + 0.45 * t),
+                      blurRadius: 22 + 30 * t,
+                      spreadRadius: 1 + 4 * t,
+                    ),
+                    BoxShadow(
+                      color: AppColors.pink.withValues(alpha: 0.22 + 0.30 * t),
+                      blurRadius: 32 + 24 * t,
+                      spreadRadius: 1 + 2 * t,
+                    ),
+                  ]
+                : null,
           ),
-          const SizedBox(height: 12),
-          Text(alert.message,
-              style: const TextStyle(color: AppColors.inkSoft, fontSize: 13.5, height: 1.45)),
-          if (!alert.lu) ...[
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Pressable(
-                onTap: () => context.read<PatientAlertsCubit>().markRead(alert.id),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.done_rounded, size: 16, color: color),
-                      const SizedBox(width: 6),
-                      Text('Marquer comme lu',
-                          style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12.5)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
+          child: child,
+        );
+      },
+      child: card,
     );
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.icon, required this.color, required this.title, required this.body});
+/// Pastille translucide « nouveau message » avec une cloche qui s'agite.
+class _NewMessagePill extends StatelessWidget {
+  const _NewMessagePill({required this.count});
 
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String body;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
-    return SoftCard(
+    final label = count > 1 ? '$count nouveaux messages' : '1 nouveau message';
+    return GlassPanel(
+      radius: 14,
+      opacity: 0.28,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          IconBadge(icon, color: color, size: 48),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                const SizedBox(height: 2),
-                Text(body,
-                    style: const TextStyle(color: AppColors.inkSoft, fontSize: 13, height: 1.35)),
-              ],
-            ),
-          ),
+          const Icon(Icons.notifications_active_rounded, color: Colors.white, size: 15)
+              .animate(onPlay: (c) => c.repeat(reverse: true))
+              .rotate(begin: -0.06, end: 0.06, duration: 420.ms, curve: Curves.easeInOut),
+          const SizedBox(width: 6),
+          Text(label,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12.5)),
         ],
       ),
     );
