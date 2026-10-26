@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/cards.dart';
+import '../../../shared/widgets/patient_alert_card.dart';
 import '../../avatar/avatar_profile.dart';
 import '../../avatar/avatar_stage_screen.dart';
 import '../../avatar/widgets/avatar_bubble.dart';
@@ -46,6 +47,33 @@ class ResultScreen extends StatelessWidget {
                       _MeaningCard(result: r, color: color),
                       _DriversCard(result: r),
                       _PlanCard(result: r),
+                      PatientAlertCard(
+                        module: 'teemo',
+                        gradient: AppColors.gradientForLevel(r.level),
+                        niveau: switch (r.level) {
+                          'HIGH' => 'important',
+                          'MODERATE' => 'attention',
+                          _ => 'info',
+                        },
+                        titre: switch (r.level) {
+                          'HIGH' => 'Votre médecin aimerait vous revoir bientôt',
+                          'MODERATE' => 'Un suivi un peu plus attentif',
+                          _ => 'Votre rétablissement est sur la bonne voie',
+                        },
+                        message: switch (r.level) {
+                          'HIGH' =>
+                            'Bonjour, votre médecin souhaite vous revoir rapidement après votre '
+                                'sortie pour s\'assurer que tout va bien. Un rendez-vous rapproché '
+                                'vous sera proposé. Prenez soin de vous.',
+                          'MODERATE' =>
+                            'Bonjour, votre médecin souhaite garder un œil attentif sur votre '
+                                'rétablissement. Pensez à bien respecter vos rendez-vous de suivi. '
+                                'Prenez soin de vous.',
+                          _ =>
+                            'Bonjour, votre médecin a étudié votre dossier. Votre rétablissement '
+                                'se présente bien : continuez vos bonnes habitudes. Prenez soin de vous.',
+                        },
+                      ),
                       _SnapshotCard(result: r),
                       _ModelCard(result: r),
                     ]

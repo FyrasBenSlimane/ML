@@ -3,9 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../shared/widgets/ambient.dart';
+import '../auth/root_gate.dart';
 import '../avatar/avatar_profile.dart';
 import '../avatar/widgets/avatar_face.dart';
-import '../shell/main_shell.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(PageRouteBuilder<void>(
         transitionDuration: const Duration(milliseconds: 800),
-        pageBuilder: (_, _, _) => const MainShell(),
+        pageBuilder: (_, _, _) => const RootGate(),
         transitionsBuilder: (_, a, _, child) => FadeTransition(opacity: a, child: child),
       ));
     });

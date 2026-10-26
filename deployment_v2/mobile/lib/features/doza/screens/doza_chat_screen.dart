@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/patient/active_patient_cubit.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/ambient.dart';
 import '../../../shared/widgets/cards.dart';
@@ -158,12 +159,14 @@ class _DozaChatScreenState extends State<DozaChatScreen> {
 
   Future<void> _analyze() async {
     final api = context.read<ApiClient>();  // capture before any await
+    final code = context.read<ActivePatientCubit>().state?.code;
     setState(() => _busy = true);
     await _bot('Merci. J\'analyse le profil du patient…');
     setState(() => _typing = true);
     _scrollToEnd();
     try {
-      final json = await api.postJson('/api/v1/doza/predict', {'answers': _answers});
+      final json = await api.postJson('/api/v1/doza/predict', {'answers': _answers},
+          headers: code == null ? null : {'X-Patient-Code': code});
       if (!mounted) return;
       final res = DozaResult(json);
       setState(() {

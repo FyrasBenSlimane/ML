@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../auth/patient_gate.dart';
 import '../avatar/avatar_profile.dart';
 import '../doza/screens/doza_chat_screen.dart';
 import '../sora/screens/sora_questionnaire_screen.dart';
@@ -109,5 +110,8 @@ const kModules = <ModelModule>[
 ];
 
 // Entry builders (top-level tear-offs are const, so kModules stays const).
-Widget _dozaEntry(BuildContext _) => const DozaChatScreen();
-Widget _soraEntry(BuildContext _) => const SoraQuestionnaireScreen();
+// Each model is gated by the Patient ID step before any evaluation starts.
+Widget _dozaEntry(BuildContext _) =>
+    const PatientGate(module: 'doza', child: DozaChatScreen());
+Widget _soraEntry(BuildContext _) =>
+    const PatientGate(module: 'sora', child: SoraQuestionnaireScreen());

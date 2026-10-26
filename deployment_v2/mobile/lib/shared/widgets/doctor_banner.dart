@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Red-tinted banner shown at the top of every model result: these outputs are
-/// for the doctor only and must never be shown to the patient (no auth yet —
-/// the app is the doctor's tool; patient linking & alerts come later).
+/// for the doctor only and must never be shown to the patient. The patient only
+/// ever receives the gentle alert the doctor sends from the card below.
 class DoctorBanner extends StatelessWidget {
   const DoctorBanner({super.key});
 

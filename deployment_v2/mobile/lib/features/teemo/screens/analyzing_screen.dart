@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/patient/active_patient_cubit.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/ambient.dart';
 import '../../../shared/widgets/cards.dart';
@@ -56,8 +57,9 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
       if (_done < _steps.length - 1) setState(() => _done++);
     });
     try {
+      final code = context.read<ActivePatientCubit>().state?.code;
       final results = await Future.wait([
-        context.read<TeemoRepository>().predict(widget.patient, label: widget.label),
+        context.read<TeemoRepository>().predict(widget.patient, label: widget.label, patientCode: code),
         Future<void>.delayed(const Duration(milliseconds: 2600)),
       ]);
       final result = results.first as TeemoResult;

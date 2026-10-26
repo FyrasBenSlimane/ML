@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/ambient.dart';
 import '../../../shared/widgets/cards.dart';
 import '../../../shared/widgets/doctor_banner.dart';
+import '../../../shared/widgets/patient_alert_card.dart';
 import '../../avatar/avatar_profile.dart';
 import '../../avatar/avatar_stage_screen.dart';
 import '../data/doza_models.dart';
@@ -62,6 +63,22 @@ class DozaResultScreen extends StatelessWidget {
                   _zoneRateCard(),
                   const SizedBox(height: 14),
                   _factorsCard(),
+                  const SizedBox(height: 14),
+                  PatientAlertCard(
+                    module: 'doza',
+                    gradient: AppColors.coralGradient,
+                    niveau: result.changeProbable ? 'attention' : 'info',
+                    titre: result.changeProbable
+                        ? 'Un petit ajustement de votre traitement'
+                        : 'Votre suivi se passe bien',
+                    message: result.changeProbable
+                        ? 'Bonjour, votre médecin a bien étudié votre dossier. Il souhaite adapter '
+                            'votre traitement pour votre confort et vous proposera un rendez-vous '
+                            'prochainement. Prenez soin de vous.'
+                        : 'Bonjour, votre médecin a étudié votre dossier. Tout se poursuit '
+                            'normalement : vous pouvez continuer votre traitement comme convenu. '
+                            'Prenez soin de vous.',
+                  ),
                   const SizedBox(height: 18),
                   GradientButton(
                     label: 'Écouter l\'explication de Doza',

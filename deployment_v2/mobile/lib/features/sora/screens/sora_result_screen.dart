@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/ambient.dart';
 import '../../../shared/widgets/cards.dart';
 import '../../../shared/widgets/doctor_banner.dart';
+import '../../../shared/widgets/patient_alert_card.dart';
 import '../../avatar/avatar_profile.dart';
 import '../../avatar/avatar_stage_screen.dart';
 import '../data/sora_models.dart';
@@ -74,6 +75,21 @@ class SoraResultScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   _profilCard(ctrl),
+                  const SizedBox(height: 14),
+                  PatientAlertCard(
+                    module: 'sora',
+                    gradient: AppColors.amberGradient,
+                    niveau: suivi.classe == 1 ? 'attention' : 'info',
+                    titre: suivi.classe == 1
+                        ? 'Un accompagnement renforcé après votre sortie'
+                        : 'Votre sortie est bien préparée',
+                    message: suivi.classe == 1
+                        ? 'Bonjour, votre médecin souhaite vous accompagner de plus près après '
+                            'votre sortie. Un suivi vous sera proposé pour vous aider au quotidien. '
+                            'Prenez soin de vous.'
+                        : 'Bonjour, votre médecin a préparé votre sortie. Votre suivi habituel '
+                            'suffit : continuez vos bonnes habitudes. Prenez soin de vous.',
+                  ),
                   const SizedBox(height: 18),
                   GradientButton(
                     label: 'Écouter l\'explication de Sora',

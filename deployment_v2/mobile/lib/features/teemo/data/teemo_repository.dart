@@ -19,8 +19,10 @@ class TeemoRepository {
     return _meta!;
   }
 
-  Future<TeemoResult> predict(Map<String, dynamic> patient, {String? label}) async {
-    final json = await _api.postJson('/api/v1/teemo/predict', patient);
+  Future<TeemoResult> predict(Map<String, dynamic> patient,
+      {String? label, String? patientCode}) async {
+    final json = await _api.postJson('/api/v1/teemo/predict', patient,
+        headers: patientCode == null ? null : {'X-Patient-Code': patientCode});
     return TeemoResult(json, label: label);
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/patient/active_patient_cubit.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/ambient.dart';
 import '../../../shared/widgets/cards.dart';
@@ -51,9 +52,11 @@ class _SoraAnalyzingScreenState extends State<SoraAnalyzingScreen> {
     _ticker = Timer.periodic(const Duration(milliseconds: 600), (t) {
       if (_done < _steps.length - 1) setState(() => _done++);
     });
+    final code = context.read<ActivePatientCubit>().state?.code;
     try {
       final results = await Future.wait([
-        context.read<ApiClient>().postJson('/api/v1/sora/predict', widget.fiche),
+        context.read<ApiClient>().postJson('/api/v1/sora/predict', widget.fiche,
+            headers: code == null ? null : {'X-Patient-Code': code}),
         Future<void>.delayed(const Duration(milliseconds: 2400)),
       ]);
       if (!mounted) return;

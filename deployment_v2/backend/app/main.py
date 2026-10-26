@@ -10,7 +10,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core import registry, tts
+from app.core import portal, registry, tts
 from app.core.config import API_PREFIX
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(name)s  %(message)s")
@@ -28,6 +28,9 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
 
 app.include_router(tts.router, prefix=API_PREFIX)
 MODULES = registry.discover(app, API_PREFIX)
+
+# Portail patient : auth, confirmation patient, alertes + garde des /predict.
+portal.install(app, API_PREFIX)
 
 
 @app.get("/health", tags=["System"])

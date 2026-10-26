@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/auth/auth_cubit.dart';
 import '../../core/network/server_status_cubit.dart';
 import '../../core/settings/settings_cubit.dart';
 import '../../core/theme/app_colors.dart';
@@ -51,6 +52,8 @@ class _SettingsSheetState extends State<_SettingsSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Settings', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 18),
+            _AccountCard(),
             const SizedBox(height: 18),
             const _Label('Your name'),
             TextField(
@@ -124,6 +127,48 @@ class _SettingsSheetState extends State<_SettingsSheet> {
             GradientButton(label: 'Done', icon: Icons.check_rounded, onTap: () => Navigator.pop(context)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Signed-in account summary with a logout action (doctor and patient alike).
+class _AccountCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = context.select((AuthCubit c) => c.state.user);
+    if (user == null) return const SizedBox.shrink();
+    final isMed = user.isMedecin;
+    return SoftCard(
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          IconBadge(isMed ? Icons.medical_services_rounded : Icons.favorite_rounded,
+              color: isMed ? AppColors.teal : AppColors.violet, size: 46),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(isMed ? 'Dr ${user.fullName}' : user.fullName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                Text(isMed ? 'Médecin' : 'Patient · ${user.code}',
+                    style: const TextStyle(color: AppColors.muted, fontSize: 12.5, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AuthCubit>().logout();
+            },
+            icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.coral),
+            label: const Text('Déconnexion',
+                style: TextStyle(color: AppColors.coral, fontWeight: FontWeight.w800)),
+          ),
+        ],
       ),
     );
   }

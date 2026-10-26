@@ -23,20 +23,33 @@ class ApiClient {
   final String Function() _baseUrl;
   final http.Client _http;
 
+  /// Bearer token of the signed-in user (set by AuthCubit). When present it is
+  /// sent on every request so the backend knows who is calling.
+  String? authToken;
+
   String get baseUrl => _baseUrl();
 
   Uri uri(String path) => Uri.parse('$baseUrl$path');
 
+  /// Auth header + any per-call extras (e.g. the patient code on /predict).
+  Map<String, String> _headers([Map<String, String>? extra]) {
+    final headers = <String, String>{};
+    final token = authToken;
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+    if (extra != null) headers.addAll(extra);
+    return headers;
+  }
+
   Future<Map<String, dynamic>> getJson(String path,
           {Duration timeout = const Duration(seconds: 12)}) =>
-      _send(() => _http.get(uri(path)), timeout);
+      _send(() => _http.get(uri(path), headers: _headers()), timeout);
 
   Future<Map<String, dynamic>> postJson(String path, Object body,
-          {Duration timeout = const Duration(seconds: 25)}) =>
+          {Map<String, String>? headers, Duration timeout = const Duration(seconds: 25)}) =>
       _send(
         () => _http.post(
           uri(path),
-          headers: const {'Content-Type': 'application/json'},
+          headers: _headers({'Content-Type': 'application/json', ...?headers}),
           body: jsonEncode(body),
         ),
         timeout,
@@ -44,7 +57,7 @@ class ApiClient {
 
   Future<List<dynamic>> getList(String path,
       {Duration timeout = const Duration(seconds: 12)}) async {
-    final res = await _raw(() => _http.get(uri(path)), timeout);
+    final res = await _raw(() => _http.get(uri(path), headers: _headers()), timeout);
     return jsonDecode(utf8.decode(res.bodyBytes)) as List<dynamic>;
   }
 

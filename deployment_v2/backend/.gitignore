@@ -1,0 +1,12 @@
+# Base SQLite locale du portail (créée au premier lancement)
+data/
+*.db
+
+# Journaux du serveur
+server.log
+*.log
+
+# Caches Python
+__pycache__/
+*.pyc
+.pytest_cache/

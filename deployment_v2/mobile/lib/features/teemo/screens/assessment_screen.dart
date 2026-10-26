@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/ambient.dart';
 import '../../../shared/widgets/cards.dart';
 import '../../../shared/widgets/pressable.dart';
+import '../../auth/patient_gate.dart';
 import '../../avatar/avatar_profile.dart';
 import '../../avatar/widgets/avatar_face.dart';
 import '../bloc/assessment_cubit.dart';
@@ -22,9 +23,13 @@ class AssessmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (ctx) => AssessmentCubit(ctx.read<TeemoRepository>()),
-      child: _AssessmentView(sample: sample),
+    // Confirm the Patient ID before any Teemo assessment can begin.
+    return PatientGate(
+      module: 'teemo',
+      child: BlocProvider(
+        create: (ctx) => AssessmentCubit(ctx.read<TeemoRepository>()),
+        child: _AssessmentView(sample: sample),
+      ),
     );
   }
 }
