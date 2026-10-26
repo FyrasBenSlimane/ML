@@ -32,8 +32,10 @@ SEED = 42
 np.random.seed(SEED)
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "splits"
-MODEL_DIR = Path(__file__).resolve().parent / "models"
-MODEL_DIR.mkdir(exist_ok=True)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from registry import MODELS as MODEL_DIR, AVATARS, model_file
+for _a in AVATARS:
+    (MODEL_DIR / AVATARS[_a]["owner"]).mkdir(parents=True, exist_ok=True)
 
 def load_split(name):
     d = DATA_DIR / name
@@ -105,8 +107,8 @@ calibrated_teemo = CalibratedClassifierCV(teemo_pipe, cv=3, method="isotonic")
 calibrated_teemo.fit(X_tr, y_tr)
 evaluate_clf("TEEMO Calibrated", calibrated_teemo, X_te, y_te)
 
-joblib.dump(calibrated_teemo, MODEL_DIR / "teemo_model.joblib")
-joblib.dump(feats, MODEL_DIR / "teemo_features.joblib")
+joblib.dump(calibrated_teemo, model_file("teemo_model.joblib"))
+joblib.dump(feats, model_file("teemo_features.joblib"))
 print("Saved: teemo_model.joblib")
 
 
@@ -117,26 +119,9 @@ print("\n" + "#"*60)
 print("# TRAINING CARESTEP (Fyras) — Recovery companion")
 print("#"*60)
 
-prep2, _, _ = make_preprocessor(X_tr, feats)
-carestep_pipe = Pipeline([
-    ("prep", prep2),
-    ("clf", xgb.XGBClassifier(
-        n_estimators=500, max_depth=5, learning_rate=0.05,
-        scale_pos_weight=(y_tr==0).sum()/(y_tr==1).sum(),
-        random_state=SEED, eval_metric="aucpr", verbosity=0,
-        subsample=0.8, colsample_bytree=0.8
-    ))
-])
-carestep_pipe.fit(X_tr, y_tr)
-evaluate_clf("CARESTEP (XGBoost)", carestep_pipe, X_te, y_te)
-
-calibrated_cs = CalibratedClassifierCV(carestep_pipe, cv=3, method="isotonic")
-calibrated_cs.fit(X_tr, y_tr)
-evaluate_clf("CARESTEP Calibrated", calibrated_cs, X_te, y_te)
-
-joblib.dump(calibrated_cs, MODEL_DIR / "carestep_model.joblib")
-joblib.dump(feats, MODEL_DIR / "carestep_features.joblib")
-print("Saved: carestep_model.joblib")
+# CareStep is trained in fyras/model/ (12 patient features, tuned + calibrated LightGBM);
+# retraining it here would overwrite that model with a different one.
+print("Skipped: CareStep is trained by fyras/model/ (run 01→04, then 05_export.py)")
 
 
 # ============================================================
@@ -165,8 +150,8 @@ calibrated_mo = CalibratedClassifierCV(medoracle_pipe, cv=3, method="isotonic")
 calibrated_mo.fit(X_tr_f, y_tr_f)
 evaluate_clf("MEDORACLE Calibrated", calibrated_mo, X_te_f, y_te_f)
 
-joblib.dump(calibrated_mo, MODEL_DIR / "medoracle_model.joblib")
-joblib.dump(feats_f, MODEL_DIR / "medoracle_features.joblib")
+joblib.dump(calibrated_mo, model_file("medoracle_model.joblib"))
+joblib.dump(feats_f, model_file("medoracle_features.joblib"))
 print("Saved: medoracle_model.joblib")
 
 
@@ -191,8 +176,8 @@ rxp_change_pipe = Pipeline([
 rxp_change_pipe.fit(X_tc_tr, y_tc_tr)
 evaluate_clf("RXPREDICT Change (DecisionTree)", rxp_change_pipe, X_tc_te, y_tc_te)
 
-joblib.dump(rxp_change_pipe, MODEL_DIR / "rxpredict_change_model.joblib")
-joblib.dump(feats_tc, MODEL_DIR / "rxpredict_change_features.joblib")
+joblib.dump(rxp_change_pipe, model_file("rxpredict_change_model.joblib"))
+joblib.dump(feats_tc, model_file("rxpredict_change_features.joblib"))
 print("Saved: rxpredict_change_model.joblib")
 
 # Model 4b: Insulin need
@@ -209,8 +194,8 @@ rxp_insulin_pipe = Pipeline([
 rxp_insulin_pipe.fit(X_ti_tr, y_ti_tr)
 evaluate_clf("RXPREDICT Insulin (DecisionTree)", rxp_insulin_pipe, X_ti_te, y_ti_te)
 
-joblib.dump(rxp_insulin_pipe, MODEL_DIR / "rxpredict_insulin_model.joblib")
-joblib.dump(feats_ti, MODEL_DIR / "rxpredict_insulin_features.joblib")
+joblib.dump(rxp_insulin_pipe, model_file("rxpredict_insulin_model.joblib"))
+joblib.dump(feats_ti, model_file("rxpredict_insulin_features.joblib"))
 print("Saved: rxpredict_insulin_model.joblib")
 
 
@@ -230,8 +215,8 @@ dg_suivi = Pipeline([
 ])
 dg_suivi.fit(X_s_tr, y_s_tr)
 evaluate_clf("DAILYGUARD Suivi", dg_suivi, X_s_te, y_s_te)
-joblib.dump(dg_suivi, MODEL_DIR / "dailyguard_suivi_model.joblib")
-joblib.dump(feats_s, MODEL_DIR / "dailyguard_suivi_features.joblib")
+joblib.dump(dg_suivi, model_file("dailyguard_suivi_model.joblib"))
+joblib.dump(feats_s, model_file("dailyguard_suivi_features.joblib"))
 
 # 5b: Compagnon
 X_c_tr, X_c_te, y_c_tr, y_c_te, feats_c = load_split("compagnon")
@@ -242,8 +227,8 @@ dg_comp = Pipeline([
 ])
 dg_comp.fit(X_c_tr, y_c_tr)
 evaluate_clf("DAILYGUARD Compagnon", dg_comp, X_c_te, y_c_te)
-joblib.dump(dg_comp, MODEL_DIR / "dailyguard_compagnon_model.joblib")
-joblib.dump(feats_c, MODEL_DIR / "dailyguard_compagnon_features.joblib")
+joblib.dump(dg_comp, model_file("dailyguard_compagnon_model.joblib"))
+joblib.dump(feats_c, model_file("dailyguard_compagnon_features.joblib"))
 
 # 5c: Rappel (medication forgetfulness risk)
 X_r_tr, X_r_te, y_r_tr, y_r_te, feats_r = load_split("rappel")
@@ -254,8 +239,8 @@ dg_rappel = Pipeline([
 ])
 dg_rappel.fit(X_r_tr, y_r_tr)
 evaluate_clf("DAILYGUARD Rappel", dg_rappel, X_r_te, y_r_te)
-joblib.dump(dg_rappel, MODEL_DIR / "dailyguard_rappel_model.joblib")
-joblib.dump(feats_r, MODEL_DIR / "dailyguard_rappel_features.joblib")
+joblib.dump(dg_rappel, model_file("dailyguard_rappel_model.joblib"))
+joblib.dump(feats_r, model_file("dailyguard_rappel_features.joblib"))
 
 print("Saved: all DailyGuard models")
 
@@ -283,8 +268,8 @@ calibrated_bs_a = CalibratedClassifierCV(bedsense_a, cv=3, method="isotonic")
 calibrated_bs_a.fit(X_tr_f, y_tr_f)
 evaluate_clf("BEDSENSE Model-A Calibrated", calibrated_bs_a, X_te_f, y_te_f)
 
-joblib.dump(calibrated_bs_a, MODEL_DIR / "bedsense_model_a.joblib")
-joblib.dump(feats_f, MODEL_DIR / "bedsense_features_a.joblib")
+joblib.dump(calibrated_bs_a, model_file("bedsense_model_a.joblib"))
+joblib.dump(feats_f, model_file("bedsense_features_a.joblib"))
 
 # 6b: Model B — Length of stay regression
 X_nb_tr, X_nb_te, y_nb_tr, y_nb_te, feats_nb = load_split("najd_b")
@@ -307,8 +292,8 @@ print(f"  MAE:      {mean_absolute_error(y_nb_te, y_pred_nb):.2f} days")
 print(f"  R²:       {r2_score(y_nb_te, y_pred_nb):.4f}")
 print(f"  Baseline: always {y_nb_te.median():.0f} days → MAE={mean_absolute_error(y_nb_te, [y_nb_te.median()]*len(y_nb_te)):.2f}")
 
-joblib.dump(bedsense_b, MODEL_DIR / "bedsense_model_b.joblib")
-joblib.dump(feats_nb, MODEL_DIR / "bedsense_features_b.joblib")
+joblib.dump(bedsense_b, model_file("bedsense_model_b.joblib"))
+joblib.dump(feats_nb, model_file("bedsense_features_b.joblib"))
 print("Saved: bedsense_model_a.joblib + bedsense_model_b.joblib")
 
 
@@ -318,8 +303,8 @@ print("Saved: bedsense_model_a.joblib + bedsense_model_b.joblib")
 print("\n" + "="*60)
 print("ALL MODELS TRAINED AND SAVED")
 print("="*60)
-models_saved = list(MODEL_DIR.glob("*.joblib"))
+models_saved = list(MODEL_DIR.rglob("*.joblib"))
 for m in sorted(models_saved):
     size_mb = m.stat().st_size / 1024 / 1024
-    print(f"  {m.name:45s} {size_mb:6.2f} MB")
+    print(f"  {str(m.relative_to(MODEL_DIR)):50s} {size_mb:6.2f} MB")
 print(f"\nTotal: {len(models_saved)} files")

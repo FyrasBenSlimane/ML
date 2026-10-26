@@ -8,7 +8,13 @@ from typing import Optional
 import joblib
 import pandas as pd
 import numpy as np
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from registry import ROOT, model_file
+
+sys.path.insert(0, str(ROOT))
 
 app = FastAPI(
     title="ReadmitGuard API",
@@ -16,12 +22,16 @@ app = FastAPI(
     version="1.0.0",
 )
 
-MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
+try:
+    from capalit_ml.api import router as capalit_router
+    app.include_router(capalit_router)
+except Exception as e:
+    print(f"Warning: Could not load capalit_ml (BedSense planning): {e}")
 
 
 def load(name):
-    model = joblib.load(MODEL_DIR / f"{name}_model.joblib")
-    features = joblib.load(MODEL_DIR / f"{name}_features.joblib")
+    model = joblib.load(model_file(f"{name}_model.joblib"))
+    features = joblib.load(model_file(f"{name}_features.joblib"))
     return model, features
 
 
@@ -35,12 +45,12 @@ for name in ["teemo", "carestep", "medoracle", "rxpredict_change", "rxpredict_in
 
 try:
     models["bedsense_a"] = (
-        joblib.load(MODEL_DIR / "bedsense_model_a.joblib"),
-        joblib.load(MODEL_DIR / "bedsense_features_a.joblib"),
+        joblib.load(model_file("bedsense_model_a.joblib")),
+        joblib.load(model_file("bedsense_features_a.joblib")),
     )
     models["bedsense_b"] = (
-        joblib.load(MODEL_DIR / "bedsense_model_b.joblib"),
-        joblib.load(MODEL_DIR / "bedsense_features_b.joblib"),
+        joblib.load(model_file("bedsense_model_b.joblib")),
+        joblib.load(model_file("bedsense_features_b.joblib")),
     )
 except Exception as e:
     print(f"Warning: Could not load bedsense: {e}")
@@ -116,9 +126,33 @@ def predict_teemo(patient: PatientData):
     }
 
 
+CARESTEP_DIAG = {"Circulatory": "circulatory", "Respiratory": "respiratory", "Digestive": "digestive",
+                 "Diabetes": "diabetes", "Injury": "injury", "Genitourinary": "infection_renal"}
+
+
+def carestep_row(p: PatientData) -> dict:
+    """Maps the shared patient fields to CareStep's 12 patient-reportable features (one-hot, as in the page)."""
+    outpatient = p.number_outpatient or 0
+    row = {
+        "age_ord": p.age_ordinal, "gender_bin": int(p.gender == "Male"),
+        "inpatient_cap": min(p.number_inpatient or 0, 3), "emergency_cap": min(p.number_emergency or 0, 3),
+        "outpatient_bkt": 0 if outpatient == 0 else 1 if outpatient <= 2 else 2 if outpatient <= 5 else 3,
+        "time_in_hospital": p.time_in_hospital, "num_medications": p.num_medications,
+        "a1c_tested": int(p.A1Cresult not in ("Not_Tested", "None", None)),
+        "change_No": int(p.num_med_changes == 0),
+    }
+    insulin = "No" if not p.insulin_prescrite else ("Up" if p.insulin_changed else "Steady")
+    discharge = p.discharge_disposition_id
+    group = "home" if discharge in (1, 8) else ("home_with_help" if discharge == 6 else "facility")
+    row[f"diag_group_{CARESTEP_DIAG.get(p.diag_1_group, 'other')}"] = 1
+    row[f"insulin_{insulin}"] = 1
+    row[f"discharge_group_{group}"] = 1
+    return row
+
+
 @app.post("/predict/carestep")
 def predict_carestep(patient: PatientData):
-    prob = predict_safe("carestep", patient.model_dump())
+    prob = predict_safe("carestep", carestep_row(patient))
     level = "HIGH" if prob >= 0.25 else ("MEDIUM" if prob >= 0.14 else "LOW")
     return {
         "model": "carestep",

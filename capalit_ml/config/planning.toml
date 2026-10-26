@@ -1,0 +1,20 @@
+# Bed planning settings. Edit these numbers to match your hospital.
+# Values marked PLACEHOLDER are NOT real data: the existing app has no bed capacity or staffing
+# figures, so these are starting values to replace with the service's own numbers.
+
+[hospital]
+total_beds = 200                 # PLACEHOLDER: beds available for these patients
+patients_per_nurse = 6           # PLACEHOLDER: patients one nurse looks after during a shift
+nurses_on_duty_per_shift = 32    # PLACEHOLDER: nurses on duty per shift
+tight_occupancy = 0.90           # share of beds above which a day is shown as "tight"
+
+[activity]
+planned_admissions_per_day = 38  # PLACEHOLDER: average admissions per day
+weekday_profile = [1.12, 1.12, 1.08, 1.08, 1.04, 0.80, 0.76]   # Monday to Sunday, average = 1
+history_days = 60                # days of past activity used to build today's ward
+horizon_days = 28                # how far ahead the plan looks
+seed = 42                        # fixes the simulated ward so every screen shows the same patients
+
+[returns]
+return_window_days = 30          # returns are spread evenly over the 30 days after discharge (Najd, note 06)
+safety_level = 0.90              # the "safe plan" line covers 9 cases out of 10

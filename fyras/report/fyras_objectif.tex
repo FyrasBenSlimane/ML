@@ -1,0 +1,124 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs,tabularx,array}
+\usepackage{amssymb,amsmath}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black}
+\setlist{nosep,leftmargin=*}
+\setlength{\tabcolsep}{3.5pt}
+
+\title{\textbf{CareStep} --- Objectif m\'etier \& objectif data\\
+\large Fyras $\mid$ Projet ML avanc\'e --- dataset UCI \#296 (Diabetes 130-US Hospitals, 1999--2008)}
+\author{Fyras}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\small\texttt{fyras/01\_vision\_and\_problem.md} \;$\cdot$\;
+\texttt{02\_objective\_OM\_ODS.md} \;$\cdot$\;
+\texttt{03\_model\_and\_features.md}
+\end{center}
+
+\section*{Probl\`eme}
+$\approx$ 1 s\'ejour sur 9 se termine par une r\'eadmission $<$30 jours ($\approx$ \$15\,200, AHRQ 2018).
+Les projets classiques s'arr\^etent \`a un score au moment de la sortie : ensuite, personne ne sait ce qui se passe \`a la maison.
+
+\section*{OM --- Objectif m\'etier}
+\begin{quote}
+\itshape
+Apr\`es la sortie, donner au patient un plan d'actions quotidien personnel, v\'erifier chaque jour ce qu'il a fait, et r\'esumer ses r\'eponses \`a l'\'equipe soignante pour \'eviter la r\'eadmission.
+\end{quote}
+
+\small
+
+
+{\centering
+\begin{tabularx}{\textwidth}{@{}XXl@{}}
+\toprule
+\textbf{KPI} & \textbf{D\'efinition} & \textbf{Cible} \\
+\midrule
+Compl\'etion du check-in & \% des 30 jours effectu\'es & $\ge$ 70\% \\
+Suivi pr\'ecoces & suivi $\le$ 7 jours (haut risque) & $\ge$ 80\% \\
+R\'eponse aux alertes & alertes trait\'ees en 24\,h & $\ge$ 90\% \\
+Compr\'ehension patient & nommer ses 2 facteurs de risque & $\ge$ 75\% \\
+\bottomrule
+\end{tabularx}
+\par}
+
+\par\vspace{2pt}
+\itshape Cibles = hypoth\`eses \`a tester en pilote, pas des r\'esultats du dataset.
+
+\section*{ODS --- Objectif data}
+\begin{quote}
+\itshape
+Un seul mod\`ele pr\'edit le risque de r\'eadmission \`a 30 jours avec 12 features patient ; SHAP en extrait les facteurs modifiables $\to$ plan personnalis\'e ; check-in, alertes et r\'esum\'e sont des r\`egles.
+\end{quote}
+
+\small
+
+
+{\centering
+\begin{tabularx}{\textwidth}{@{}llXp{5.2cm}@{}}
+\toprule
+\textbf{Partie} & \textbf{Type} & \textbf{Contenu} & \textbf{Succ\`es} \\
+\midrule
+ODS-A & ML & Risque $<$30\,j calibr\'e $\to$ faible/moyen/\'elev\'e & PR-AUC $\ge 2\times0{,}11$ ; $\ge$ 85--90\,\% du mod\`ele complet \\
+ODS-B & SHAP + r\`egles & Facteurs modifiables $\to$ plan d'action & 100\,\% des patients moyen/\'elev\'e ont $\ge$ 1 action \\
+ODS-C & R\`egles & Check-in 30\,j, alertes, r\'esum\'e hebdo & r\'esum\'e pour 100\,\% des patients actifs \\
+\bottomrule
+\end{tabularx}
+\par}
+
+\par\vspace{2pt}
+\itshape Un seul mod\`ele ML (ODS-A) ; ODS-B l'explique, ODS-C est de la logique autour.
+
+\section*{Target}
+\begin{quote}
+\itshape
+\textbf{Pr\'edire si le patient sera r\'eadmis dans les 30 jours} (\texttt{readmitted\ ==\ "<30"}), \`a partir uniquement de 12 questions qu'il sait lui-m\^eme r\'epondre.
+\end{quote}
+
+\small
+
+
+{\centering
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{\'El\'ement} & \textbf{D\'etail} \\
+\midrule
+Type & Classification binaire, $y=\mathbb{1}[\text{readmitted}<30]$ \\
+Pr\'evalence & $\approx$ 11\,\% de positifs (classe d\'es\'equilibr\'ee) \\
+Features & 12 r\'eponses patient : \^age, genre, visites pass\'ees, dur\'ee du s\'ejour, motif, nb m\'edicaments, insuline chang\'ee, traitement chang\'e, HbA1c test\'e, lieu de sortie --- pas de codes ICD-9 \\
+Sortie & Probabilit\'e calibr\'e $\to$ seuils faible $<$ 11\,\% $<$ moyen $<$ $\sim$2$\times$ $\le$ \'elev\'e \\
+M\'etriques & PR-AUC (phare), ROC-AUC, Brier + calibration, recall haut risque, ratio patient/full \\
+Mod\`eles & R\'egression logistique (baseline) $\to$ LightGBM/XGBoost ; split par patient (\texttt{GroupShuffleSplit}, anti-fuite) \\
+\bottomrule
+\end{tabularx}
+\par}
+
+
+\section*{ML ou pas ?}
+
+
+{\centering
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Partie} & \textbf{Nature} \\
+\midrule
+Score de risque \`a la sortie & ML (entra\^in\'e sur le dataset) \\
+Facteurs personnels & SHAP sur le mod\`ele \\
+Plan d'action, check-in, alertes, r\'esum\'e & R\`egles \\
+\bottomrule
+\end{tabularx}
+\par}
+
+\par\vspace{2pt}
+\itshape Le dataset s'arr\^ete \`a la sortie : seules les parties \emph{risque} sont apprises. Dire au prof : « l'OM est \emph{suivre le patient 30 jours chez lui} ; l'ODS n'utilise le ML que pour la partie risque. »
+
+\end{document}

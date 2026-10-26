@@ -1,0 +1,8 @@
+# Versions d'entraînement des modèles de Najd (scikit-learn lu dans les .joblib ; LightGBM 4.x, format de modèle v4).
+# Vérifié : sorties identiques avec scikit-learn 1.6.1 et 1.7.2 (LightGBM 4.7.0) sur les 101 766 séjours.
+scikit-learn==1.6.1
+lightgbm==4.7.0
+pandas>=2.1.0
+numpy>=1.26.0
+joblib>=1.3.0
+pytest>=8.0

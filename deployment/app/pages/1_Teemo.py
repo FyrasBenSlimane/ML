@@ -26,7 +26,8 @@ else:
 
 render_avatar_header("teemo")
 
-MODEL_DIR = Path(__file__).resolve().parent.parent.parent / "models"
+from registry import model_dir
+MODEL_DIR = model_dir("teemo")
 DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "splits"
 
 import joblib

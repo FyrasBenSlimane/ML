@@ -1,11 +1,16 @@
+# Build from the repository root (the app also needs capalit_ml/ and data/splits/):
+#   docker build -f deployment/Dockerfile -t readmitguard .
+#   docker run -p 8501:8501 -p 8000:8000 readmitguard
 FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY deployment/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY deployment/ .
+COPY capalit_ml /capalit_ml
+COPY data/splits /data/splits
 
 EXPOSE 8501 8000
 

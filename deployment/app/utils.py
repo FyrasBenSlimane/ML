@@ -5,9 +5,12 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import base64
+import sys
 import plotly.graph_objects as go
 
-MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from registry import model_file
+
 AVATAR_DIR = Path(__file__).resolve().parent / "static" / "avatars"
 
 
@@ -832,23 +835,67 @@ def inject_global_css():
     .team-role {
         font-size: 0.72rem; color: var(--text-secondary); margin: 0;
     }
+
+    /* ── Responsive — Tablet ── */
+    @media (max-width: 900px) {
+        .main .block-container { max-width: 100%; padding: 1.2rem 1rem; }
+        .hero-section { padding: 1.8rem 1.2rem; }
+        .hero-title { font-size: 1.5rem; }
+        .page-header { padding: 1.5rem 1.2rem; gap: 1.2rem; flex-wrap: wrap; }
+        .page-header-avatar { width: 80px; height: 80px; }
+        .page-header-name { font-size: 1.5rem; }
+        .page-header.teemo-header .page-header-avatar { width: 100px; height: 100px; }
+        .page-header.teemo-header .page-header-name { font-size: 1.8rem; }
+        .glass-card { padding: 1.2rem; }
+        .risk-circle { width: 110px; height: 110px; }
+        .risk-pct { font-size: 1.8rem; }
+        .chat-bubble { max-width: 90%; }
+    }
+
+    /* ── Responsive — Mobile ── */
+    @media (max-width: 600px) {
+        .main .block-container { padding: 0.8rem 0.5rem; }
+        .hero-section { padding: 1.2rem 1rem; border-radius: 14px; }
+        .hero-title { font-size: 1.2rem; }
+        .page-header {
+            padding: 1.2rem; gap: 0.8rem; border-radius: 14px;
+            flex-direction: column; text-align: center;
+        }
+        .page-header-avatar { width: 70px; height: 70px; }
+        .page-header-name { font-size: 1.3rem; }
+        .page-header.teemo-header .page-header-avatar { width: 80px; height: 80px; }
+        .page-header.teemo-header .page-header-name { font-size: 1.5rem; }
+        .glass-card { padding: 1rem; border-radius: 14px; }
+        .risk-container { padding: 1.2rem; }
+        .risk-circle { width: 100px; height: 100px; }
+        .risk-pct { font-size: 1.6rem; }
+        .chat-avatar { width: 36px; height: 36px; }
+        .chat-bubble { max-width: 85%; padding: 0.8rem 1rem; font-size: 0.85rem; }
+        .metric-value { font-size: 1.4rem; }
+        .avatar-img-wrap { width: 64px; height: 64px; }
+        .section-title { font-size: 1rem; }
+        .advice-card { padding: 0.8rem 1rem; font-size: 0.83rem; }
+        .blob-1 { width: 300px; height: 300px; }
+        .blob-2 { width: 250px; height: 250px; }
+        .blob-3 { width: 200px; height: 200px; }
+    }
     </style>
     """, unsafe_allow_html=True)
 
 
 def load_model(name):
-    model_path = MODEL_DIR / f"{name}_model.joblib"
-    feat_path = MODEL_DIR / f"{name}_features.joblib"
+    model_path = model_file(f"{name}_model.joblib")
+    feat_path = model_file(f"{name}_features.joblib")
     if not model_path.exists():
-        model_path = MODEL_DIR / f"{name}.joblib"
+        model_path = model_file(f"{name}.joblib")
     return joblib.load(model_path), joblib.load(feat_path)
 
 
 def load_model_ab(base_name):
-    model_a = joblib.load(MODEL_DIR / f"{base_name}_model_a.joblib")
-    feats_a = joblib.load(MODEL_DIR / f"{base_name}_features_a.joblib")
-    model_b = joblib.load(MODEL_DIR / f"{base_name}_model_b.joblib")
-    feats_b = joblib.load(MODEL_DIR / f"{base_name}_features_b.joblib")
+    model_a = joblib.load(model_file(f"{base_name}_model_a.joblib"))
+    feats_a = joblib.load(model_file(f"{base_name}_features_a.joblib"))
+    model_b = joblib.load(model_file(f"{base_name}_model_b.joblib"))
+    feats_b = joblib.load(model_file(f"{base_name}_features_b.joblib"))
     return model_a, feats_a, model_b, feats_b
 
 
@@ -942,19 +989,16 @@ def render_avatar_header(key):
     if key == "teemo":
         bars_html = '<span class="speaking-bars"><span></span><span></span><span></span><span></span><span></span></span>'
 
-    st.markdown(f"""
-    <div class="page-header{extra_class} fade-in" style="--header-color: {a['color']}; --header-color-end: {a['color']}cc;">
-        <div class="page-header-avatar">{img_html}</div>
-        <div class="page-header-info">
-            <p class="page-header-name">{a['name']}</p>
-            <p class="page-header-title">{a['title']} &mdash; by {a['owner']}</p>
-            <div style="margin-top: 0.5rem;">
-                <span class="badge {aud_class}">{aud_label}</span>
-                {bars_html}
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    header_html = (
+        f'<div class="page-header{extra_class} fade-in" style="--header-color: {a["color"]}; --header-color-end: {a["color"]}cc;">'
+        f'<div class="page-header-avatar">{img_html}</div>'
+        f'<div class="page-header-info">'
+        f'<p class="page-header-name">{a["name"]}</p>'
+        f'<p class="page-header-title">{a["title"]} &mdash; by {a["owner"]}</p>'
+        f'<div style="margin-top: 0.5rem;"><span class="badge {aud_class}">{aud_label}</span>{bars_html}</div>'
+        f'</div></div>'
+    )
+    st.markdown(header_html, unsafe_allow_html=True)
 
 
 def chat_message(key, text, is_user=False):
