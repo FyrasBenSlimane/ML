@@ -1,53 +1,39 @@
-"""Écrire un entier 0–100 en toutes lettres (français), pour le texte parlé.
+"""Spell an integer 0–100 in English words, for the spoken text.
 
-L'avatar lit la `narrative` à voix haute : on y écrit donc « soixante-deux pour
-cent » plutôt que « 62 % », conformément à la spec (nombres en toutes lettres).
+The avatar reads the `narrative` aloud, so we write "sixty-two percent"
+rather than "62 %" (numbers spelled out, per the spec). The module/function
+names are kept for backward compatibility.
 """
 
-_UNITES = [
-    "zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf",
-    "dix", "onze", "douze", "treize", "quatorze", "quinze", "seize",
-    "dix-sept", "dix-huit", "dix-neuf",
+_ONES = [
+    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+    "seventeen", "eighteen", "nineteen",
 ]
-_DIZAINES = {
-    20: "vingt", 30: "trente", 40: "quarante", 50: "cinquante", 60: "soixante",
-    80: "quatre-vingt",
+_TENS = {
+    20: "twenty", 30: "thirty", 40: "forty", 50: "fifty",
+    60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety",
 }
 
 
-def _sous_cent(n: int) -> str:
+def _sub_hundred(n: int) -> str:
     if n < 20:
-        return _UNITES[n]
-    if n < 70:
-        d, u = (n // 10) * 10, n % 10
-        base = _DIZAINES[d]
-        if u == 0:
-            return base
-        if u == 1:
-            return f"{base} et un"
-        return f"{base}-{_UNITES[u]}"
-    if n < 80:  # 70–79 : soixante-dix, soixante et onze, soixante-douze…
-        u = n - 60
-        if u == 11:
-            return "soixante et onze"
-        return f"soixante-{_UNITES[u]}"
-    # 80–99 : quatre-vingts, quatre-vingt-un, quatre-vingt-dix…
-    u = n - 80
-    if u == 0:
-        return "quatre-vingts"
-    return f"quatre-vingt-{_UNITES[u]}"
+        return _ONES[n]
+    d, u = (n // 10) * 10, n % 10
+    base = _TENS[d]
+    return base if u == 0 else f"{base}-{_ONES[u]}"
 
 
 def en_lettres(n: int) -> str:
-    """Entier 0–100 en toutes lettres."""
+    """Integer 0–100 in words."""
     n = int(round(n))
     if n <= 0:
-        return "zéro"
+        return "zero"
     if n >= 100:
-        return "cent"
-    return _sous_cent(n)
+        return "one hundred"
+    return _sub_hundred(n)
 
 
 def pourcent(n: int) -> str:
-    """« soixante-deux pour cent »."""
-    return f"{en_lettres(n)} pour cent"
+    """\"sixty-two percent\"."""
+    return f"{en_lettres(n)} percent"

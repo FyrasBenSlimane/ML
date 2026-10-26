@@ -11,45 +11,45 @@ router = APIRouter()
 
 
 def _narrative(res: dict) -> list:
-    """Texte PARLÉ pour l'avatar (français, nombres en toutes lettres).
+    """SPOKEN text for the avatar (English, numbers spelled out).
 
-    Destiné au médecin : on énonce la probabilité, la zone et son taux réel
-    observé, puis les facteurs qui ont le plus pesé (explication, pas un conseil).
+    For the doctor: we state the probability, the zone and its real observed
+    rate, then the factors that weighed most (an explanation, not advice).
     """
     segs = [{
         "kind": "greeting",
-        "text": "Bonjour, je suis Doza. Voici mon analyse du changement de dose "
-                "d'insuline, destinée au médecin.",
+        "text": "Hello, I'm Doza. Here is my analysis of the insulin dose change, "
+                "for the doctor.",
     }, {
         "kind": "score",
-        "text": f"La probabilité estimée que la dose change est de {pourcent(res['pourcentage'])}.",
+        "text": f"The estimated probability that the dose changes is {pourcent(res['pourcentage'])}.",
     }]
 
     zone = res["zone"].lower()
     if res["zone_taux"] is not None:
         segs.append({
             "kind": "calibration",
-            "text": f"Ce patient se situe en zone de {zone}. Parmi les patients proches, "
-                    f"environ {pourcent(res['zone_taux'])} ont vu leur dose changer.",
+            "text": f"This patient is in the {zone} zone. Among similar patients, "
+                    f"about {pourcent(res['zone_taux'])} saw their dose change.",
         })
     else:
-        segs.append({"kind": "calibration", "text": f"Ce patient se situe en zone de {zone}."})
+        segs.append({"kind": "calibration", "text": f"This patient is in the {zone} zone."})
 
     if res["facteurs"]:
         segs.append({
             "kind": "action",
-            "text": "Les facteurs qui ont le plus pesé pour ce patient sont les suivants.",
+            "text": "The factors that weighed most for this patient are as follows.",
         })
         for f in res["facteurs"]:
             segs.append({
                 "kind": "driver_up",
-                "text": f"{f['champ'].capitalize()}, renseignée comme {f['reponse']}.",
+                "text": f"{f['champ'].capitalize()}, recorded as {f['reponse']}.",
             })
 
     segs.append({
         "kind": "closing",
-        "text": "Rappel important : ce résultat est une aide à la décision pour le médecin. "
-                "Il ne doit pas être montré au patient.",
+        "text": "Important reminder: this result is a decision aid for the doctor. "
+                "It must not be shown to the patient.",
     })
     return segs
 

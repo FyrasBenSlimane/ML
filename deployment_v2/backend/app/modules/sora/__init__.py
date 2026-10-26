@@ -6,9 +6,9 @@ MODULE = ModuleInfo(
     id="sora",
     name="Sora",
     owner="Fatma",
-    tagline="Profil de sortie : suivi & contrôle",
-    description="Combine deux modèles — intensité du suivi (M1) et contrôle du diabète (M2) — "
-                "en un profil de sortie avec recommandation. Résultat destiné au médecin.",
+    tagline="Discharge profile: follow-up & control",
+    description="Combines two models — follow-up intensity (M1) and diabetes control (M2) — "
+                "into a discharge profile with a recommendation. Result for the doctor.",
     color="#F59E0B",  # amber
     status="live",
 )

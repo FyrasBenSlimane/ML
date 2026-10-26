@@ -126,7 +126,7 @@ class _AvatarPatientProfileScreenState extends State<AvatarPatientProfileScreen>
                 children: [
                   if (alerts.isNotEmpty) ...[
                     SectionHeader(
-                      unread > 0 ? 'Un message de votre médecin' : 'Vos messages',
+                      unread > 0 ? 'A message from your doctor' : 'Your messages',
                       icon: unread > 0
                           ? Icons.mark_email_unread_rounded
                           : Icons.mark_email_read_rounded,
@@ -138,11 +138,11 @@ class _AvatarPatientProfileScreenState extends State<AvatarPatientProfileScreen>
                       ),
                     const SizedBox(height: 10),
                   ],
-                  const SectionHeader('Comment je fonctionne', icon: Icons.route_rounded),
+                  const SectionHeader('How I work', icon: Icons.route_rounded),
                   _HowItWorks(steps: widget.steps),
                   if (widget.notes.isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    const SectionHeader('Bon à savoir', icon: Icons.favorite_rounded),
+                    const SectionHeader('Good to know', icon: Icons.favorite_rounded),
                     SoftCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

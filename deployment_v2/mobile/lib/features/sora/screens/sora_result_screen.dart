@@ -34,7 +34,7 @@ class SoraResultScreen extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const Text('Résultat Sora'),
+              title: const Text('Sora result'),
             ),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(16, 4, 16, 36 + MediaQuery.paddingOf(context).bottom),
@@ -55,7 +55,7 @@ class SoraResultScreen extends StatelessWidget {
                           child: _Tile(
                             icon: Icons.event_repeat_rounded,
                             color: suivi.classe == 1 ? AppColors.coral : AppColors.green,
-                            title: 'Suivi',
+                            title: 'Follow-up',
                             verdict: suivi.resultat,
                             pourcentage: suivi.pourcentage,
                           ),
@@ -65,7 +65,7 @@ class SoraResultScreen extends StatelessWidget {
                           child: _Tile(
                             icon: Icons.monitor_heart_rounded,
                             color: ctrl.classe == 1 ? AppColors.red : AppColors.green,
-                            title: 'Contrôle',
+                            title: 'Control',
                             verdict: ctrl.resultat,
                             pourcentage: ctrl.pourcentage,
                           ),
@@ -81,24 +81,24 @@ class SoraResultScreen extends StatelessWidget {
                     gradient: AppColors.amberGradient,
                     niveau: suivi.classe == 1 ? 'attention' : 'info',
                     titre: suivi.classe == 1
-                        ? 'Un accompagnement renforcé après votre sortie'
-                        : 'Votre sortie est bien préparée',
+                        ? 'Closer support after you go home'
+                        : 'Your discharge is well prepared',
                     message: suivi.classe == 1
-                        ? 'Bonjour, votre médecin souhaite vous accompagner de plus près après '
-                            'votre sortie. Un suivi vous sera proposé pour vous aider au quotidien. '
-                            'Prenez soin de vous.'
-                        : 'Bonjour, votre médecin a préparé votre sortie. Votre suivi habituel '
-                            'suffit : continuez vos bonnes habitudes. Prenez soin de vous.',
+                        ? 'Hello, your doctor would like to support you more closely after '
+                            'you go home. A follow-up will be offered to help you day to day. '
+                            'Take care of yourself.'
+                        : 'Hello, your doctor has prepared your discharge. Your usual follow-up '
+                            'is enough: keep up your good habits. Take care of yourself.',
                   ),
                   const SizedBox(height: 18),
                   GradientButton(
-                    label: 'Écouter l\'explication de Sora',
+                    label: 'Hear Sora\'s explanation',
                     icon: Icons.volume_up_rounded,
                     gradient: AppColors.amberGradient,
                     onTap: () => AvatarStageScreen.open(context,
                         avatar: AvatarProfile.sora,
                         segments: result.narrative,
-                        title: 'Sora explique'),
+                        title: 'Sora explains'),
                   ),
                 ].animate(interval: 80.ms).fadeIn(duration: 400.ms).slideY(begin: 0.08),
               ),
@@ -120,7 +120,7 @@ class SoraResultScreen extends StatelessWidget {
           Text(suivi.resultat,
               style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          const Text('Jauge pilotée par le besoin de suivi à la sortie',
+          const Text('Gauge driven by the need for follow-up at discharge',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12.5)),
         ],
@@ -137,7 +137,7 @@ class SoraResultScreen extends StatelessWidget {
             children: [
               Icon(Icons.hub_rounded, color: AppColors.amber),
               SizedBox(width: 8),
-              Text('Profil de sortie recommandé',
+              Text('Recommended discharge profile',
                   style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
             ],
           ),
@@ -209,7 +209,7 @@ class _Gauge extends StatelessWidget {
                 Text('$percentage%',
                     style: const TextStyle(
                         color: Colors.white, fontSize: 34, fontWeight: FontWeight.w800, height: 1)),
-                const Text('suivi',
+                const Text('follow-up',
                     style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
               ],
             ),

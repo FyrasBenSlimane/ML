@@ -121,12 +121,12 @@ class _PatientCodeSheetState extends State<_PatientCodeSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Quel patient évaluez-vous ?',
+                    const Text('Which patient are you assessing?',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                     Text(
                       _found == null
-                          ? 'Saisissez son identifiant patient (ex. PT-00042).'
-                          : 'Vérifiez que c\'est bien la bonne personne.',
+                          ? 'Enter their Patient ID (e.g. PT-00042).'
+                          : 'Check this is the right person.',
                       style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600, fontSize: 12.5),
                     ),
                   ],
@@ -153,7 +153,7 @@ class _PatientCodeSheetState extends State<_PatientCodeSheet> {
             ],
             const SizedBox(height: 18),
             GradientButton(
-              label: 'Confirmer le patient',
+              label: 'Confirm patient',
               icon: Icons.search_rounded,
               loading: _busy,
               onTap: _busy ? null : _confirm,
@@ -162,7 +162,7 @@ class _PatientCodeSheetState extends State<_PatientCodeSheet> {
             _confirmedCard(_found!),
             const SizedBox(height: 18),
             GradientButton(
-              label: 'Commencer l\'évaluation',
+              label: 'Start assessment',
               icon: Icons.arrow_forward_rounded,
               onTap: () => Navigator.of(context).pop(_found),
             ),
@@ -172,7 +172,7 @@ class _PatientCodeSheetState extends State<_PatientCodeSheet> {
                 _found = null;
                 _error = null;
               }),
-              child: const Text('Changer de patient',
+              child: const Text('Change patient',
                   style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.w700)),
             ),
           ],

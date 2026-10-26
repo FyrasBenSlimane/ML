@@ -56,7 +56,7 @@ class AvatarProfile {
   static const doza = AvatarProfile(
     id: 'doza',
     name: 'Doza',
-    role: 'Changement de dose d\'insuline',
+    role: 'Insulin dose advisor',
     faceAsset: 'assets/doza/doza_face.png',
     portraitAsset: 'assets/doza/doza_portrait.png',
     videoAsset: 'assets/doza/doza_talk.mp4',
@@ -68,12 +68,13 @@ class AvatarProfile {
   static const sora = AvatarProfile(
     id: 'sora',
     name: 'Sora',
-    role: 'Profil de sortie du patient',
+    role: 'Patient discharge profile',
     faceAsset: 'assets/sora/sora_face.png',
     portraitAsset: 'assets/sora/sora_portrait.png',
+    videoAsset: 'assets/sora/sora_talk.mp4',
     gradient: AppColors.amberGradient,
     accent: AppColors.amber,
-    voice: 'fr-FR-DeniseNeural',
+    voice: 'en-US-JennyNeural',
   );
 }
 

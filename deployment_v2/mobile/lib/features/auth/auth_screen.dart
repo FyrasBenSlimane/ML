@@ -103,13 +103,13 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(_register ? 'Créer un compte' : 'Content de vous revoir',
+                      Text(_register ? 'Create an account' : 'Welcome back',
                           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                       const SizedBox(height: 4),
                       Text(
                         _register
-                            ? 'Rejoignez le portail ReadmitGuard.'
-                            : 'Connectez-vous pour continuer.',
+                            ? 'Join the ReadmitGuard portal.'
+                            : 'Sign in to continue.',
                         style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 18),
@@ -118,20 +118,20 @@ class _AuthScreenState extends State<AuthScreen> {
                         const SizedBox(height: 14),
                         Row(
                           children: [
-                            Expanded(child: _field(_prenom, 'Prénom', Icons.badge_rounded)),
+                            Expanded(child: _field(_prenom, 'First name', Icons.badge_rounded)),
                             const SizedBox(width: 12),
-                            Expanded(child: _field(_nom, 'Nom', Icons.badge_outlined)),
+                            Expanded(child: _field(_nom, 'Last name', Icons.badge_outlined)),
                           ],
                         ),
                         const SizedBox(height: 12),
                       ],
-                      _field(_email, 'E-mail', Icons.alternate_email_rounded,
+                      _field(_email, 'Email', Icons.alternate_email_rounded,
                           keyboard: TextInputType.emailAddress),
                       const SizedBox(height: 12),
-                      _field(_password, 'Mot de passe', Icons.lock_rounded, obscure: true),
+                      _field(_password, 'Password', Icons.lock_rounded, obscure: true),
                       if (_register && _medecin) ...[
                         const SizedBox(height: 12),
-                        _field(_code, 'Code établissement', Icons.verified_user_rounded),
+                        _field(_code, 'Establishment code', Icons.verified_user_rounded),
                       ],
                       if (_error != null) ...[
                         const SizedBox(height: 14),
@@ -139,7 +139,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ],
                       const SizedBox(height: 20),
                       GradientButton(
-                        label: _register ? 'Créer mon compte' : 'Se connecter',
+                        label: _register ? 'Create my account' : 'Sign in',
                         icon: Icons.arrow_forward_rounded,
                         loading: _busy,
                         onTap: _busy ? null : _submit,
@@ -158,9 +158,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       text: TextSpan(
                         style: const TextStyle(color: AppColors.inkSoft, fontWeight: FontWeight.w600),
                         children: [
-                          TextSpan(text: _register ? 'Déjà un compte ?  ' : 'Nouveau ici ?  '),
+                          TextSpan(text: _register ? 'Already have an account?  ' : 'New here?  '),
                           TextSpan(
-                            text: _register ? 'Se connecter' : 'Créer un compte',
+                            text: _register ? 'Sign in' : 'Create an account',
                             style: const TextStyle(color: AppColors.tealDeep, fontWeight: FontWeight.w800),
                           ),
                         ],
@@ -193,7 +193,7 @@ class _AuthScreenState extends State<AuthScreen> {
         const Text('ReadmitGuard',
             style: TextStyle(
                 color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1)),
-        const Text('Un suivi qui veille sur vous',
+        const Text('Care that watches over you',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ],
     );
@@ -209,7 +209,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Row(
         children: [
           _roleTab('Patient', Icons.favorite_rounded, !_medecin, () => setState(() => _medecin = false)),
-          _roleTab('Médecin', Icons.medical_services_rounded, _medecin,
+          _roleTab('Doctor', Icons.medical_services_rounded, _medecin,
               () => setState(() => _medecin = true)),
         ],
       ),

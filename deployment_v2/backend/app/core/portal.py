@@ -91,22 +91,22 @@ def _bearer(authorization: str | None) -> str | None:
 def current_user(authorization: str | None = Header(default=None)) -> sqlite3.Row:
     payload = read_token(_bearer(authorization) or "")
     if not payload:
-        raise HTTPException(401, "Authentification requise.")
+        raise HTTPException(401, "Authentication required.")
     user = _user_by_id(int(payload["uid"]))
     if not user:
-        raise HTTPException(401, "Compte introuvable.")
+        raise HTTPException(401, "Account not found.")
     return user
 
 
 def require_medecin(user: sqlite3.Row = Depends(current_user)) -> sqlite3.Row:
     if user["role"] != "medecin":
-        raise HTTPException(403, "Action réservée au médecin.")
+        raise HTTPException(403, "Action restricted to the doctor.")
     return user
 
 
 def require_patient(user: sqlite3.Row = Depends(current_user)) -> sqlite3.Row:
     if user["role"] != "patient":
-        raise HTTPException(403, "Action réservée au patient.")
+        raise HTTPException(403, "Action restricted to the patient.")
     return user
 
 
@@ -128,7 +128,7 @@ class RegisterIn(BaseModel):
     @classmethod
     def _email(cls, v: str) -> str:
         if not _EMAIL_RE.match(v.strip()):
-            raise ValueError("Adresse e-mail invalide.")
+            raise ValueError("Invalid email address.")
         return v.strip()
 
 
@@ -154,9 +154,9 @@ auth_router = APIRouter(prefix="/auth", tags=["Portail · Auth"])
 @auth_router.post("/register", summary="Créer un compte patient ou médecin")
 def register(body: RegisterIn):
     if body.role == "medecin" and (body.code or "") != medecin_code():
-        raise HTTPException(403, "Code établissement invalide pour un compte médecin.")
+        raise HTTPException(403, "Invalid establishment code for a doctor account.")
     if _user_by_email(body.email):
-        raise HTTPException(400, "Un compte existe déjà avec cet e-mail.")
+        raise HTTPException(400, "An account already exists with this email.")
     conn = db.connect()
     try:
         cur = conn.execute(
@@ -176,7 +176,7 @@ def register(body: RegisterIn):
 def login(body: LoginIn):
     row = _user_by_email(body.email)
     if not row or not verify_password(body.password, row["password_hash"]):
-        raise HTTPException(401, "E-mail ou mot de passe incorrect.")
+        raise HTTPException(401, "Incorrect email or password.")
     return {"token": make_token(row["id"], row["role"]), "user": _public_user(row)}
 
 
@@ -195,7 +195,7 @@ def _patient_by_code(code: str) -> sqlite3.Row:
     uid = parse_patient_code(code)
     row = _user_by_id(uid) if uid is not None else None
     if not row or row["role"] != "patient":
-        raise HTTPException(404, "Aucun patient ne correspond à cet identifiant.")
+        raise HTTPException(404, "No patient matches this ID.")
     return row
 
 
@@ -224,7 +224,7 @@ def send_notification(body: NotificationIn, medecin: sqlite3.Row = Depends(requi
         ).fetchone()
         if not evalu:
             raise HTTPException(
-                403, "Vous devez d'abord évaluer ce patient avec ce module avant de l'alerter.")
+                403, "You must assess this patient with this module before alerting them.")
         cur = conn.execute(
             "INSERT INTO notifications "
             "(patient_id, medecin_id, module, niveau, titre, message, lu, created_at) "
@@ -277,7 +277,7 @@ def mark_read(notif_id: int, patient: sqlite3.Row = Depends(require_patient)):
         )
         conn.commit()
         if cur.rowcount == 0:
-            raise HTTPException(404, "Alerte introuvable.")
+            raise HTTPException(404, "Alert not found.")
     finally:
         conn.close()
     return {"id": notif_id, "lu": True}
@@ -301,20 +301,20 @@ class PredictGuardMiddleware(BaseHTTPMiddleware):
         module = match.group(1)
         payload = read_token(_bearer(request.headers.get("authorization")) or "")
         if not payload:
-            return _json_error(401, "Connexion médecin requise pour une évaluation.")
+            return _json_error(401, "Doctor sign-in required for an assessment.")
         if payload.get("role") != "medecin":
-            return _json_error(403, "Seul un médecin peut lancer une évaluation.")
+            return _json_error(403, "Only a doctor can run an assessment.")
         medecin = _user_by_id(int(payload["uid"]))
         if not medecin:
-            return _json_error(401, "Compte médecin introuvable.")
+            return _json_error(401, "Doctor account not found.")
 
         code = request.headers.get("x-patient-code")
         uid = parse_patient_code(code or "")
         patient = _user_by_id(uid) if uid is not None else None
         if not code:
-            return _json_error(400, "L'identifiant du patient est obligatoire.")
+            return _json_error(400, "The patient ID is required.")
         if not patient or patient["role"] != "patient":
-            return _json_error(404, "Aucun patient ne correspond à cet identifiant.")
+            return _json_error(404, "No patient matches this ID.")
 
         response = await call_next(request)
         body = b"".join([chunk async for chunk in response.body_iterator])

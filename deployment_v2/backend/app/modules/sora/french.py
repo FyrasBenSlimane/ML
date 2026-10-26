@@ -1,40 +1,30 @@
-"""Écrire un entier 0–100 en toutes lettres (français), pour le texte parlé."""
+"""Spell an integer 0–100 in English words, for the spoken text."""
 
-_UNITES = [
-    "zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf",
-    "dix", "onze", "douze", "treize", "quatorze", "quinze", "seize",
-    "dix-sept", "dix-huit", "dix-neuf",
+_ONES = [
+    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+    "seventeen", "eighteen", "nineteen",
 ]
-_DIZAINES = {20: "vingt", 30: "trente", 40: "quarante", 50: "cinquante",
-             60: "soixante", 80: "quatre-vingt"}
+_TENS = {20: "twenty", 30: "thirty", 40: "forty", 50: "fifty",
+         60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety"}
 
 
 def _sous_cent(n: int) -> str:
     if n < 20:
-        return _UNITES[n]
-    if n < 70:
-        d, u = (n // 10) * 10, n % 10
-        base = _DIZAINES[d]
-        if u == 0:
-            return base
-        if u == 1:
-            return f"{base} et un"
-        return f"{base}-{_UNITES[u]}"
-    if n < 80:
-        u = n - 60
-        return "soixante et onze" if u == 11 else f"soixante-{_UNITES[u]}"
-    u = n - 80
-    return "quatre-vingts" if u == 0 else f"quatre-vingt-{_UNITES[u]}"
+        return _ONES[n]
+    d, u = (n // 10) * 10, n % 10
+    base = _TENS[d]
+    return base if u == 0 else f"{base}-{_ONES[u]}"
 
 
 def en_lettres(n: int) -> str:
     n = int(round(n))
     if n <= 0:
-        return "zéro"
+        return "zero"
     if n >= 100:
-        return "cent"
+        return "one hundred"
     return _sous_cent(n)
 
 
 def pourcent(n: int) -> str:
-    return f"{en_lettres(n)} pour cent"
+    return f"{en_lettres(n)} percent"

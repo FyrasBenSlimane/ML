@@ -8,17 +8,17 @@ import '../../avatar/avatar_profile.dart';
 /// Aucun chiffre, aucun résultat de modèle — seulement des mots rassurants.
 const dozaIntro = [
   SpeechSegment('greeting',
-      "Bonjour, je suis Doza, l'assistante insuline de votre équipe soignante."),
+      "Hello, I'm Doza, your care team's insulin assistant."),
   SpeechSegment('action',
-      'Pendant votre séjour, votre médecin répond à quelques questions sur votre santé et votre traitement.'),
+      'During your stay, your doctor answers a few questions about your health and your treatment.'),
   SpeechSegment('comparison',
-      "Grâce à ces réponses, j'aide votre médecin à anticiper si votre dose d'insuline doit être adaptée."),
+      "From those answers, I help your doctor anticipate whether your insulin dose should be adjusted."),
   SpeechSegment('action',
-      "C'est toujours votre médecin qui décide. Moi, je l'aide simplement à préparer votre suivi."),
+      "Your doctor always makes the decision. I simply help them prepare your follow-up."),
   SpeechSegment('action',
-      'Si quelque chose doit changer, votre médecin vous enverra un message dans l\'application.'),
+      'If anything needs to change, your doctor will send you a message in the app.'),
   SpeechSegment('closing',
-      'Prenez soin de vous. Votre équipe soignante veille sur vous.'),
+      'Take care of yourself. Your care team is looking out for you.'),
 ];
 
 /// Écran patient de Doza — l'écran générique [AvatarPatientProfileScreen] en
@@ -39,23 +39,23 @@ class DozaPatientProfileScreen extends StatelessWidget {
       blobColors: [AppColors.coral, AppColors.pink, AppColors.amber],
       brandLabel: 'DOZA AI',
       brandDot: Color(0xFFFECDD3),
-      subtitle: 'Assistant insuline · by Emna',
+      subtitle: 'Insulin assistant · by Emna',
       title: 'Doza',
       intro: dozaIntro,
       steps: [
-        (Icons.edit_note_rounded, 'Le médecin répond à quelques questions',
-            'Sur votre santé et votre traitement, pendant votre séjour.', AppColors.blue),
-        (Icons.insights_rounded, "J'aide le médecin à anticiper",
-            "Un éventuel ajustement de votre dose d'insuline.", AppColors.coral),
-        (Icons.mark_email_read_rounded, 'Le médecin vous écrit si besoin',
-            'Vous recevez un message bienveillant dans « Mes messages ».', AppColors.teal),
+        (Icons.edit_note_rounded, 'The doctor answers a few questions',
+            'About your health and treatment, during your stay.', AppColors.blue),
+        (Icons.insights_rounded, 'I help the doctor anticipate',
+            'A possible adjustment to your insulin dose.', AppColors.coral),
+        (Icons.mark_email_read_rounded, 'The doctor writes to you if needed',
+            'You get a kind message in “Your messages”.', AppColors.teal),
       ],
       notes: [
         (Icons.verified_user_rounded,
-            "C'est toujours votre médecin qui décide. Doza l'aide seulement à préparer votre suivi."),
+            'Your doctor always makes the decision. Doza only helps them prepare your follow-up.'),
         (Icons.lock_person_rounded,
-            'Vos analyses restent avec votre médecin ; vous ne voyez que ses messages.'),
-        (Icons.spa_rounded, 'Doza est là pour vous rassurer, jamais pour vous inquiéter.'),
+            'Your analyses stay with your doctor; you only see their messages.'),
+        (Icons.spa_rounded, 'Doza is here to reassure you, never to worry you.'),
       ],
     );
   }

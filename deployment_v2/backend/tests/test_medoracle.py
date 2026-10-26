@@ -90,7 +90,7 @@ def test_meta_has_available_fields_and_historical_limitations():
     body = meta.json()
     assert body["fields"]["number_diagnoses"]["type"] == "number"
     assert "Circulatory" in body["fields"]["diag_1_group"]["options"]
-    assert "ne prouve pas" in body["model"]["limitations"]
+    assert "does not prove" in body["model"]["limitations"]
     assert body["rows"]["training"] > body["rows"]["test"] > 0
 
 

@@ -6,10 +6,10 @@ MODULE = ModuleInfo(
     id="doza",
     name="Doza",
     owner="Emna",
-    tagline="Changement de dose d'insuline",
-    description="Pipeline Gradient Boosting calibré : probabilité et zone de risque que la "
-                "dose d'insuline change, avec les facteurs qui ont le plus pesé (explication). "
-                "Résultat destiné au médecin.",
+    tagline="Insulin dose change advisor",
+    description="Calibrated Gradient Boosting pipeline: probability and risk zone that the "
+                "insulin dose changes, with the factors that weighed most (explanation). "
+                "Result for the doctor.",
     color="#FB7185",  # coral
     status="live",
 )

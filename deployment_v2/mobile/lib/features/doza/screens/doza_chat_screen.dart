@@ -15,7 +15,8 @@ import '../data/doza_models.dart';
 import 'doza_result_screen.dart';
 
 /// One question Doza asks, with the quick replies the doctor can tap. The LABELS
-/// are French (for the doctor); the VALUES are the codes the model expects.
+/// are shown to the doctor; the VALUES are the codes the model expects (never
+/// translated).
 class _Question {
   const _Question(this.key, this.text, this.options);
   final String key;
@@ -24,38 +25,38 @@ class _Question {
 }
 
 const _script = <_Question>[
-  _Question('gender', 'Pour commencer, le patient est un homme ou une femme ?',
-      [(1, 'Homme'), (0, 'Femme')]),
-  _Question('age_ordinal', 'Quelle est sa tranche d\'âge ?', [
+  _Question('gender', 'To start, is the patient a man or a woman?',
+      [(1, 'Man'), (0, 'Woman')]),
+  _Question('age_ordinal', 'What is their age range?', [
     (3, '18–39'), (4, '40–49'), (5, '50–59'), (6, '60–69'), (7, '70–79'), (8, '80 +')
   ]),
-  _Question('admission_type_id', 'Comment a-t-il été admis ?',
-      [(1, 'Urgence'), (2, 'Urgente'), (3, 'Programmée'), (0, 'Je ne sais pas')]),
-  _Question('admission_source_id', 'D\'où arrive-t-il ?', [
-    (7, 'Urgences'), (1, 'Médecin'), (6, 'Transfert'), (0, 'Autre'), ('jnsp', 'Je ne sais pas')
+  _Question('admission_type_id', 'How were they admitted?',
+      [(1, 'Emergency'), (2, 'Urgent'), (3, 'Elective'), (0, 'Not sure')]),
+  _Question('admission_source_id', 'Where are they coming from?', [
+    (7, 'ER'), (1, 'Physician'), (6, 'Transfer'), (0, 'Other'), ('jnsp', 'Not sure')
   ]),
-  _Question('medical_specialty', 'Dans quel service est-il pris en charge ?', [
-    ('InternalMedicine', 'Médecine interne'), ('Emergency/Trauma', 'Urgences'),
-    ('Family/GeneralPractice', 'Médecine générale'), ('Cardiology', 'Cardiologie'),
-    ('Other', 'Autre service'), ('Unknown', 'Inconnu'),
+  _Question('medical_specialty', 'Which department is caring for them?', [
+    ('InternalMedicine', 'Internal medicine'), ('Emergency/Trauma', 'ER / Trauma'),
+    ('Family/GeneralPractice', 'Family / GP'), ('Cardiology', 'Cardiology'),
+    ('Other', 'Other department'), ('Unknown', 'Unknown'),
   ]),
-  _Question('diag_1_group', 'Quel est le motif principal d\'hospitalisation ?', [
-    ('Diabetes', 'Diabète'), ('Circulatory', 'Cœur / vaisseaux'), ('Respiratory', 'Poumons'),
-    ('Digestive', 'Digestif'), ('Genitourinary', 'Reins'), ('Musculoskeletal', 'Articulations'),
-    ('Injury', 'Blessure'), ('Neoplasms', 'Cancer'), ('Other', 'Autre'),
+  _Question('diag_1_group', 'What is the main reason for admission?', [
+    ('Diabetes', 'Diabetes'), ('Circulatory', 'Heart / vessels'), ('Respiratory', 'Lungs'),
+    ('Digestive', 'Digestive'), ('Genitourinary', 'Kidneys'), ('Musculoskeletal', 'Joints'),
+    ('Injury', 'Injury'), ('Neoplasms', 'Cancer'), ('Other', 'Other'),
   ]),
-  _Question('A1Cresult', 'Quelle est sa dernière HbA1c ?',
-      [(1, '< 7 %'), (2, '7–8 %'), (3, '> 8 %'), (0, 'Inconnue')]),
-  _Question('num_medications', 'Combien de médicaments lui sont administrés ?',
+  _Question('A1Cresult', 'What is their latest HbA1c?',
+      [(1, '< 7 %'), (2, '7–8 %'), (3, '> 8 %'), (0, 'Unknown')]),
+  _Question('num_medications', 'How many medications are they on?',
       [(3, '1–5'), (8, '6–10'), (13, '11–15'), (18, '16–20'), (25, '> 20')]),
-  _Question('sulfonylurea', 'Un sulfamide hypoglycémiant est-il prescrit ?',
-      [(1, 'Oui'), (0, 'Non')]),
-  _Question('number_inpatient', 'L\'année précédente, combien d\'hospitalisations ?',
-      [(0, '0'), (1, '1'), (2, '2'), (3, '3 et +')]),
-  _Question('number_emergency', 'Et combien de passages aux urgences ?',
-      [(0, '0'), (1, '1'), (2, '2'), (3, '3 et +')]),
-  _Question('number_outpatient', 'Enfin, combien de consultations externes ?',
-      [(0, '0'), (1, '1'), (2, '2'), (3, '3 et +')]),
+  _Question('sulfonylurea', 'Is a sulfonylurea prescribed?',
+      [(1, 'Yes'), (0, 'No')]),
+  _Question('number_inpatient', 'In the past year, how many inpatient stays?',
+      [(0, '0'), (1, '1'), (2, '2'), (3, '3+')]),
+  _Question('number_emergency', 'And how many ER visits?',
+      [(0, '0'), (1, '1'), (2, '2'), (3, '3+')]),
+  _Question('number_outpatient', 'Finally, how many outpatient visits?',
+      [(0, '0'), (1, '1'), (2, '2'), (3, '3+')]),
 ];
 
 enum _Kind { bot, user, result, error }
@@ -106,9 +107,9 @@ class _DozaChatScreenState extends State<DozaChatScreen> {
     _retry = false;
     _options = null;
     setState(() {});
-    await _bot('Bonjour, je suis Doza 👩‍⚕️');
-    await _bot('Je vais estimer si la dose d\'insuline de votre patient (déjà sous '
-        'insuline) risque de changer. Quelques questions rapides — touchez une réponse.');
+    await _bot('Hello, I\'m Doza 👩‍⚕️');
+    await _bot('I\'ll estimate whether your patient\'s insulin dose (already on '
+        'insulin) is likely to change. A few quick questions — tap an answer.');
     await _ask();
   }
 
@@ -161,7 +162,7 @@ class _DozaChatScreenState extends State<DozaChatScreen> {
     final api = context.read<ApiClient>();  // capture before any await
     final code = context.read<ActivePatientCubit>().state?.code;
     setState(() => _busy = true);
-    await _bot('Merci. J\'analyse le profil du patient…');
+    await _bot('Thanks. Analyzing the patient\'s profile…');
     setState(() => _typing = true);
     _scrollToEnd();
     try {
@@ -183,7 +184,7 @@ class _DozaChatScreenState extends State<DozaChatScreen> {
         _busy = false;
         _messages.add(_Msg(_Kind.error, text: e.message));
         _retry = true;
-        _options = [('retry', 'Réessayer')];
+        _options = [('retry', 'Try again')];
       });
       _scrollToEnd();
     }
@@ -258,7 +259,7 @@ class _DozaChatScreenState extends State<DozaChatScreen> {
                   Row(
                     children: [
                       const PulseDot(color: AppColors.green, size: 6),
-                      Text(_busy ? 'analyse en cours…' : 'assistante insuline · en ligne',
+                      Text(_busy ? 'analyzing…' : 'insulin assistant · online',
                           style: const TextStyle(
                               color: AppColors.muted, fontSize: 12, fontWeight: FontWeight.w600)),
                     ],
@@ -267,7 +268,7 @@ class _DozaChatScreenState extends State<DozaChatScreen> {
               ),
             ),
             IconButton(
-              tooltip: 'Recommencer',
+              tooltip: 'Restart',
               onPressed: _busy ? null : _start,
               icon: const Icon(Icons.refresh_rounded),
             ),
@@ -431,8 +432,8 @@ class _ResultCard extends StatelessWidget {
   final DozaResult result;
 
   Color get _zoneColor => switch (result.zone) {
-        'Risque élevé' => AppColors.red,
-        'Risque intermédiaire' => AppColors.amber,
+        'High risk' => AppColors.red,
+        'Intermediate risk' => AppColors.amber,
         _ => AppColors.green,
       };
 
@@ -446,7 +447,7 @@ class _ResultCard extends StatelessWidget {
             const Icon(Icons.lock_person_rounded, color: AppColors.coral, size: 15),
             const SizedBox(width: 5),
             Flexible(
-              child: Text('Destiné au médecin — ne pas montrer au patient.',
+              child: Text('For the doctor — do not show the patient.',
                   style: TextStyle(
                       color: AppColors.coral.withValues(alpha: 0.95),
                       fontWeight: FontWeight.w800,
@@ -478,8 +479,8 @@ class _ResultCard extends StatelessWidget {
                           color: _zoneColor, fontWeight: FontWeight.w800, fontSize: 15)),
                   Text(
                     result.changeProbable
-                        ? 'Changement de dose probable'
-                        : 'Dose plutôt stable',
+                        ? 'Dose change likely'
+                        : 'Dose fairly stable',
                     style: const TextStyle(color: AppColors.inkSoft, fontSize: 12),
                   ),
                 ],
@@ -489,12 +490,12 @@ class _ResultCard extends StatelessWidget {
         ),
         if (result.zoneTaux != null) ...[
           const SizedBox(height: 8),
-          Text('Taux réel observé dans cette zone : ${result.zoneTaux} %.',
+          Text('Actual rate observed in this zone: ${result.zoneTaux}%.',
               style: const TextStyle(color: AppColors.inkSoft, fontSize: 12, height: 1.35)),
         ],
         const SizedBox(height: 12),
         GradientButton(
-          label: 'Détails & explication vocale',
+          label: 'Details & voice explanation',
           icon: Icons.volume_up_rounded,
           gradient: AppColors.coralGradient,
           onTap: () => Navigator.of(context).push(

@@ -18,16 +18,16 @@ class DozaResultScreen extends StatelessWidget {
   final DozaResult result;
 
   Color get _zoneColor => switch (result.zone) {
-        'Risque élevé' => AppColors.red,
-        'Risque intermédiaire' => AppColors.amber,
+        'High risk' => AppColors.red,
+        'Intermediate risk' => AppColors.amber,
         _ => AppColors.green,
       };
 
   LinearGradient get _zoneGradient => switch (result.zone) {
-        'Risque élevé' => const LinearGradient(
+        'High risk' => const LinearGradient(
             colors: [Color(0xFFFB7185), Color(0xFFEF4444), Color(0xFFDB2777)],
             begin: Alignment.topLeft, end: Alignment.bottomRight),
-        'Risque intermédiaire' => const LinearGradient(
+        'Intermediate risk' => const LinearGradient(
             colors: [Color(0xFFFBBF24), Color(0xFFF59E0B), Color(0xFFF97316)],
             begin: Alignment.topLeft, end: Alignment.bottomRight),
         _ => const LinearGradient(
@@ -50,7 +50,7 @@ class DozaResultScreen extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const Text('Résultat Doza'),
+              title: const Text('Doza result'),
             ),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(16, 4, 16, 36 + MediaQuery.paddingOf(context).bottom),
@@ -69,25 +69,24 @@ class DozaResultScreen extends StatelessWidget {
                     gradient: AppColors.coralGradient,
                     niveau: result.changeProbable ? 'attention' : 'info',
                     titre: result.changeProbable
-                        ? 'Un petit ajustement de votre traitement'
-                        : 'Votre suivi se passe bien',
+                        ? 'A small adjustment to your treatment'
+                        : 'Your follow-up is going well',
                     message: result.changeProbable
-                        ? 'Bonjour, votre médecin a bien étudié votre dossier. Il souhaite adapter '
-                            'votre traitement pour votre confort et vous proposera un rendez-vous '
-                            'prochainement. Prenez soin de vous.'
-                        : 'Bonjour, votre médecin a étudié votre dossier. Tout se poursuit '
-                            'normalement : vous pouvez continuer votre traitement comme convenu. '
-                            'Prenez soin de vous.',
+                        ? 'Hello, your doctor has carefully reviewed your file. They would like to '
+                            'adjust your treatment for your comfort and will offer you an appointment '
+                            'soon. Take care of yourself.'
+                        : 'Hello, your doctor has reviewed your file. Everything is going as usual: '
+                            'you can continue your treatment as agreed. Take care of yourself.',
                   ),
                   const SizedBox(height: 18),
                   GradientButton(
-                    label: 'Écouter l\'explication de Doza',
+                    label: 'Hear Doza\'s explanation',
                     icon: Icons.volume_up_rounded,
                     gradient: AppColors.coralGradient,
                     onTap: () => AvatarStageScreen.open(context,
                         avatar: AvatarProfile.doza,
                         segments: result.narrative,
-                        title: 'Doza explique'),
+                        title: 'Doza explains'),
                   ),
                 ].animate(interval: 80.ms).fadeIn(duration: 400.ms).slideY(begin: 0.08),
               ),
@@ -109,12 +108,12 @@ class DozaResultScreen extends StatelessWidget {
           Text(result.zone,
               style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          const Text('Probabilité que la dose d\'insuline change',
+          const Text('Probability the insulin dose changes',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12.5)),
           const SizedBox(height: 12),
           Pill(
-            result.changeProbable ? 'CHANGEMENT PROBABLE' : 'DOSE PLUTÔT STABLE',
+            result.changeProbable ? 'CHANGE LIKELY' : 'DOSE FAIRLY STABLE',
             color: Colors.white.withValues(alpha: 0.28),
             filled: true,
             icon: result.changeProbable ? Icons.swap_vert_rounded : Icons.horizontal_rule_rounded,
@@ -136,14 +135,14 @@ class DozaResultScreen extends StatelessWidget {
               children: [
                 Text(
                   result.zoneTaux != null
-                      ? 'Taux réel observé : ${result.zoneTaux} %'
-                      : 'Taux réel observé : indisponible',
+                      ? 'Actual rate observed: ${result.zoneTaux}%'
+                      : 'Actual rate observed: unavailable',
                   style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Parmi les patients proches de cette zone, c\'est la part dont la dose a '
-                  'réellement changé. Seuil de décision : ${(result.seuil * 100).round()} %.',
+                  'Among patients close to this zone, this is the share whose dose actually '
+                  'changed. Decision threshold: ${(result.seuil * 100).round()}%.',
                   style: const TextStyle(color: AppColors.inkSoft, fontSize: 12.5, height: 1.4),
                 ),
               ],
@@ -165,18 +164,18 @@ class DozaResultScreen extends StatelessWidget {
               Icon(Icons.account_tree_rounded, color: AppColors.coral),
               SizedBox(width: 8),
               Expanded(
-                child: Text('Facteurs qui ont le plus pesé',
+                child: Text('Factors that weighed most',
                     style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          const Text('Explication de ce patient précis — pas un conseil : ces éléments '
-              '(âge, provenance…) ne sont pas modifiables.',
+          const Text('An explanation for this specific patient — not advice: these items '
+              '(age, source…) cannot be changed.',
               style: TextStyle(color: AppColors.muted, fontSize: 12)),
           const SizedBox(height: 14),
           if (facteurs.isEmpty)
-            const Text('Aucun facteur n\'a dépassé le seuil d\'influence.',
+            const Text('No factor passed the influence threshold.',
                 style: TextStyle(color: AppColors.inkSoft))
           else
             for (final f in facteurs) ...[
@@ -223,7 +222,7 @@ class _Gauge extends StatelessWidget {
                 Text('$percentage%',
                     style: const TextStyle(
                         color: Colors.white, fontSize: 34, fontWeight: FontWeight.w800, height: 1)),
-                const Text('estimée',
+                const Text('estimated',
                     style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
               ],
             ),

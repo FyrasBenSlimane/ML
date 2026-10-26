@@ -10,9 +10,9 @@ import '../../teemo/data/teemo_models.dart';
 import '../../teemo/widgets/form_fields.dart';
 import 'sora_analyzing_screen.dart';
 
-/// Sora's clinical form — phrased FOR THE DOCTOR (French labels). The VALUES
-/// sent to the two models stay in English (Circulatory, Up, Not_Tested…), never
-/// translated. Builds a discharge profile: follow-up intensity × diabetes control.
+/// Sora's clinical form — phrased FOR THE DOCTOR. The VALUES sent to the two
+/// models stay as the model expects them (Circulatory, Up, Not_Tested, Oui…),
+/// never translated. Builds a discharge profile: follow-up × diabetes control.
 class SoraQuestionnaireScreen extends StatefulWidget {
   const SoraQuestionnaireScreen({super.key});
 
@@ -38,14 +38,14 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
   void _set(String k, Object v) => setState(() => _a[k] = v);
 
   static const _ageSpec = FieldSpec(type: 'choice', defaultValue: '[60-70]', options: [
-    FieldOption('[20-30]', '20 – 29 ans'),
-    FieldOption('[30-40]', '30 – 39 ans'),
-    FieldOption('[40-50]', '40 – 49 ans'),
-    FieldOption('[50-60]', '50 – 59 ans'),
-    FieldOption('[60-70]', '60 – 69 ans'),
-    FieldOption('[70-80]', '70 – 79 ans'),
-    FieldOption('[80-90]', '80 – 89 ans'),
-    FieldOption('[90-100]', '90 ans et +'),
+    FieldOption('[20-30]', '20 – 29 yrs'),
+    FieldOption('[30-40]', '30 – 39 yrs'),
+    FieldOption('[40-50]', '40 – 49 yrs'),
+    FieldOption('[50-60]', '50 – 59 yrs'),
+    FieldOption('[60-70]', '60 – 69 yrs'),
+    FieldOption('[70-80]', '70 – 79 yrs'),
+    FieldOption('[80-90]', '80 – 89 yrs'),
+    FieldOption('[90-100]', '90+ yrs'),
   ]);
 
   @override
@@ -60,19 +60,19 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
             children: [
               _header(context),
               const _Tip(
-                  'Renseignez le séjour du patient. Je combine deux modèles — intensité du '
-                  'suivi et contrôle du diabète — pour un profil de sortie, destiné au médecin.'),
+                  "Fill in the patient's stay. I combine two models — follow-up "
+                  'intensity and diabetes control — into a discharge profile, for the doctor.'),
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
                   children: [
-                    const SectionHeader('Séjour', icon: Icons.local_hospital_rounded),
+                    const SectionHeader('Stay', icon: Icons.local_hospital_rounded),
                     FieldCard(
                       icon: Icons.cake_rounded,
                       color: AppColors.pink,
-                      title: 'Tranche d\'âge',
+                      title: 'Age range',
                       child: PickerField(
-                        title: 'Tranche d\'âge',
+                        title: 'Age range',
                         spec: _ageSpec,
                         value: _a['age'],
                         color: AppColors.pink,
@@ -82,24 +82,24 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
                     FieldCard(
                       icon: Icons.bed_rounded,
                       color: AppColors.teal,
-                      title: 'Durée d\'hospitalisation',
+                      title: 'Length of stay',
                       child: SliderField(
                         value: (_a['hosp_days'] as num).toInt(),
                         min: 1,
                         max: 14,
-                        unit: 'jours',
+                        unit: 'days',
                         onChanged: (v) => _set('hosp_days', v),
                       ),
                     ),
                     FieldCard(
                       icon: Icons.medication_rounded,
                       color: AppColors.coral,
-                      title: 'Nombre de médicaments',
+                      title: 'Number of medications',
                       child: SliderField(
                         value: (_a['medications'] as num).toInt(),
                         min: 1,
                         max: 81,
-                        unit: 'médicaments',
+                        unit: 'medications',
                         color: AppColors.coral,
                         onChanged: (v) => _set('medications', v),
                       ),
@@ -107,33 +107,33 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
                     FieldCard(
                       icon: Icons.format_list_numbered_rounded,
                       color: AppColors.violet,
-                      title: 'Nombre de diagnostics',
+                      title: 'Number of diagnoses',
                       child: CounterField(
                         value: (_a['diagnostics'] as num).toInt(),
                         min: 1,
                         max: 16,
-                        unit: 'diagnostics',
+                        unit: 'diagnoses',
                         color: AppColors.violet,
                         onChanged: (v) => _set('diagnostics', v),
                       ),
                     ),
-                    const SectionHeader('Clinique', icon: Icons.monitor_heart_rounded),
+                    const SectionHeader('Clinical', icon: Icons.monitor_heart_rounded),
                     FieldCard(
                       icon: Icons.monitor_heart_rounded,
                       color: AppColors.red,
-                      title: 'Motif principal d\'hospitalisation',
+                      title: 'Main reason for admission',
                       child: ChoiceChips(
                         options: const [
-                          FieldOption('Circulatory', 'Cœur / vaisseaux'),
-                          FieldOption('Diabetes', 'Diabète'),
-                          FieldOption('Respiratory', 'Poumons'),
-                          FieldOption('Digestive', 'Digestif'),
-                          FieldOption('Injury', 'Blessure'),
-                          FieldOption('Musculoskeletal', 'Articulations'),
-                          FieldOption('Genitourinary', 'Reins'),
+                          FieldOption('Circulatory', 'Heart / vessels'),
+                          FieldOption('Diabetes', 'Diabetes'),
+                          FieldOption('Respiratory', 'Lungs'),
+                          FieldOption('Digestive', 'Digestive'),
+                          FieldOption('Injury', 'Injury'),
+                          FieldOption('Musculoskeletal', 'Joints'),
+                          FieldOption('Genitourinary', 'Kidneys'),
                           FieldOption('Neoplasms', 'Cancer'),
-                          FieldOption('External', 'Cause externe'),
-                          FieldOption('Other', 'Autre'),
+                          FieldOption('External', 'External cause'),
+                          FieldOption('Other', 'Other'),
                         ],
                         value: _a['diagnosis'],
                         color: AppColors.red,
@@ -144,12 +144,12 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
                     FieldCard(
                       icon: Icons.water_drop_rounded,
                       color: AppColors.sky,
-                      title: 'Glycémie max (sérum)',
-                      subtitle: 'Plus haute valeur pendant le séjour',
+                      title: 'Max glucose (serum)',
+                      subtitle: 'Highest value during the stay',
                       child: SegmentedChoice(
                         options: const [
-                          FieldOption('Not_Tested', 'Non testée'),
-                          FieldOption('Norm', 'Normale'),
+                          FieldOption('Not_Tested', 'Not tested'),
+                          FieldOption('Norm', 'Normal'),
                           FieldOption('>200', '> 200'),
                           FieldOption('>300', '> 300'),
                         ],
@@ -158,13 +158,13 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
                         onChanged: (v) => _set('glucose', v),
                       ),
                     ),
-                    const SectionHeader('Traitements', icon: Icons.vaccines_rounded),
+                    const SectionHeader('Treatments', icon: Icons.vaccines_rounded),
                     FieldCard(
                       icon: Icons.medical_information_rounded,
                       color: AppColors.indigo,
-                      title: 'Traitement antidiabétique',
+                      title: 'Antidiabetic treatment',
                       child: SegmentedChoice(
-                        options: const [FieldOption('Oui', 'Oui'), FieldOption('Non', 'Non')],
+                        options: const [FieldOption('Oui', 'Yes'), FieldOption('Non', 'No')],
                         value: _a['antidiabetic'],
                         color: AppColors.indigo,
                         onChanged: (v) => _set('antidiabetic', v),
@@ -173,13 +173,13 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
                     FieldCard(
                       icon: Icons.vaccines_rounded,
                       color: AppColors.violet,
-                      title: 'Insuline',
+                      title: 'Insulin',
                       child: ChoiceChips(
                         options: const [
-                          FieldOption('Oui', 'Prescrite'),
-                          FieldOption('Non', 'Non prescrite'),
-                          FieldOption('Up', 'Augmentée'),
-                          FieldOption('Down', 'Diminuée'),
+                          FieldOption('Oui', 'Prescribed'),
+                          FieldOption('Non', 'Not prescribed'),
+                          FieldOption('Up', 'Increased'),
+                          FieldOption('Down', 'Decreased'),
                         ],
                         value: _a['insulin'],
                         color: AppColors.violet,
@@ -189,12 +189,12 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
                     FieldCard(
                       icon: Icons.medication_liquid_rounded,
                       color: AppColors.teal,
-                      title: 'Metformine',
+                      title: 'Metformin',
                       child: ChoiceChips(
                         options: const [
-                          FieldOption('Oui', 'Prescrite'),
-                          FieldOption('Non', 'Non prescrite'),
-                          FieldOption('Steady', 'Inchangée'),
+                          FieldOption('Oui', 'Prescribed'),
+                          FieldOption('Non', 'Not prescribed'),
+                          FieldOption('Steady', 'Unchanged'),
                         ],
                         value: _a['metformin'],
                         color: AppColors.teal,
@@ -221,12 +221,12 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
               icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
             ),
             const Expanded(
-              child: Text('Sora · profil de sortie',
+              child: Text('Sora · discharge profile',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800)),
             ),
             IconButton(
-              tooltip: 'Réinitialiser',
+              tooltip: 'Reset',
               onPressed: () => setState(() => _a = Map.of(_initial)),
               icon: const Icon(Icons.refresh_rounded),
             ),
@@ -242,7 +242,7 @@ class _SoraQuestionnaireScreenState extends State<SoraQuestionnaireScreen> {
           boxShadow: AppColors.softShadow(),
         ),
         child: GradientButton(
-          label: 'Obtenir le profil',
+          label: 'Get the profile',
           icon: Icons.auto_awesome_rounded,
           gradient: AppColors.amberGradient,
           onTap: () => Navigator.of(context).push(MaterialPageRoute(

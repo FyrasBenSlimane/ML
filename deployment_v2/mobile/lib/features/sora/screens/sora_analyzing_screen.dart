@@ -27,10 +27,10 @@ class SoraAnalyzingScreen extends StatefulWidget {
 
 class _SoraAnalyzingScreenState extends State<SoraAnalyzingScreen> {
   static const _steps = [
-    ('Conversion de la fiche', Icons.tune_rounded),
-    ('Modèle Suivi (M1)', Icons.event_repeat_rounded),
-    ('Modèle Contrôle (M2)', Icons.monitor_heart_rounded),
-    ('Combinaison en profil', Icons.hub_rounded),
+    ('Converting the form', Icons.tune_rounded),
+    ('Follow-up model (M1)', Icons.event_repeat_rounded),
+    ('Control model (M2)', Icons.monitor_heart_rounded),
+    ('Combining into a profile', Icons.hub_rounded),
   ];
 
   int _done = 0;
@@ -108,7 +108,7 @@ class _SoraAnalyzingScreenState extends State<SoraAnalyzingScreen> {
             .animate()
             .scale(begin: const Offset(0.6, 0.6), curve: Curves.elasticOut, duration: 900.ms),
         const SizedBox(height: 24),
-        const Text('Sora établit le profil…',
+        const Text('Sora is building the profile…',
                 style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800))
             .animate(onPlay: (c) => c.repeat())
             .shimmer(duration: 1800.ms, color: AppColors.amber),
@@ -132,19 +132,19 @@ class _SoraAnalyzingScreenState extends State<SoraAnalyzingScreen> {
       children: [
         const IconBadge(Icons.wifi_off_rounded, color: AppColors.coral, size: 90),
         const SizedBox(height: 20),
-        const Text('Analyse impossible', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+        const Text('Analysis failed', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
         Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.inkSoft)),
         const SizedBox(height: 26),
         GradientButton(
-            label: 'Réessayer',
+            label: 'Try again',
             icon: Icons.refresh_rounded,
             gradient: AppColors.amberGradient,
             onTap: _run),
         const SizedBox(height: 12),
         TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Retour au questionnaire')),
+            child: const Text('Back to the form')),
       ],
     ).animate().fadeIn().scale(begin: const Offset(0.95, 0.95));
   }

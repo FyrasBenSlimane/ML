@@ -31,16 +31,16 @@ GLUCOSE_VALEURS = {"Not_Tested", "Norm", ">200", ">300"}
 
 # Profil combiné : (classe_suivi, classe_controle) -> recommandation.
 PROFILS = {
-    (0, 0): "Suivi allégé, conseils standards",
-    (0, 1): "Peu de rendez-vous, programme pédagogique recommandé",
-    (1, 0): "Rendez-vous réguliers, pas de programme spécifique",
-    (1, 1): "Suivi rapproché et programme pédagogique",
+    (0, 0): "Light follow-up, standard advice",
+    (0, 1): "Few appointments, educational program recommended",
+    (1, 0): "Regular appointments, no specific program",
+    (1, 1): "Close follow-up and educational program",
 }
 
-# Messages affichés AVEC accents (le bundle contient des libellés sans accents).
+# Messages affichés (libellés en anglais pour toute l'application).
 MESSAGES_CONTROLE_FR = {
-    1: "Programme pédagogique recommandé (alimentation, activité physique)",
-    0: "Conseils standards, pas de programme spécifique",
+    1: "Educational program recommended (diet, physical activity)",
+    0: "Standard advice, no specific program",
 }
 
 
@@ -84,7 +84,7 @@ def predire_suivi(data: dict) -> dict:
     return {
         "proba": round(proba, 4), "pourcentage": round(proba * 100), "classe": classe,
         "seuil": round(b["seuil"], 4),
-        "resultat": "Suivi renforcé" if classe == 1 else "Suivi léger",
+        "resultat": "Enhanced follow-up" if classe == 1 else "Light follow-up",
     }
 
 
@@ -96,7 +96,7 @@ def predire_controle(data: dict) -> dict:
     return {
         "proba": round(proba, 4), "pourcentage": round(proba * 100), "classe": classe,
         "seuil": round(b["seuil"], 4),
-        "resultat": "Mal contrôlé" if classe == 1 else "Bien contrôlé",
+        "resultat": "Poorly controlled" if classe == 1 else "Well controlled",
         "message": MESSAGES_CONTROLE_FR[classe],
     }
 

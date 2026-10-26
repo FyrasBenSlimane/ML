@@ -13,10 +13,10 @@ client = TestClient(app)
 authenticate(client)  # /predict est réservé au médecin : on authentifie le client
 
 PROFILS = {
-    (0, 0): "Suivi allégé, conseils standards",
-    (0, 1): "Peu de rendez-vous, programme pédagogique recommandé",
-    (1, 0): "Rendez-vous réguliers, pas de programme spécifique",
-    (1, 1): "Suivi rapproché et programme pédagogique",
+    (0, 0): "Light follow-up, standard advice",
+    (0, 1): "Few appointments, educational program recommended",
+    (1, 0): "Regular appointments, no specific program",
+    (1, 1): "Close follow-up and educational program",
 }
 
 FICHE = {
@@ -33,8 +33,8 @@ def test_sora_predict_combine_et_narration():
     body = client.post("/api/v1/sora/predict", json=FICHE).json()
     suivi, ctrl = body["suivi"], body["controle"]
 
-    for bloc, resultats in ((suivi, ("Suivi renforcé", "Suivi léger")),
-                            (ctrl, ("Mal contrôlé", "Bien contrôlé"))):
+    for bloc, resultats in ((suivi, ("Enhanced follow-up", "Light follow-up")),
+                            (ctrl, ("Poorly controlled", "Well controlled"))):
         assert 0.0 <= bloc["proba"] <= 1.0
         assert bloc["classe"] in (0, 1)
         assert bloc["resultat"] in resultats
@@ -49,7 +49,7 @@ def test_sora_predict_combine_et_narration():
     assert body["narrative"][0]["kind"] == "greeting"
     assert body["narrative"][-1]["kind"] == "closing"
     spoken = " ".join(s["text"] for s in body["narrative"])
-    assert "médecin" in spoken.lower()
+    assert "doctor" in spoken.lower()
     assert "%" not in spoken and not re.search(r"\d", spoken)
 
 

@@ -6,8 +6,8 @@ MODULE = ModuleInfo(
     id="medoracle",
     name="MedOracle",
     owner="Faycel",
-    tagline="Analyse comparative de l'équité des soins",
-    description="Compare les écarts moyens observés entre profils à gravité clinique comparable.",
+    tagline="Care equity comparison analysis",
+    description="Compares the average observed gaps between profiles of comparable clinical severity.",
     color="#8B5CF6",
     status="live",
 )

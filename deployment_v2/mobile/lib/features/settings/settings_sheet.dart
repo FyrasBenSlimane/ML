@@ -154,7 +154,7 @@ class _AccountCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                Text(isMed ? 'Médecin' : 'Patient · ${user.code}',
+                Text(isMed ? 'Doctor' : 'Patient · ${user.code}',
                     style: const TextStyle(color: AppColors.muted, fontSize: 12.5, fontWeight: FontWeight.w600)),
               ],
             ),
@@ -165,7 +165,7 @@ class _AccountCard extends StatelessWidget {
               context.read<AuthCubit>().logout();
             },
             icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.coral),
-            label: const Text('Déconnexion',
+            label: const Text('Log out',
                 style: TextStyle(color: AppColors.coral, fontWeight: FontWeight.w800)),
           ),
         ],

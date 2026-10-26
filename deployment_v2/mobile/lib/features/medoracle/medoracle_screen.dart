@@ -23,37 +23,37 @@ const _profileOptions = <String, List<String>>{
 };
 
 const _labels = <String, String>{
-  'number_diagnoses': 'Diagnostics',
-  'number_inpatient': 'Hospitalisations antérieures',
-  'number_emergency': 'Passages aux urgences',
-  'number_outpatient': 'Consultations externes',
-  'admission_type_id': 'Type d’admission',
-  'admission_source_id': 'Origine de l’admission',
-  'diag_1_group': 'Diagnostic principal',
-  'diag_2_group': 'Diagnostic secondaire',
-  'diag_3_group': 'Diagnostic tertiaire',
-  'A1Cresult': 'Résultat HbA1c',
-  'max_glu_serum': 'Glycémie maximale',
-  'race': 'Groupe démographique',
-  'gender': 'Genre',
-  'age_band': 'Tranche d’âge',
+  'number_diagnoses': 'Diagnoses',
+  'number_inpatient': 'Prior inpatient stays',
+  'number_emergency': 'ER visits',
+  'number_outpatient': 'Outpatient visits',
+  'admission_type_id': 'Admission type',
+  'admission_source_id': 'Admission source',
+  'diag_1_group': 'Primary diagnosis',
+  'diag_2_group': 'Secondary diagnosis',
+  'diag_3_group': 'Tertiary diagnosis',
+  'A1Cresult': 'HbA1c result',
+  'max_glu_serum': 'Max glucose',
+  'race': 'Demographic group',
+  'gender': 'Gender',
+  'age_band': 'Age band',
 };
 
 const _profileLabels = <String, Map<String, String>>{
   'race': {
-    'Caucasian': 'Caucasien',
-    'AfricanAmerican': 'Afro-américain',
-    'Asian': 'Asiatique',
-    'Hispanic': 'Hispanique',
-    'Other': 'Autre',
-    'Unknown': 'Inconnu',
+    'Caucasian': 'Caucasian',
+    'AfricanAmerican': 'African American',
+    'Asian': 'Asian',
+    'Hispanic': 'Hispanic',
+    'Other': 'Other',
+    'Unknown': 'Unknown',
   },
-  'gender': {'Female': 'Femme', 'Male': 'Homme'},
+  'gender': {'Female': 'Female', 'Male': 'Male'},
   'age_band': {
-    '<40': 'Moins de 40 ans',
-    '40-59': '40–59 ans',
-    '60-79': '60–79 ans',
-    '80+': '80 ans et plus',
+    '<40': 'Under 40',
+    '40-59': '40–59',
+    '60-79': '60–79',
+    '80+': '80+',
   },
 };
 
@@ -131,7 +131,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
     if (!_formKey.currentState!.validate()) return;
     final patient = context.read<ActivePatientCubit>().state;
     if (patient == null) {
-      setState(() => _error = 'Confirmez d’abord le patient à analyser.');
+      setState(() => _error = 'Confirm the patient to analyze first.');
       return;
     }
 
@@ -206,7 +206,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              _error ?? 'Le modèle MedOracle ne peut pas être chargé.',
+              _error ?? 'The MedOracle model could not be loaded.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -219,7 +219,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
                 _loadMeta();
               },
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Réessayer'),
+              label: const Text('Try again'),
             ),
           ],
         ),
@@ -255,7 +255,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
                           ),
                     ),
                     const Text(
-                      'Analyse comparative de l’équité des soins',
+                      'Care equity comparison analysis',
                       style: TextStyle(color: AppColors.inkSoft, height: 1.3),
                     ),
                   ],
@@ -275,8 +275,8 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
                 Expanded(
                   child: Text(
                     patient == null
-                        ? 'Aucun patient confirmé'
-                        : 'Évaluation liée au dossier ${patient.code}'
+                        ? 'No patient confirmed'
+                        : 'Assessment linked to file ${patient.code}'
                               '${patient.fullName.isEmpty ? '' : ' · ${patient.fullName}'}',
                     style: const TextStyle(
                       color: AppColors.inkSoft,
@@ -289,7 +289,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
           ),
           const SizedBox(height: 10),
           const SectionHeader(
-            'Contexte clinique commun',
+            'Shared clinical context',
             icon: Icons.local_hospital_rounded,
           ),
           SoftCard(
@@ -302,8 +302,8 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Les variables cliniques sont maintenues identiques pour les deux profils. '
-            'Seuls les attributs démographiques sélectionnés varient.',
+            'The clinical variables are kept identical for both profiles. '
+            'Only the selected demographic attributes vary.',
             style: TextStyle(
               color: AppColors.inkSoft,
               fontSize: 12.5,
@@ -311,16 +311,16 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _profileCard('patient_a', 'Profil de référence', AppColors.teal),
+          _profileCard('patient_a', 'Reference profile', AppColors.teal),
           const SizedBox(height: 12),
-          _profileCard('patient_b', 'Profil à comparer', AppColors.violet),
+          _profileCard('patient_b', 'Profile to compare', AppColors.violet),
           if (_error != null) ...[
             const SizedBox(height: 14),
             _errorCard(_error!),
           ],
           const SizedBox(height: 18),
           GradientButton(
-            label: _submitting ? 'Analyse en cours…' : 'Comparer les profils',
+            label: _submitting ? 'Analyzing…' : 'Compare the profiles',
             icon: Icons.compare_arrows_rounded,
             gradient: AppColors.violetGradient,
             loading: _submitting,
@@ -328,9 +328,9 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Comparaison de groupes rétrospective fondée sur des données hospitalières '
-            'américaines de 1999 à 2008. Ce résultat n’est ni une prédiction individuelle '
-            'ni une recommandation clinique; une association ne prouve pas une causalité.',
+            'Retrospective group comparison based on US hospital data from 1999 to 2008. '
+            'This result is neither an individual prediction nor a clinical recommendation; '
+            'an association does not prove causation.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.inkSoft,
@@ -369,7 +369,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
           validator: (text) {
             final parsed = int.tryParse(text ?? '');
             if (parsed == null || parsed < min || parsed > limit) {
-              return 'Saisissez une valeur de $min à $limit.';
+              return 'Enter a value from $min to $limit.';
             }
             return null;
           },
@@ -466,19 +466,19 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
     if (profileLabel != null) return profileLabel;
     if (field == 'A1Cresult') {
       return switch (value) {
-        'Not_Tested' => 'Non mesurée',
-        'Norm' => 'Normale',
-        '>7' => 'Supérieure à 7 %',
-        '>8' => 'Supérieure à 8 %',
+        'Not_Tested' => 'Not measured',
+        'Norm' => 'Normal',
+        '>7' => 'Above 7%',
+        '>8' => 'Above 8%',
         _ => '$value',
       };
     }
     if (field == 'max_glu_serum') {
       return switch (value) {
-        'Not_Tested' => 'Non mesurée',
+        'Not_Tested' => 'Not measured',
         'Norm' => 'Normal',
-        '>200' => 'Supérieure à 200',
-        '>300' => 'Supérieure à 300',
+        '>200' => 'Above 200',
+        '>300' => 'Above 300',
         _ => '$value',
       };
     }
@@ -486,20 +486,20 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
         field == 'diag_2_group' ||
         field == 'diag_3_group') {
       return switch (value) {
-        'Circulatory' => 'Circulatoire',
-        'Respiratory' => 'Respiratoire',
-        'Digestive' => 'Digestif',
-        'Diabetes' => 'Diabète',
-        'Injury' => 'Traumatisme',
-        'Musculoskeletal' => 'Musculosquelettique',
-        'Genitourinary' => 'Génito-urinaire',
-        'Neoplasms' => 'Néoplasmes',
-        'External' => 'Causes externes',
-        _ => 'Autre',
+        'Circulatory' => 'Circulatory',
+        'Respiratory' => 'Respiratory',
+        'Digestive' => 'Digestive',
+        'Diabetes' => 'Diabetes',
+        'Injury' => 'Injury',
+        'Musculoskeletal' => 'Musculoskeletal',
+        'Genitourinary' => 'Genitourinary',
+        'Neoplasms' => 'Neoplasms',
+        'External' => 'External causes',
+        _ => 'Other',
       };
     }
     if (field == 'admission_type_id') return 'Type $value';
-    if (field == 'admission_source_id') return 'Origine $value';
+    if (field == 'admission_source_id') return 'Source $value';
     return '$value';
   }
 
@@ -527,7 +527,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
       children: [
         const DoctorBanner(),
         const SectionHeader(
-          'Résultats comparatifs',
+          'Comparative results',
           icon: Icons.insights_rounded,
         ),
         for (final entry in comparisons.entries) ...[
@@ -540,7 +540,7 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'À propos du modèle',
+                'About the model',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -591,8 +591,8 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
               ),
               Pill(
                 comparison['detectable'] == true
-                    ? 'ÉCART DÉTECTABLE'
-                    : 'NON CONCLUANT',
+                    ? 'DETECTABLE GAP'
+                    : 'INCONCLUSIVE',
                 color: comparison['detectable'] == true
                     ? AppColors.violet
                     : AppColors.teal,
@@ -610,14 +610,14 @@ class _MedOracleScreenState extends State<MedOracleScreen> {
             ),
           ),
           Text(
-            'Différence ajustée (profil B − profil A); IC 95 % : '
-            '${comparison['ci_low']} à ${comparison['ci_high']} ${comparison['unit']}.',
+            'Adjusted difference (profile B − profile A); 95% CI: '
+            '${comparison['ci_low']} to ${comparison['ci_high']} ${comparison['unit']}.',
             style: const TextStyle(color: AppColors.inkSoft, height: 1.4),
           ),
           const SizedBox(height: 10),
           Text(
-            'Contexte moyen estimé : ${comparison['expected']} ${comparison['unit']} '
-            '(intervalle indicatif : $rangeLow–$rangeHigh).',
+            'Estimated average context: ${comparison['expected']} ${comparison['unit']} '
+            '(indicative range: $rangeLow–$rangeHigh).',
             style: const TextStyle(
               color: AppColors.inkSoft,
               fontSize: 12.5,

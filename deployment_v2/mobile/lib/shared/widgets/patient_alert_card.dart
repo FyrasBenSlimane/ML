@@ -38,9 +38,9 @@ class _PatientAlertCardState extends State<PatientAlertCard> {
   String? _error;
 
   (String, Color) get _niveauInfo => switch (widget.niveau) {
-        'important' => ('À revoir bientôt', AppColors.coral),
-        'attention' => ('Un peu plus de suivi', AppColors.amber),
-        _ => ('Tout va bien', AppColors.green),
+        'important' => ('Review soon', AppColors.coral),
+        'attention' => ('A bit more follow-up', AppColors.amber),
+        _ => ('All is well', AppColors.green),
       };
 
   @override
@@ -90,8 +90,8 @@ class _PatientAlertCardState extends State<PatientAlertCard> {
             Expanded(
               child: Text(
                 patient == null
-                    ? 'Alerte envoyée au patient.'
-                    : 'Alerte envoyée à ${patient.fullName}.',
+                    ? 'Alert sent to the patient.'
+                    : 'Alert sent to ${patient.fullName}.',
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 15),
               ),
             ),
@@ -110,7 +110,7 @@ class _PatientAlertCardState extends State<PatientAlertCard> {
               const IconBadge(Icons.send_rounded, color: AppColors.teal, size: 40),
               const SizedBox(width: 12),
               const Expanded(
-                child: Text('Envoyer une alerte au patient',
+                child: Text('Send an alert to the patient',
                     style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
               ),
               Pill(niveauLabel, color: niveauColor),
@@ -119,14 +119,14 @@ class _PatientAlertCardState extends State<PatientAlertCard> {
           const SizedBox(height: 6),
           Text(
             patient == null
-                ? 'Aucun patient sélectionné.'
-                : 'Message bienveillant pour ${patient.fullName} · ${patient.code}',
+                ? 'No patient selected.'
+                : 'Kind message for ${patient.fullName} · ${patient.code}',
             style: const TextStyle(color: AppColors.muted, fontSize: 12.5, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 14),
           TextField(
             controller: _titre,
-            decoration: const InputDecoration(labelText: 'Titre', isDense: true),
+            decoration: const InputDecoration(labelText: 'Title', isDense: true),
           ),
           const SizedBox(height: 10),
           TextField(
@@ -151,7 +151,7 @@ class _PatientAlertCardState extends State<PatientAlertCard> {
           ],
           const SizedBox(height: 16),
           GradientButton(
-            label: 'Envoyer l\'alerte',
+            label: 'Send the alert',
             icon: Icons.notifications_active_rounded,
             gradient: widget.gradient,
             loading: _busy,
@@ -163,7 +163,7 @@ class _PatientAlertCardState extends State<PatientAlertCard> {
               Icon(Icons.lock_person_rounded, color: AppColors.muted, size: 15),
               SizedBox(width: 6),
               Expanded(
-                child: Text('Le patient ne reçoit que ce message — jamais le résultat du modèle.',
+                child: Text('The patient only receives this message — never the model result.',
                     style: TextStyle(color: AppColors.muted, fontSize: 11.5, height: 1.3)),
               ),
             ],

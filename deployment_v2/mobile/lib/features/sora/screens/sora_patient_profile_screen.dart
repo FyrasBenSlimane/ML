@@ -8,16 +8,16 @@ import '../../avatar/avatar_profile.dart';
 /// Aucun chiffre, aucun résultat de modèle — seulement des mots rassurants.
 const soraIntro = [
   SpeechSegment('greeting',
-      "Bonjour, je suis Sora, l'assistante de suivi de votre équipe soignante."),
+      "Hello, I'm Sora, your care team's follow-up assistant."),
   SpeechSegment('action',
-      'Avant votre sortie, votre médecin remplit une fiche sur votre séjour.'),
+      'Before you go home, your doctor fills in a form about your stay.'),
   SpeechSegment('comparison',
-      "J'aide votre médecin à prévoir le bon rythme de suivi et, si besoin, un accompagnement sur l'alimentation et l'activité physique."),
-  SpeechSegment('action', "C'est toujours votre médecin qui décide."),
+      "I help your doctor plan the right follow-up pace and, if needed, support with diet and physical activity."),
+  SpeechSegment('action', "Your doctor always makes the decision."),
   SpeechSegment('action',
-      'Il vous enverra un message dans l\'application pour vous expliquer la suite.'),
+      "They'll send you a message in the app to explain what comes next."),
   SpeechSegment('closing',
-      'Prenez soin de vous. Votre équipe soignante reste à vos côtés.'),
+      'Take care of yourself. Your care team stays by your side.'),
 ];
 
 /// Écran patient de Sora — l'écran générique [AvatarPatientProfileScreen] en
@@ -39,16 +39,16 @@ class SoraPatientProfileScreen extends StatelessWidget {
       blobColors: [AppColors.amber, Color(0xFFFB923C), Color(0xFFFCD34D)],
       brandLabel: 'SORA AI',
       brandDot: Color(0xFFFDE68A),
-      subtitle: 'Suivi de sortie · by Fatma',
+      subtitle: 'Discharge follow-up · by Fatma',
       title: 'Sora',
       intro: soraIntro,
       steps: [
-        (Icons.edit_note_rounded, 'Le médecin remplit votre fiche de sortie',
-            'Pendant votre séjour, sur votre hospitalisation et vos traitements.', AppColors.blue),
-        (Icons.insights_rounded, "J'aide votre médecin à organiser votre suivi",
-            'Le bon rythme de suivi et, si besoin, un accompagnement.', AppColors.amber),
-        (Icons.mark_email_read_rounded, 'Le médecin vous écrit si besoin',
-            'Vous recevez un message bienveillant dans « Mes messages ».', AppColors.teal),
+        (Icons.edit_note_rounded, 'The doctor fills in your discharge form',
+            'During your stay, about your hospitalization and treatments.', AppColors.blue),
+        (Icons.insights_rounded, 'I help your doctor organize your follow-up',
+            'The right follow-up pace and, if needed, extra support.', AppColors.amber),
+        (Icons.mark_email_read_rounded, 'The doctor writes to you if needed',
+            'You get a kind message in “Your messages”.', AppColors.teal),
       ],
     );
   }

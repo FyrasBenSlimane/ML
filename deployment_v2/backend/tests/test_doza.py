@@ -18,10 +18,10 @@ BORNE_HAUTE = 0.55
 
 def _zone_attendue(p: float) -> str:
     if p >= BORNE_HAUTE:
-        return "Risque élevé"
+        return "High risk"
     if p >= SEUIL:
-        return "Risque intermédiaire"
-    return "Risque plus faible"
+        return "Intermediate risk"
+    return "Lower risk"
 
 
 def test_doza_predict_structure_et_defauts():
@@ -41,7 +41,7 @@ def test_doza_predict_structure_et_defauts():
     assert body["narrative"][0]["kind"] == "greeting"
     assert body["narrative"][-1]["kind"] == "closing"
     spoken = " ".join(s["text"] for s in body["narrative"])
-    assert "médecin" in spoken.lower()
+    assert "doctor" in spoken.lower()
     # nombres écrits en toutes lettres : pas de chiffre ni de « % » parlés
     assert "%" not in spoken and not re.search(r"\d", spoken)
 

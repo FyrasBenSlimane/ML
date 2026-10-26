@@ -17,29 +17,29 @@ router = APIRouter()
 ARTIFACT_DIR = ARTIFACTS_DIR / "medoracle"
 
 MODEL_INFO = {
-    "name": "MedOracle · analyse comparative de l'équité",
+    "name": "MedOracle · care equity comparison",
     "version": "1.0.0",
-    "dataset": "Diabetes 130-US Hospitals, établissements américains, 1999–2008",
-    "target": "Écarts moyens observés de durée de séjour et de nombre d'actes",
-    "method": "Régression ajustée sur la gravité clinique; LightGBM et XGBoost estiment le contexte moyen.",
+    "dataset": "Diabetes 130-US Hospitals, US facilities, 1999–2008",
+    "target": "Average observed gaps in length of stay and number of procedures",
+    "method": "Regression adjusted for clinical severity; LightGBM and XGBoost estimate the average context.",
     "limitations": (
-        "Analyse rétrospective de groupes, pas une prédiction individuelle ni une recommandation. "
-        "Les données historiques américaines ne décrivent pas nécessairement les pratiques actuelles. "
-        "Une association ne prouve pas une cause ni une faute de soins."
+        "Retrospective group analysis, not an individual prediction or a recommendation. "
+        "The historical US data does not necessarily describe current practices. "
+        "An association does not prove a cause or a care fault."
     ),
 }
 
 TARGETS = {
     "time_in_hospital": {
-        "label": "Durée du séjour",
-        "singular": "jour",
-        "plural": "jours",
+        "label": "Length of stay",
+        "singular": "day",
+        "plural": "days",
         "floor": 1,
     },
     "num_procedures": {
-        "label": "Nombre d'actes",
-        "singular": "acte",
-        "plural": "actes",
+        "label": "Number of procedures",
+        "singular": "procedure",
+        "plural": "procedures",
         "floor": 0,
     },
 }

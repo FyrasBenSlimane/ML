@@ -56,22 +56,22 @@ class ResultScreen extends StatelessWidget {
                           _ => 'info',
                         },
                         titre: switch (r.level) {
-                          'HIGH' => 'Votre médecin aimerait vous revoir bientôt',
-                          'MODERATE' => 'Un suivi un peu plus attentif',
-                          _ => 'Votre rétablissement est sur la bonne voie',
+                          'HIGH' => 'Your doctor would like to see you soon',
+                          'MODERATE' => 'A bit closer follow-up',
+                          _ => 'Your recovery is on the right track',
                         },
                         message: switch (r.level) {
                           'HIGH' =>
-                            'Bonjour, votre médecin souhaite vous revoir rapidement après votre '
-                                'sortie pour s\'assurer que tout va bien. Un rendez-vous rapproché '
-                                'vous sera proposé. Prenez soin de vous.',
+                            'Hello, your doctor would like to see you soon after your discharge '
+                                'to make sure all is well. An early appointment will be offered to '
+                                'you. Take care of yourself.',
                           'MODERATE' =>
-                            'Bonjour, votre médecin souhaite garder un œil attentif sur votre '
-                                'rétablissement. Pensez à bien respecter vos rendez-vous de suivi. '
-                                'Prenez soin de vous.',
+                            'Hello, your doctor would like to keep a close eye on your recovery. '
+                                'Please be sure to keep your follow-up appointments. '
+                                'Take care of yourself.',
                           _ =>
-                            'Bonjour, votre médecin a étudié votre dossier. Votre rétablissement '
-                                'se présente bien : continuez vos bonnes habitudes. Prenez soin de vous.',
+                            'Hello, your doctor has reviewed your file. Your recovery is looking '
+                                'good: keep up your good habits. Take care of yourself.',
                         },
                       ),
                       _SnapshotCard(result: r),

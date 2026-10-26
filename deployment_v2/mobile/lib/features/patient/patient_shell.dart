@@ -111,7 +111,7 @@ class _AlertsSection extends StatelessWidget {
           avatar: AvatarProfile.doza,
           module: 'doza',
           title: 'Doza',
-          subtitle: 'Votre assistant insuline',
+          subtitle: 'Your insulin assistant',
           gradient: AppColors.coralGradient,
           haloPrimary: AppColors.coral,
           haloSecondary: AppColors.pink,
@@ -122,7 +122,7 @@ class _AlertsSection extends StatelessWidget {
           avatar: AvatarProfile.sora,
           module: 'sora',
           title: 'Sora',
-          subtitle: 'Votre suivi après l\'hôpital',
+          subtitle: 'Your follow-up after hospital',
           gradient: AppColors.amberGradient,
           haloPrimary: AppColors.amber,
           haloSecondary: const Color(0xFFFB923C),
@@ -130,7 +130,7 @@ class _AlertsSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         const Center(
-          child: Text('Vos résultats médicaux restent avec votre médecin.',
+          child: Text('Your medical results stay with your doctor.',
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.muted, fontSize: 11.5)),
         ),
@@ -307,7 +307,7 @@ class _NewMessagePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = count > 1 ? '$count nouveaux messages' : '1 nouveau message';
+    final label = count > 1 ? '$count new messages' : '1 new message';
     return GlassPanel(
       radius: 14,
       opacity: 0.28,
@@ -351,10 +351,10 @@ class _SkyHeaderState extends State<_SkyHeader> with SingleTickerProviderStateMi
   }
 
   String _greeting(double h) {
-    if (h >= 5 && h < 12) return 'Bonjour';
-    if (h >= 12 && h < 17) return 'Bon après-midi';
-    if (h >= 17 && h < 21) return 'Bonsoir';
-    return 'Bonne nuit';
+    if (h >= 5 && h < 12) return 'Good morning';
+    if (h >= 12 && h < 17) return 'Good afternoon';
+    if (h >= 17 && h < 21) return 'Good evening';
+    return 'Good night';
   }
 
   @override
@@ -389,7 +389,7 @@ class _SkyHeaderState extends State<_SkyHeader> with SingleTickerProviderStateMi
                     children: [
                       Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 17),
                       SizedBox(width: 6),
-                      Text('Mon espace santé',
+                      Text('My health space',
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13)),
                     ],
                   ),
@@ -418,7 +418,7 @@ class _SkyHeaderState extends State<_SkyHeader> with SingleTickerProviderStateMi
                   style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
                 ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.1),
                 const SizedBox(height: 6),
-                const Text('Prenez soin de vous',
+                const Text('Take care of yourself',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 32,
@@ -437,8 +437,8 @@ class _SkyHeaderState extends State<_SkyHeader> with SingleTickerProviderStateMi
                       const SizedBox(width: 8),
                       Text(
                         unread > 0
-                            ? '$unread nouveau${unread > 1 ? 'x' : ''} message${unread > 1 ? 's' : ''}'
-                            : 'Vous êtes à jour',
+                            ? '$unread new message${unread > 1 ? 's' : ''}'
+                            : 'You\'re up to date',
                         style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12.5),
                       ),
@@ -508,8 +508,8 @@ class _PatientProfile extends StatelessWidget {
                 const SizedBox(width: 14),
                 const Expanded(
                   child: Text(
-                    'Votre confidentialité est protégée : les analyses restent réservées à votre '
-                    'médecin, qui vous transmet seulement ses messages.',
+                    'Your privacy is protected: the analyses stay with your doctor, '
+                    'who only passes on their messages to you.',
                     style: TextStyle(color: AppColors.inkSoft, fontSize: 13, height: 1.4),
                   ),
                 ),
@@ -518,7 +518,7 @@ class _PatientProfile extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           GradientButton(
-            label: 'Se déconnecter',
+            label: 'Log out',
             icon: Icons.logout_rounded,
             gradient: const LinearGradient(
               colors: [Color(0xFFFB7185), Color(0xFFEF4444)],
@@ -557,7 +557,7 @@ class _IdCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Mon identifiant patient',
+              const Text('My Patient ID',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12.5)),
               const SizedBox(height: 2),
               Text(code,
@@ -570,7 +570,7 @@ class _IdCard extends StatelessWidget {
             onTap: () {
               Clipboard.setData(ClipboardData(text: code));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Identifiant copié')),
+                const SnackBar(content: Text('ID copied')),
               );
             },
             child: const GlassPanel(
@@ -615,8 +615,8 @@ class _PatientNav extends StatelessWidget {
             ),
             child: Row(
               children: [
-                _item(0, Icons.favorite_rounded, 'Accueil', badge: unread),
-                _item(1, Icons.person_rounded, 'Profil'),
+                _item(0, Icons.favorite_rounded, 'Home', badge: unread),
+                _item(1, Icons.person_rounded, 'Profile'),
               ],
             ),
           ),

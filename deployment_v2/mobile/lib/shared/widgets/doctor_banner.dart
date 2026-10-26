@@ -22,7 +22,7 @@ class DoctorBanner extends StatelessWidget {
           const Icon(Icons.lock_person_rounded, color: AppColors.coral, size: 20),
           const SizedBox(width: 10),
           Expanded(
-            child: Text('Résultat destiné au médecin — ne pas montrer au patient.',
+            child: Text('Result for the doctor — do not show the patient.',
                 style: TextStyle(
                     color: AppColors.coral.withValues(alpha: 0.95),
                     fontWeight: FontWeight.w800,

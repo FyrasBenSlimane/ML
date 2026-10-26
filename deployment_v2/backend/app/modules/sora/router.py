@@ -28,62 +28,62 @@ class FicheSora(BaseModel):
     def _age(cls, v):
         m = re.search(r"\d+", v or "")
         if not m or not (0 <= int(m.group()) // 10 <= 9):
-            raise ValueError("La tranche d'âge est invalide (ex. attendu : « [70-80] »).")
+            raise ValueError("Invalid age range (expected e.g. “[70-80]”).")
         return v
 
     @field_validator("hosp_days")
     @classmethod
     def _tih(cls, v):
         if not (1 <= v <= 14):
-            raise ValueError("La durée d'hospitalisation doit être comprise entre 1 et 14 jours.")
+            raise ValueError("Length of stay must be between 1 and 14 days.")
         return v
 
     @field_validator("medications")
     @classmethod
     def _nmed(cls, v):
         if not (1 <= v <= 81):
-            raise ValueError("Le nombre de médicaments doit être compris entre 1 et 81.")
+            raise ValueError("Number of medications must be between 1 and 81.")
         return v
 
     @field_validator("diagnostics")
     @classmethod
     def _ndiag(cls, v):
         if not (1 <= v <= 16):
-            raise ValueError("Le nombre de diagnostics doit être compris entre 1 et 16.")
+            raise ValueError("Number of diagnoses must be between 1 and 16.")
         return v
 
     @field_validator("diagnosis")
     @classmethod
     def _diag(cls, v):
         if v not in logic.DIAG_GROUPS:
-            raise ValueError("Le motif d'hospitalisation est invalide.")
+            raise ValueError("Invalid reason for admission.")
         return v
 
     @field_validator("glucose")
     @classmethod
     def _glu(cls, v):
         if v not in logic.GLUCOSE_VALEURS:
-            raise ValueError("La glycémie max doit être : Not_Tested, Norm, >200 ou >300.")
+            raise ValueError("Max glucose must be: Not_Tested, Norm, >200 or >300.")
         return v
 
 
 def _narrative(res: dict) -> list:
-    """Texte PARLÉ pour l'avatar (français, nombres en toutes lettres), destiné au médecin."""
+    """SPOKEN text for the avatar (English, numbers spelled out), for the doctor."""
     suivi, ctrl = res["suivi"], res["controle"]
     return [
         {"kind": "greeting",
-         "text": "Bonjour, je suis Sora. Voici le profil de sortie du patient, destiné au médecin."},
+         "text": "Hello, I'm Sora. Here is the patient's discharge profile, for the doctor."},
         {"kind": "score",
-         "text": f"Côté suivi : {suivi['resultat'].lower()}. La probabilité d'un besoin de suivi "
-                 f"renforcé est de {pourcent(suivi['pourcentage'])}."},
+         "text": f"On follow-up: {suivi['resultat'].lower()}. The probability of needing enhanced "
+                 f"follow-up is {pourcent(suivi['pourcentage'])}."},
         {"kind": "comparison",
-         "text": f"Côté contrôle du diabète : {ctrl['resultat'].lower()}. La probabilité d'un "
-                 f"diabète mal contrôlé est de {pourcent(ctrl['pourcentage'])}."},
+         "text": f"On diabetes control: {ctrl['resultat'].lower()}. The probability of poorly "
+                 f"controlled diabetes is {pourcent(ctrl['pourcentage'])}."},
         {"kind": "action",
-         "text": f"Recommandation combinée : {res['profil'].lower()}."},
+         "text": f"Combined recommendation: {res['profil'].lower()}."},
         {"kind": "closing",
-         "text": "Rappel important : ce profil est une aide à la décision pour le médecin. "
-                 "Il ne doit pas être montré au patient."},
+         "text": "Important reminder: this profile is a decision aid for the doctor. "
+                 "It must not be shown to the patient."},
     ]
 
 
@@ -104,12 +104,12 @@ def predict(fiche: FicheSora):
     if not logic.modeles_disponibles():
         raise HTTPException(
             status_code=503,
-            detail="Modèle(s) Sora indisponible(s) : vérifiez artifacts/sora/ "
-                   "(sora_suivi_modele.joblib et accompagnement_modele.joblib).",
+            detail="Sora model(s) unavailable: check artifacts/sora/ "
+                   "(sora_suivi_modele.joblib and accompagnement_modele.joblib).",
         )
     try:
         res = logic.predire(fiche.model_dump())
     except Exception as e:  # pragma: no cover - erreur de prédiction inattendue
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la prédiction : {e}")
+        raise HTTPException(status_code=500, detail=f"Prediction error: {e}")
     # Clé générique pour l'app (jauge pilotée par le suivi), + narration.
     return {**res, "probability": res["suivi"]["proba"], "narrative": _narrative(res)}
