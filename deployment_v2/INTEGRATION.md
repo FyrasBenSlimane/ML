@@ -1,8 +1,9 @@
 # Plugging your model into ReadmitGuard
 
-Each teammate has a reserved slot in the app's **Team** tab (CareStep, RxPredict,
-DailyGuard, BedSense). MedOracle is already integrated as a physician-only, live module.
-Tapping a reserved slot shows these same steps. Nothing in Teemo's code needs to change.
+All six modules are live: Teemo, CareStep, MedOracle, Doza, Sora and BedSense.
+These steps describe how each one was plugged in, and how to add a new one.
+BedSense imports Najd's `capalit_ml/` package from the repository root, so keep that
+folder next to `deployment_v2/`. Nothing in Teemo's code needs to change.
 
 ## 1. Backend (5 minutes)
 

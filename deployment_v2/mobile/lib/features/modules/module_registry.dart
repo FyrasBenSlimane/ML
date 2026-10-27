@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/patient_gate.dart';
 import '../avatar/avatar_profile.dart';
+import '../carestep/carestep_screen.dart';
 import '../doza/screens/doza_chat_screen.dart';
 import '../medoracle/medoracle_screen.dart';
 import '../sora/screens/sora_questionnaire_screen.dart';
@@ -65,6 +66,9 @@ const kModules = <ModelModule>[
     tagline: '30-day recovery companion',
     icon: Icons.directions_walk_rounded,
     gradient: AppColors.blueGradient,
+    status: ModuleStatus.live,
+    avatar: AvatarProfile.carestep,
+    entry: _careStepEntry,
   ),
   ModelModule(
     id: 'medoracle',
@@ -120,3 +124,5 @@ Widget _soraEntry(BuildContext _) =>
     const PatientGate(module: 'sora', child: SoraQuestionnaireScreen());
 Widget _medOracleEntry(BuildContext _) =>
     const PatientGate(module: 'medoracle', child: MedOracleScreen());
+Widget _careStepEntry(BuildContext _) =>
+    const PatientGate(module: 'carestep', child: CareStepScreen());

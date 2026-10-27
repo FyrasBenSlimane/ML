@@ -76,6 +76,31 @@ class AvatarProfile {
     accent: AppColors.amber,
     voice: 'en-US-JennyNeural',
   );
+  /// CareStep — Fyras's 30-day recovery companion (blue).
+  static const carestep = AvatarProfile(
+    id: 'carestep',
+    name: 'CareStep',
+    role: '30-day recovery companion',
+    faceAsset: 'assets/carestep/carestep_face.png',
+    portraitAsset: 'assets/carestep/carestep_portrait.png',
+    gradient: AppColors.blueGradient,
+    accent: AppColors.blue,
+  );
+
+  /// BedSense — Najd's bed planning & length-of-stay advisor (green).
+  static const bedsense = AvatarProfile(
+    id: 'bedsense',
+    name: 'BedSense',
+    role: 'Bed planning & length of stay',
+    faceAsset: 'assets/bedsense/bedsense_face.png',
+    portraitAsset: 'assets/bedsense/bedsense_portrait.png',
+    gradient: LinearGradient(
+      colors: [Color(0xFF86EFAC), Color(0xFF22C55E), Color(0xFF0D9488)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+    accent: Color(0xFF22C55E),
+  );
 }
 
 /// One subtitle line of an avatar's script. `kind` lets the UI pick an icon.

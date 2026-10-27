@@ -1,8 +1,22 @@
 # ReadmitGuard — ML Avancé (Diabetes 130-US Hospitals, UCI #296)
 
-One Streamlit app with six AI avatars, one per team member, sharing the same UI.
-Every avatar's page, model files and training code are listed in
-[`deployment/registry.py`](deployment/registry.py).
+Two apps with six AI avatars, one per team member:
+
+- **MAAK معاك** (`deployment_v2/`): the main app. A Flutter mobile/web app and a FastAPI
+  backend with one plug-in module per member. See [`deployment_v2/README.md`](deployment_v2/README.md).
+- **ReadmitGuard** (`deployment/`): the Streamlit app. Every avatar's page, model files and
+  training code are listed in [`deployment/registry.py`](deployment/registry.py).
+
+| Avatar (MAAK) | Owner | Backend module | App screens |
+|---|---|---|---|
+| Teemo | Ryma | `deployment_v2/backend/app/modules/teemo/` | `deployment_v2/mobile/lib/features/teemo/` |
+| CareStep | Fyras | `deployment_v2/backend/app/modules/carestep/` | `deployment_v2/mobile/lib/features/carestep/` |
+| MedOracle | Faycel | `deployment_v2/backend/app/modules/medoracle/` | `deployment_v2/mobile/lib/features/medoracle/` |
+| Doza | Emna | `deployment_v2/backend/app/modules/doza/` | `deployment_v2/mobile/lib/features/doza/` |
+| Sora | Fatma | `deployment_v2/backend/app/modules/sora/` | `deployment_v2/mobile/lib/features/sora/` |
+| BedSense | Najd | `deployment_v2/backend/app/modules/bedsense/` (uses `capalit_ml/`) | `deployment_v2/mobile/lib/features/bedsense/` |
+
+Streamlit app:
 
 | Avatar | Owner | Page | Model files | Trained by |
 |---|---|---|---|---|
@@ -26,6 +40,7 @@ deployment/
   models/<member>/               each member's trained model files
   registry.py                    who owns which page, model and training code
   train_all_models.py            retrains Ryma, Faycel, Emna and Fatma's models
+deployment_v2/                   MAAK app: backend/ (FastAPI modules) + mobile/ (Flutter)
 capalit_ml/                      Najd: models, planning, settings, tests
 fyras/model/                     Fyras: CareStep labs, main.py, notebook
 <member>/                        each member's design notes (and report)

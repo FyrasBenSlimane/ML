@@ -7,20 +7,25 @@ deployment_v2/
 ├── backend/                     FastAPI — one plug-in module per team member
 │   ├── app/main.py              entry point (auto-discovers modules)
 │   ├── app/core/                registry, shared female TTS (/api/v1/tts), config
+│   ├── app/modules/bedsense/    Najd's bed planning + length of stay (imports ../../capalit_ml)
+│   ├── app/modules/carestep/    Fyras's 30-day recovery companion
 │   ├── app/modules/medoracle/   physician-only equity-of-care comparison
 │   ├── app/modules/teemo/       Ryma's model: features, model, SHAP, care plan, narrative
 │   ├── app/modules/_template/   copy this to add a model
+│   ├── artifacts/carestep/      CareStep model + feature list
 │   ├── artifacts/medoracle/     MedOracle model, metadata and source coefficients
 │   ├── artifacts/teemo/         model files + reference.json (built from the data splits)
 │   ├── scripts/build_teemo_reference.py
-│   └── tests/                   pytest (11 tests)
+│   └── tests/                   pytest (45 tests)
 ├── mobile/                      Flutter app (Android / iOS / web)
 │   ├── lib/core/                theme, settings, API client, server status
 │   ├── lib/features/avatar/     reusable talking-avatar stage (video + voice + subtitles)
+│   ├── lib/features/bedsense/   bed planning, follow-up list, check a patient
+│   ├── lib/features/carestep/   questionnaire, analysing, result + 30-day plan
 │   ├── lib/features/medoracle/  physician-only comparative analysis form and results
 │   ├── lib/features/teemo/      assessment wizard, analysing, results, profile
 │   ├── lib/features/home/       day/night sky home screen
-│   ├── lib/features/modules/    team hub, registry, reserved slots, _template
+│   ├── lib/features/modules/    team hub, registry (all six live), _template
 │   └── assets/teemo/            Teemo's portrait, face and talking clip
 ├── README.md
 └── INTEGRATION.md               how teammates plug their model in
