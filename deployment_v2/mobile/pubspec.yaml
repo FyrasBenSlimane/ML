@@ -72,6 +72,7 @@ flutter:
     - assets/doza/
     - assets/sora/
     - assets/carestep/
+    - assets/bedsense/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

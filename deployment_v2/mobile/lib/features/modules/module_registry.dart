@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/patient_gate.dart';
 import '../avatar/avatar_profile.dart';
+import '../bedsense/bedsense_screen.dart';
 import '../carestep/carestep_screen.dart';
 import '../doza/screens/doza_chat_screen.dart';
 import '../medoracle/medoracle_screen.dart';
@@ -113,6 +114,9 @@ const kModules = <ModelModule>[
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
+    status: ModuleStatus.live,
+    avatar: AvatarProfile.bedsense,
+    entry: _bedSenseEntry,
   ),
 ];
 
@@ -126,3 +130,5 @@ Widget _medOracleEntry(BuildContext _) =>
     const PatientGate(module: 'medoracle', child: MedOracleScreen());
 Widget _careStepEntry(BuildContext _) =>
     const PatientGate(module: 'carestep', child: CareStepScreen());
+Widget _bedSenseEntry(BuildContext _) =>
+    const PatientGate(module: 'bedsense', child: BedSenseScreen());
